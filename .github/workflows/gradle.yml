@@ -38,4 +38,4 @@ jobs:
       # 4. Dockerfile 빌드
     - name: build Dockerfile to image
       run: |
-        docker build -t SSG-USMS-business-service-img:latest .
+        docker build -t ssg-usms-business-service-img:latest .
