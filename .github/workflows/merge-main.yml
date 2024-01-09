@@ -39,6 +39,6 @@ jobs:
     # 5. Dockerfile 빌드
     - name: build Dockerfile to image
       run: |
-        docker build -t ${{secrets.DOCKER_USERNAME}}/ssg-usms-business-service-img:${{ github.sha }} .
+        docker build -t ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMG_NAME}}:${{ github.sha }} .
         docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-        docker push ${{secrets.DOCKER_USERNAME}}/ssg-usms-business-service-img:${{ github.sha }}
+        docker push ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMG_NAME}}:${{ github.sha }}
