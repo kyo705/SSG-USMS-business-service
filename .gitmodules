@@ -1,0 +1,3 @@
+[submodule "SSG-USMS-business-service-yml"]
+	path = SSG-USMS-business-service-yml
+	url = git@github.com:kyo705/SSG-USMS-business-service-yml.git
