@@ -1,4 +1,4 @@
-FROM openjdk:11-alpine
+FROM openjdk:11
 
 ARG JAR_FILE=/build/libs/business-0.0.1-SNAPSHOT.jar
 
