@@ -36,9 +36,22 @@ jobs:
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
         arguments: build test
-    # 5. Dockerfile 빌드
+    # 5. Dockerfile 빌드 및 hub 업로드
     - name: build Dockerfile to image
       run: |
         docker build -t ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMG_NAME}}:${{ github.sha }} .
         docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
         docker push ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMG_NAME}}:${{ github.sha }}
+    # 6. 운영 서버 접속 후 최신 도커 이미지 다운로드 및 실행
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{secrets.OP_SERVER_HOST}}
+        username: ${{secrets.OP_SERVER_USERNAME}}
+        key: ${{secrets.OP_SERVER_SSH_KEY}}
+        script: |
+          sudo ssh -i ${{secrets.PRIVATE_SERVER_KEYPAIR_DIR}} ${{secrets.PRIVATE_SERVER_ID}}
+          sudo docker pull ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMG_NAME}}:${{ github.sha }}
+          sudo docker stop server
+          sudo docker run -d --rm -name ssg-usms-business-service-server -p 8080:9000 ${{secrets.DOCKER_USERNAME}}/${{secrets.DOCKER_IMG_NAME}}:${{ github.sha }}
+          
