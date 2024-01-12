@@ -60,7 +60,7 @@ public class VideoService {
         return String.format("%s/video/%s/live/%s/%s", mediaServerUrl, streamKey, protocol, filename);
     }
 
-    public byte[] getReplayVideo(String streamKey) {
+    public byte[] getReplayVideo(String username, String streamKey, String protocol, String filename) {
 
         return null;
     }

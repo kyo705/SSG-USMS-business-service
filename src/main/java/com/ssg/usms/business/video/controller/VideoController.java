@@ -1,11 +1,13 @@
 package com.ssg.usms.business.video.controller;
 
 import com.ssg.usms.business.video.annotation.LiveVideoFilename;
+import com.ssg.usms.business.video.annotation.ReplayVideoFilename;
 import com.ssg.usms.business.video.annotation.StreamKey;
 import com.ssg.usms.business.video.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -31,5 +33,19 @@ public class VideoController {
         return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
                 .header(HttpHeaders.LOCATION, redirectUrl)
                 .build();
+    }
+
+    @GetMapping("/video/{streamKey}/replay/{protocol}/{filename}")
+    public ResponseEntity<byte[]> getReplayVideo(@PathVariable String protocol,
+                                                 @PathVariable @StreamKey String streamKey,
+                                                 @PathVariable @ReplayVideoFilename String filename) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        byte[] videoStream = videoService.getReplayVideo(username, streamKey, protocol, filename);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .body(videoStream);
     }
 }

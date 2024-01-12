@@ -23,4 +23,19 @@ public class VideoTestSetup {
                 List.of()
         );
     }
+
+    static Stream<String> getValidFilename() {
+
+        return Stream.of(
+                UUID.randomUUID().toString().replace("-", "")
+                        + "-"
+                        + (System.currentTimeMillis()/1000)
+                        + ".m3u8",
+
+                UUID.randomUUID().toString().replace("-", "")
+                        + "-"
+                        + (System.currentTimeMillis()/1000)
+                        + ".ts"
+        );
+    }
 }
