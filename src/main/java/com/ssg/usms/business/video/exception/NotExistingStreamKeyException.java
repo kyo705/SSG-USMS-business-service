@@ -4,8 +4,8 @@ import static com.ssg.usms.business.constant.CustomStatusCode.NOT_EXISTING_STREA
 
 public class NotExistingStreamKeyException extends IllegalStreamKeyException {
 
-    public NotExistingStreamKeyException(String message) {
+    public NotExistingStreamKeyException() {
 
-        super(NOT_EXISTING_STREAM_KEY, message);
+        super(NOT_EXISTING_STREAM_KEY, "유효하지 않은 스트림 키 값입니다.");
     }
 }

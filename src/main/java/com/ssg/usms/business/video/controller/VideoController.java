@@ -25,9 +25,8 @@ public class VideoController {
                                              @PathVariable @StreamKey String streamKey,
                                              @PathVariable @LiveVideoFilename String filename) {
 
-        ProtocolAndFileFormatMatcher.matches(protocol, filename.split("[.]")[1]);
-
-        String redirectUrl = videoService.getLiveVideo(streamKey);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String redirectUrl = videoService.getLiveVideo(username, streamKey, protocol, filename);
 
         return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
                 .header(HttpHeaders.LOCATION, redirectUrl)
