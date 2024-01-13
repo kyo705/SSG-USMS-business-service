@@ -1,30 +1,35 @@
-package com.ssg.usms.business.video;
+package com.ssg.usms.business.video.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
 import com.ssg.usms.business.store.*;
 import com.ssg.usms.business.video.exception.*;
-import com.ssg.usms.business.video.service.VideoService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class VideoServiceTest {
+public class VideoServiceReplayStreamTest {
 
-    private String mediaServerUrl = "https://test.com";
     private VideoService videoService;
+    @Mock
+    private AmazonS3 amazonS3;
     @Mock
     private StoreService storeService;
     @Mock
@@ -32,19 +37,19 @@ public class VideoServiceTest {
 
     @BeforeEach
     public void setup() {
-        videoService = new VideoService(storeService, cctvService);
-        videoService.setMediaServerUrl(mediaServerUrl);
+        videoService = new VideoService(amazonS3, storeService, cctvService);
+        videoService.setTranscodeVideoBucket("s3-bucket");
     }
 
-    @DisplayName("라이브 스트리밍 비디오 요청 : 유저가 자기 자신의 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 실제 파일 경로를 리턴한다.")
+    @DisplayName("정상적인 파라미터로 요청시 영상 데이터를 리턴한다.")
     @Test
-    public void testGetLiveVideoWithValidParam() {
+    public void testGetReplayVideoWithValidParam() throws IOException {
 
         //given
         String username = "kyo705";
         String streamKey = UUID.randomUUID().toString().replace("-", "");
         String protocol = "hls";
-        String filename = "test.m3u8";
+        String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         CctvDto cctv = new CctvDto();
         cctv.setId(1L);
@@ -65,80 +70,92 @@ public class VideoServiceTest {
 
         given(storeService.getStoresByUsername(username)).willReturn(stores);
 
+        String filePath = "test2-1704442782.m3u8";
+        ClassPathResource resource = new ClassPathResource(filePath);
+
+        S3Object s3Object = new S3Object();
+        s3Object.setObjectContent(resource.getInputStream());
+        given(amazonS3.getObject(anyString(), anyString())).willReturn(s3Object);
+
         //when
-        String redirectUrl = videoService.getLiveVideo(username, streamKey, protocol, filename);
+        byte[] fileData = videoService.getReplayVideo(username, streamKey, protocol, filename);
 
         //then
-        assertThat(redirectUrl).startsWith(mediaServerUrl);
+        Assertions.assertThat(fileData).isEqualTo(resource.getInputStream().readAllBytes());
+
         verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
+        verify(amazonS3, times(1)).getObject(anyString(), anyString());
     }
 
-    @DisplayName("라이브 스트리밍 비디오 요청 : 허용되지 않은 스트림 프토로콜 타입으로 요청한 경우 예외를 발생시킨다.")
+    @DisplayName("허용되지 않은 스트림 프토로콜 타입으로 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithNotAllowedStreamingProtocol() {
+    public void testGetReplayVideoWithNotAllowedStreamingProtocol() {
 
         //given
         String username = "kyo705";
         String streamKey = UUID.randomUUID().toString().replace("-", "");
         String protocol = "ftp";
-        String filename = "test.m3u8";
+        String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         //when & then
         assertThrows(NotAllowedStreamingProtocolException.class,
-                () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
+                () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
         verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
+        verify(amazonS3, times(0)).getObject(anyString(), anyString());
     }
 
-    @DisplayName("라이브 스트리밍 비디오 요청 : 스트림 프토로콜 타입과 불일치하는 파일 확장자로 요청한 경우 예외를 발생시킨다.")
+    @DisplayName("스트림 프토로콜 타입과 불일치하는 파일 확장자로 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithNotMatchingStreamProtocolAndFileFormat() {
+    public void testGetReplayVideoWithNotMatchingStreamProtocolAndFileFormat() {
 
         //given
         String username = "kyo705";
         String streamKey = UUID.randomUUID().toString().replace("-", "");
         String protocol = "hls";
-        String filename = "test.mp4";
+        String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".mp4";
 
         //when & then
         assertThrows(NotMatchingStreamingProtocolAndFileFormatException.class,
-                () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
+                () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
         verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
+        verify(amazonS3, times(0)).getObject(anyString(), anyString());
     }
 
-    @DisplayName("라이브 스트리밍 비디오 요청 : 존재하지 않는 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
+    @DisplayName("존재하지 않는 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithExpiredStreamKey() {
+    public void testGetReplayVideoWithExpiredStreamKey() {
 
         //given
         String username = "kyo705";
         String streamKey = UUID.randomUUID().toString().replace("-", "");
         String protocol = "hls";
-        String filename = "test.m3u8";
+        String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         given(cctvService.getCctvByStreamKey(streamKey)).willReturn(null);
 
         //when & then
         assertThrows(NotExistingStreamKeyException.class,
-                () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
+                () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
         verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
+        verify(amazonS3, times(0)).getObject(anyString(), anyString());
     }
 
-    @DisplayName("라이브 스트리밍 비디오 요청 : 만료된 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
+    @DisplayName("만료된 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithNotExistingStreamKey() {
+    public void testGetReplayVideoWithNotExistingStreamKey() {
 
         //given
         String username = "kyo705";
         String streamKey = UUID.randomUUID().toString().replace("-", "");
         String protocol = "hls";
-        String filename = "test.m3u8";
+        String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         CctvDto cctv = new CctvDto();
         cctv.setId(1L);
@@ -151,21 +168,22 @@ public class VideoServiceTest {
 
         //when & then
         assertThrows(ExpiredStreamKeyException.class,
-                () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
+                () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
         verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
+        verify(amazonS3, times(0)).getObject(anyString(), anyString());
     }
 
-    @DisplayName("라이브 스트리밍 비디오 요청 : 타인의 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
+    @DisplayName("타인의 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithNotOwnedStreamKey() {
+    public void testGetReplayVideoWithNotOwnedStreamKey() {
 
         //given
         String username = "kyo705";
         String streamKey = UUID.randomUUID().toString().replace("-", "");
         String protocol = "hls";
-        String filename = "test.m3u8";
+        String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         CctvDto cctv = new CctvDto();
         cctv.setId(1L);
@@ -188,10 +206,10 @@ public class VideoServiceTest {
 
         //when & then
         assertThrows(NotOwnedStreamKeyException.class,
-                () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
+                () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
         verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
+        verify(amazonS3, times(0)).getObject(anyString(), anyString());
     }
-
 }
