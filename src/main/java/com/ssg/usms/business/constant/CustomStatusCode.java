@@ -7,4 +7,5 @@ public class CustomStatusCode {
     public static final int NOT_OWNED_STREAM_KEY = 626;
     public static final int NOT_EXISTING_STREAM_KEY = 625;
     public static final int EXPIRED_STREAM_KEY = 624;
+    public static final int ALREADY_CONNECTED_STREAM_KEY = 629;
 }
