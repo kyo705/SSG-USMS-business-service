@@ -1,4 +1,4 @@
-package com.ssg.usms.business.login.exception;
+package com.ssg.usms.business.User.exception;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.NOT_ALLOWED_KEY;
 

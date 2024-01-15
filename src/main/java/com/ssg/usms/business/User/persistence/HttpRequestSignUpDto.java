@@ -1,24 +1,27 @@
-package com.ssg.usms.business.login.persistence;
+package com.ssg.usms.business.User.persistence;
 
 
+import com.ssg.usms.business.User.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.web.access.intercept.RequestMatcherDelegatingAuthorizationManager;
-
-import javax.validation.constraints.Email;
 
 @Getter
 @Setter
 public class HttpRequestSignUpDto {
 
+    @CustomUsername
     private String username;
 
+    @CustomPassword
     private String password;
-    @Email
+
+    @CustomEmail
     private String email;
 
+    @CustomeNickName
     private String nickname;
 
+    @CustomPhoneNumber
     private String phoneNum;
 
 }

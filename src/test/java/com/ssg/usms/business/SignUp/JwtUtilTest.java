@@ -1,16 +1,12 @@
 package com.ssg.usms.business.SignUp;
 
 
-import com.ssg.usms.business.login.exception.NotAllowedKeyExcetpion;
-import com.ssg.usms.business.login.service.SignUpService;
-import com.ssg.usms.business.login.util.JwtUtil;
+import com.ssg.usms.business.User.exception.NotAllowedKeyExcetpion;
+import com.ssg.usms.business.User.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

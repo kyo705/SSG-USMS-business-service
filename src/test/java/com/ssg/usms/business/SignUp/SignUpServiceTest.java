@@ -1,40 +1,29 @@
 package com.ssg.usms.business.SignUp;
 
 
-import com.ssg.usms.business.login.Repository.UserRepository;
-import com.ssg.usms.business.login.exception.AlreadyExistIdException;
-import com.ssg.usms.business.login.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.login.persistence.HttpRequestSignUpDto;
-import com.ssg.usms.business.login.persistence.UsmsUser;
-import com.ssg.usms.business.login.service.SignUpService;
-import com.ssg.usms.business.login.util.JwtUtil;
+import com.ssg.usms.business.User.Repository.UserRepository;
+import com.ssg.usms.business.User.exception.AlreadyExistIdException;
+import com.ssg.usms.business.User.exception.AlreadyExistPhoneNumException;
+import com.ssg.usms.business.User.persistence.HttpRequestSignUpDto;
+import com.ssg.usms.business.User.persistence.UsmsUser;
+import com.ssg.usms.business.User.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import org.assertj.core.api.Assertions;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class SignUpServiceTest {
     private SignUpService service;
 
-    @Mock
-    private JwtUtil jwtUtil;
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Mock
@@ -141,10 +130,8 @@ public void testSinupWithDupicateId(){
         dto.setPhoneNum("010-1234-24124");
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
-
-        ResponseEntity<?> responseEntity = service.SignUp(dto); // 테스트 대상 메서드 호출
         // then
-        Assertions.assertThat(responseEntity.getStatusCodeValue()).isEqualTo(201); // 상태 코드가 200인지 검증
+        assertTrue(service.SignUp(dto));
     }
 
 

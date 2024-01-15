@@ -1,7 +1,7 @@
-package com.ssg.usms.business.login.util;
+package com.ssg.usms.business.User.util;
 
 
-import com.ssg.usms.business.login.exception.NotAllowedKeyExcetpion;
+import com.ssg.usms.business.User.exception.NotAllowedKeyExcetpion;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 

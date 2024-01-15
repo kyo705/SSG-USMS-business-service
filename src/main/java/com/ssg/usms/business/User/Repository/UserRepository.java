@@ -1,6 +1,6 @@
-package com.ssg.usms.business.login.Repository;
+package com.ssg.usms.business.User.Repository;
 
-import com.ssg.usms.business.login.persistence.UsmsUser;
+import com.ssg.usms.business.User.persistence.UsmsUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<UsmsUser,Integer> {

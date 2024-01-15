@@ -1,4 +1,4 @@
-package com.ssg.usms.business.login.exception;
+package com.ssg.usms.business.User.exception;
 
 
 import com.ssg.usms.business.error.ErrorResponseDto;
@@ -18,6 +18,7 @@ public abstract class IllegalSignUpFormException extends RuntimeException {
 
         errorResponseDto = new ErrorResponseDto(code, message);
     }
+
 
 
     @Override

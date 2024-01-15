@@ -1,7 +1,6 @@
-package com.ssg.usms.business.login.persistence;
+package com.ssg.usms.business.User.persistence;
 
 
-import com.ssg.usms.business.login.persistence.UserRole;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -9,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @DynamicInsert
-@Table(name="usms_user")
+@Table(name="usms_user" , indexes = {@Index(name = "idx_username", columnList = "username", unique = true)})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +19,7 @@ public class UsmsUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="username", nullable = false, unique = true)
+    @Column(name="username", nullable = false)
     private String username;
 
     @Column(name="password")
@@ -32,7 +31,7 @@ public class UsmsUser {
     @Column(name="person_number",nullable = false,unique = true)
     private String phoneNumber;
 
-    @Column(name="email",nullable = false,unique = true)
+    @Column(name="email",nullable = false)
     private String email;
 
     @Builder.Default
