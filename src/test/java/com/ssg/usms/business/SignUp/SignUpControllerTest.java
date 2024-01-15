@@ -92,7 +92,7 @@ public class SignUpControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("aksenaksen");
         dto.setPassword(password);
-        dto.setEmail("aksenaksen@1234@asdf.com");
+        dto.setEmail("aksenaksen@123asdf.com");
         dto.setPhoneNum("101-1513-5454");
         dto.setNickname("aksenaksen");
 
@@ -268,5 +268,5 @@ public class SignUpControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(500));
     }
 
-    }
+}
 

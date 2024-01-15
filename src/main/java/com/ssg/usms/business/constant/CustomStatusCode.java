@@ -9,6 +9,9 @@ public class CustomStatusCode {
     public static final int ALREADY_EXIST_ID = 620;
     public static final int ALREADY_EXIST_PHONE_NUM = 621;
 
+    public static final int NOT_ALLOWED_NICKNAME_FORM = 624;
+    public static final int NOT_ALLOWED_PHONENUMBER_FORM = 625;
+
 
 
 
