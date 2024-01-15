@@ -54,7 +54,7 @@ public class VideoControllerReplayStreamTest {
     }
     // 2. 리플레이 스트리밍 비디오 요청
 
-    @DisplayName("리플레이 스트리밍 비디오 요청 : 유저가 자기 자신의 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 실제 파일 경로를 리턴한다.")
+    @DisplayName("리플레이 스트리밍 비디오 요청 : 유저가 자기 자신의 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 실제 파일 데이터를 리턴한다.")
     @MethodSource("com.ssg.usms.business.video.VideoTestSetup#getValidFilename")
     @ParameterizedTest
     public void testGetReplayVideoWithValidParam(String filename) throws Exception {
@@ -69,7 +69,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
@@ -92,7 +92,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -118,7 +118,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -143,7 +143,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -168,7 +168,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -195,7 +195,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -218,7 +218,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
         ;
@@ -237,7 +237,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
         ;

@@ -67,15 +67,15 @@ public class VideoControllerLiveStreamTest {
         String protocol = "hls";
 
         given(videoService.getLiveVideo(USERNAME, streamKey, protocol, filename))
-                .willReturn(String.format("localhost:8090/video/%s/live/%s/%s", streamKey, protocol, filename));
+                .willReturn(String.format("localhost:8090/video/%s/live/%s/%s", protocol, streamKey, filename));
 
         //when & then
         mockMvc.perform(
                 MockMvcRequestBuilders
-                        .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                        .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(307))
-                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, String.format("localhost:8090/video/%s/live/%s/%s", streamKey, protocol, filename)))
+                .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LOCATION, String.format("localhost:8090/video/%s/live/%s/%s", protocol, streamKey, filename)))
         ;
 
     }
@@ -95,7 +95,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -120,7 +120,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -145,7 +145,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -170,7 +170,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -197,7 +197,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -220,7 +220,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
         ;
@@ -239,7 +239,7 @@ public class VideoControllerLiveStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/live/{protocol}/{filename}", streamKey, protocol, filename)
+                                .get("/video/{streamKey}/live/{protocol}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
         ;
