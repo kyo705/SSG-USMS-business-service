@@ -44,7 +44,7 @@ public class VideoService {
         validate(username, streamKey, protocol, filename);
 
         // 해당 파일에 대한 URL 리다이렉트
-        return String.format("%s/video/%s/live/%s/%s", mediaServerUrl, streamKey, protocol, filename);
+        return String.format("%s/video/live/%s/%s", mediaServerUrl, streamKey, filename);
     }
 
     @Transactional(readOnly = true)

@@ -22,7 +22,7 @@ public class VideoController {
 
     private final VideoService videoService;
 
-    @GetMapping("/video/{streamKey}/live/{protocol}/{filename}")
+    @GetMapping("/video/{protocol}/live/{streamKey}/{filename}")
     public ResponseEntity<Void> getLiveVideo(@PathVariable String protocol,
                                              @PathVariable @StreamKey String streamKey,
                                              @PathVariable @LiveVideoFilename String filename) {
@@ -35,7 +35,7 @@ public class VideoController {
                 .build();
     }
 
-    @GetMapping("/video/{streamKey}/replay/{protocol}/{filename}")
+    @GetMapping("/video/{protocol}/replay/{streamKey}/{filename}")
     public ResponseEntity<byte[]> getReplayVideo(@PathVariable String protocol,
                                                  @PathVariable @StreamKey String streamKey,
                                                  @PathVariable @ReplayVideoFilename String filename) {
