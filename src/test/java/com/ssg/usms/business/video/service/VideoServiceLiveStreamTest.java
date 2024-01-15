@@ -114,7 +114,7 @@ public class VideoServiceLiveStreamTest {
 
     @DisplayName("라이브 스트리밍 비디오 요청 : 존재하지 않는 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithExpiredStreamKey() {
+    public void testGetLiveVideoWithNotExistingStreamKey() {
 
         //given
         String username = "kyo705";
@@ -134,7 +134,7 @@ public class VideoServiceLiveStreamTest {
 
     @DisplayName("라이브 스트리밍 비디오 요청 : 만료된 라이브 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
     @Test
-    public void testGetLiveVideoWithNotExistingStreamKey() {
+    public void testGetLiveVideoWithExpiredStreamKey() {
 
         //given
         String username = "kyo705";
