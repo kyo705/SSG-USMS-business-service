@@ -38,7 +38,7 @@ public class VideoService {
     @Value("${aws.s3.transcode-video-bucket}")
     private String transcodeVideoBucket;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public String getLiveVideo(String username, String streamKey, String protocol, String filename) {
 
         validate(username, streamKey, protocol, filename);
@@ -47,6 +47,7 @@ public class VideoService {
         return String.format("%s/video/%s/live/%s/%s", mediaServerUrl, streamKey, protocol, filename);
     }
 
+    @Transactional(readOnly = true)
     public byte[] getReplayVideo(String username, String streamKey, String protocol, String filename) {
 
         validate(username, streamKey, protocol, filename);
