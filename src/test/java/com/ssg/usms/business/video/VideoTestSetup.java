@@ -1,6 +1,7 @@
 package com.ssg.usms.business.video;
 
 import com.ssg.usms.business.store.CctvDto;
+import com.ssg.usms.business.video.dto.HttpRequestCheckingStreamDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,28 @@ public class VideoTestSetup {
                         + "-"
                         + (System.currentTimeMillis()/1000)
                         + ".ts"
+        );
+    }
+
+    static Stream<HttpRequestCheckingStreamDto> getValidCheckingDto() {
+
+        String streamKey = UUID.randomUUID().toString().replace("-", "");
+
+        return Stream.of(
+                HttpRequestCheckingStreamDto
+                        .builder()
+                        .app("live")
+                        .name(streamKey)
+                        .addr("localhost:8080")
+                        .build(),
+                HttpRequestCheckingStreamDto
+                        .builder()
+                        .app("live")
+                        .name(streamKey)
+                        .addr("localhost:8080")
+                        .time(System.currentTimeMillis()/1000L)
+                        .build()
+
         );
     }
 }

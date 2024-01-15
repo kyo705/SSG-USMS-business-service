@@ -1,7 +1,9 @@
 package com.ssg.usms.business.video.handler;
 
 import com.ssg.usms.business.error.ErrorResponseDto;
+import com.ssg.usms.business.video.controller.StreamKeyController;
 import com.ssg.usms.business.video.controller.VideoController;
+import com.ssg.usms.business.video.exception.AlreadyConnectedStreamKeyException;
 import com.ssg.usms.business.video.exception.IllegalStreamKeyException;
 import com.ssg.usms.business.video.exception.NotAllowedStreamingProtocolException;
 import com.ssg.usms.business.video.exception.NotMatchingStreamingProtocolAndFileFormatException;
@@ -16,7 +18,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {VideoController.class})
+@RestControllerAdvice(assignableTypes = {VideoController.class, StreamKeyController.class})
 public class VideoExceptionHandler {
 
     @ExceptionHandler(IllegalStreamKeyException.class)
@@ -69,5 +71,16 @@ public class VideoExceptionHandler {
                 .body(
                         ErrorResponseDto.builder().code(400).message(errorMessage).build()
                 );
+    }
+
+    @ExceptionHandler(AlreadyConnectedStreamKeyException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyConnectedStreamKeyException(AlreadyConnectedStreamKeyException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getErrorResponseDto());
     }
 }
