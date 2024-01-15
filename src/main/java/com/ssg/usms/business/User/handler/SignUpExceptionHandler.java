@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(assignableTypes = {SignupController.class})
 public class SignUpExceptionHandler {
 
-
     @ExceptionHandler(AlreadyExistIdException.class)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistIdException (AlreadyExistIdException exception){
 

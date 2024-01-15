@@ -21,6 +21,7 @@ public class SignupController {
 
     private final SignUpService signUpService;
     private final JwtUtil jwtUtil;
+
     @GetMapping("/users")
     public String users(){
         return "users ADMIN";
