@@ -6,4 +6,6 @@ public class VideoConstants {
     public static final String STREAM_KEY_PATTERN = "[a-zA-Z0-9]{32}";
     public static final String LIVE_VIDEO_FILE_NAME_PATTERN = "[a-zA-Z0-9-_]+\\.[a-zA-Z0-9]+";
 
+    public static final String SET_NAME_OF_CONNECTED_STREAM_KEY = "CONNECTED_STREAM_KEY";
+
 }
