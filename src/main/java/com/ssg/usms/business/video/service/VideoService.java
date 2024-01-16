@@ -1,14 +1,13 @@
 package com.ssg.usms.business.video.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.ssg.usms.business.store.CctvDto;
-import com.ssg.usms.business.store.CctvService;
-import com.ssg.usms.business.store.StoreDto;
-import com.ssg.usms.business.store.StoreService;
+import com.ssg.usms.business.store.dto.CctvDto;
+import com.ssg.usms.business.store.service.CctvService;
+import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.exception.ExpiredStreamKeyException;
 import com.ssg.usms.business.video.exception.NotExistingStreamKeyException;
 import com.ssg.usms.business.video.exception.NotOwnedStreamKeyException;
+import com.ssg.usms.business.video.repository.VideoRepository;
 import com.ssg.usms.business.video.util.ProtocolAndFileFormatMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -28,14 +26,12 @@ import java.util.TimeZone;
 @RequiredArgsConstructor
 public class VideoService {
 
-    private final AmazonS3 amazonS3;
     private final StoreService storeService;
     private final CctvService cctvService;
+    private final VideoRepository videoRepository;
 
     @Value("${usms.media-server.url}")
     private String mediaServerUrl;
-    @Value("${aws.s3.transcode-video-bucket}")
-    private String transcodeVideoBucket;
 
     @Transactional(readOnly = true)
     public String getLiveVideo(String username, String streamKey, String protocol, String filename) {
@@ -64,13 +60,7 @@ public class VideoService {
                                             filename
                                     ).toString();
 
-        S3Object s3Object = amazonS3.getObject(transcodeVideoBucket, replayVideoRealPath);
-
-        try {
-            return s3Object.getObjectContent().readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return videoRepository.getVideo(replayVideoRealPath);
     }
 
     private void validate(String username, String streamKey, String protocol, String filename) {

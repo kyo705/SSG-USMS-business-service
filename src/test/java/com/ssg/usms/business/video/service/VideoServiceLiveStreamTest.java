@@ -1,8 +1,12 @@
 package com.ssg.usms.business.video.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.ssg.usms.business.store.*;
+import com.ssg.usms.business.store.StoreState;
+import com.ssg.usms.business.store.dto.CctvDto;
+import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.service.CctvService;
+import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.exception.*;
+import com.ssg.usms.business.video.repository.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +27,10 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class VideoServiceLiveStreamTest {
 
-    private String mediaServerUrl = "https://test.com";
+    private final String mediaServerUrl = "https://test.com";
     private VideoService videoService;
     @Mock
-    private AmazonS3 amazonS3;
+    private VideoRepository videoRepository;
     @Mock
     private StoreService storeService;
     @Mock
@@ -34,7 +38,7 @@ public class VideoServiceLiveStreamTest {
 
     @BeforeEach
     public void setup() {
-        videoService = new VideoService(amazonS3, storeService, cctvService);
+        videoService = new VideoService(storeService, cctvService, videoRepository);
         videoService.setMediaServerUrl(mediaServerUrl);
     }
 

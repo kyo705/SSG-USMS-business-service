@@ -1,4 +1,4 @@
-package com.ssg.usms.business.store;
+package com.ssg.usms.business.store.service;
 
 import org.springframework.stereotype.Service;
 

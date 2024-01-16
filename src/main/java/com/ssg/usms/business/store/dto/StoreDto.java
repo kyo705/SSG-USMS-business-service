@@ -1,10 +1,13 @@
-package com.ssg.usms.business.store;
+package com.ssg.usms.business.store.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.ssg.usms.business.store.StoreState;
+import lombok.*;
 
+@Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class StoreDto {
 
     private long id;
