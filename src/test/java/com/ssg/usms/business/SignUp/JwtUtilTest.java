@@ -1,8 +1,8 @@
 package com.ssg.usms.business.SignUp;
 
 
-import com.ssg.usms.business.User.exception.NotAllowedKeyExcetpion;
-import com.ssg.usms.business.User.util.JwtUtil;
+import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
+import com.ssg.usms.business.user.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -3,10 +3,11 @@ package com.ssg.usms.business.SignUp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.User.exception.*;
-import com.ssg.usms.business.User.persistence.HttpRequestSignUpDto;
-import com.ssg.usms.business.User.service.SignUpService;
-import com.ssg.usms.business.User.util.JwtUtil;
+import com.ssg.usms.business.user.Repository.UserRepository;
+import com.ssg.usms.business.user.exception.*;
+import com.ssg.usms.business.user.persistence.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.service.SignUpService;
+import com.ssg.usms.business.user.util.JwtUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
@@ -50,6 +52,8 @@ public class SignUpControllerTest {
     private JwtUtil jwtUtil;
 
 
+
+
     @BeforeEach
     public void setup() {
 
@@ -62,6 +66,7 @@ public class SignUpControllerTest {
     @DisplayName("성공한경우")
     @Test
     public void testPostSignUp() throws Exception {
+
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("aksenaksen3");
         dto.setPassword("hashedpasord123@");
@@ -70,8 +75,6 @@ public class SignUpControllerTest {
         dto.setNickname("hihello");
 
         given(jwtUtil.VerifyToken(any())).willReturn(true);
-        given(signUpService.SignUp(any()))
-                .willReturn(true);
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -85,7 +88,7 @@ public class SignUpControllerTest {
 
     @DisplayName("요청된 패스워드가 조건에 불충족할 경우 예외를 발생시킨다.")
     @ParameterizedTest
-    @ValueSource(strings={"as","asdf2123123","asdasdf@@@@@","sadfqeisdfasdfmaaaaaaaaaaaaaaaaaaaaaaaaaa2@aaa"})
+    @ValueSource(strings={"as","asdf2123123","asdasdf@@@@@","sadfqeisdfasdfmaaaaaaaaaaaaaaaaaaaaaaaaaa2@aaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
     public void testPostSignUpWithNotAllowedPwd(String password) throws Exception {
 
         //given
@@ -93,7 +96,7 @@ public class SignUpControllerTest {
         dto.setUsername("aksenaksen");
         dto.setPassword(password);
         dto.setEmail("aksenaksen@123asdf.com");
-        dto.setPhoneNum("101-1513-5454");
+        dto.setPhoneNum("010-1513-5454");
         dto.setNickname("aksenaksen");
 
         mockMvc.perform(
@@ -121,7 +124,7 @@ public class SignUpControllerTest {
         dto.setUsername(id);
         dto.setPassword("akaasdf123@");
         dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("101-1513-5454");
+        dto.setPhoneNum("010-1513-5454");
         dto.setNickname("heeee");
 
         mockMvc.perform(
@@ -145,10 +148,10 @@ public class SignUpControllerTest {
         dto.setUsername("tmasdfasdf");
         dto.setPassword("askaasddf123*");
         dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("101-1513-5454");
+        dto.setPhoneNum("010-1513-5454");
         dto.setNickname("hellow");
 
-        given(signUpService.SignUp(any())).willThrow(new AlreadyExistIdException("이미 존재하는 아이디 입니다."));
+        willThrow(new AlreadyExistIdException("이미 존재하는 전화번호 입니다.")).given(signUpService).SignUp(any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -173,10 +176,10 @@ public class SignUpControllerTest {
         dto.setUsername("tmasdfasdf");
         dto.setPassword("askaasddf123*");
         dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("101-1513-5454");
+        dto.setPhoneNum("010-1513-5454");
         dto.setNickname("hellow");
 
-        given(signUpService.SignUp(any())).willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다."));
+        willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다.")).given(signUpService).SignUp(any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -202,7 +205,7 @@ public class SignUpControllerTest {
         dto.setUsername("aksenakse1231");
         dto.setPassword("asdf112323$");
         dto.setEmail(email);
-        dto.setPhoneNum("101-1513-5454");
+        dto.setPhoneNum("010-1513-5454");
         dto.setNickname("hello");
 
         mockMvc.perform(
@@ -218,6 +221,59 @@ public class SignUpControllerTest {
                 });
 
     }
+
+    @DisplayName("요청된 전화번호 양식이 잘못 된 경우에 400에러 리턴.")
+    @ParameterizedTest
+    @ValueSource(strings = {"12321", "101-1234-4845", "010-123-1223", "010-1323-123", "010*1212*1213"})
+    public void testPostSignUpWithNotAllowedPhoneNumber(String phoneNumber) throws Exception {
+
+        HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
+        dto.setUsername("aksenakse1231");
+        dto.setPassword("asdf112323$");
+        dto.setEmail("as123@asdf.com");
+        dto.setPhoneNum(phoneNumber);
+        dto.setNickname("hello");
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/users")
+                                .content(objectMapper.writeValueAsString(dto))
+                                .contentType("application/json; charset=utf-8")
+                )
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_ALLOWED_PHONENUMBER_FORM);
+                });
+
+    }
+
+    @DisplayName("요청된 닉네임 양식이 잘못된 경우 400 에러 리턴")
+    @ParameterizedTest
+    @ValueSource(strings = {"12321ASDFASDF", "ASD@!@#0" })
+    public void testPostSignUpWithNotAllowedNickName(String nickname) throws Exception {
+
+        HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
+        dto.setUsername("aksenakse1231");
+        dto.setPassword("asdf112323$");
+        dto.setEmail("as123@asdf.com");
+        dto.setPhoneNum("010-1234-5253");
+        dto.setNickname(nickname);
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/users")
+                                .content(objectMapper.writeValueAsString(dto))
+                                .contentType("application/json; charset=utf-8")
+                )
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_ALLOWED_NICKNAME_FORM);
+                });
+
+    }
+
 
 
     @DisplayName("요청된 본인인증 키가 잘못된 경우 예외를 발생시킨다.")
@@ -257,7 +313,7 @@ public class SignUpControllerTest {
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
-        given(signUpService.SignUp(any())).willThrow(new RuntimeException());
+        willThrow((new RuntimeException())).given(signUpService).SignUp(any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
