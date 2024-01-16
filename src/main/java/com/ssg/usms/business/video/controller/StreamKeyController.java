@@ -16,7 +16,6 @@ public class StreamKeyController {
     private final StreamKeyService streamKeyService;
 
     @PostMapping("/live-streaming/checking")
-
     public ResponseEntity<Void> checkAuthOfPushingStream(@ModelAttribute HttpRequestCheckingStreamDto requestParam) {
 
         streamKeyService.checkAuthOfPushingStream(requestParam);
