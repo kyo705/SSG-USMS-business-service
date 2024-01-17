@@ -1,6 +1,6 @@
 package com.ssg.usms.business.video.service;
 
-import com.ssg.usms.business.store.StoreState;
+import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.CctvDto;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.service.CctvService;

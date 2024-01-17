@@ -1,6 +1,6 @@
 package com.ssg.usms.business.store.dto;
 
-import com.ssg.usms.business.store.StoreState;
+import com.ssg.usms.business.store.constant.StoreState;
 import lombok.*;
 
 @Builder
