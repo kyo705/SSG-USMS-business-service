@@ -5,6 +5,9 @@ spring:
     url: jdbc:h2:~/test
     username: sa
     password:
+  jpa:
+    hibernate:
+      ddl-auto: create
   redis:
     host: localhost
     port: 6379
@@ -27,3 +30,4 @@ logging:
 aws:
   s3:
     transcode-video-bucket: usms-bucket-test
+    image-bucket: usms-bucket-img-test
