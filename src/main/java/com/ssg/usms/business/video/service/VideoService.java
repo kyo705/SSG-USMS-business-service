@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TimeZone;
@@ -33,7 +32,7 @@ public class VideoService {
     private final StoreService storeService;
     private final CctvService cctvService;
 
-    @Value("${usms.media-server.url")
+    @Value("${usms.media-server.url}")
     private String mediaServerUrl;
     @Value("${aws.s3.transcode-video-bucket}")
     private String transcodeVideoBucket;
@@ -44,7 +43,7 @@ public class VideoService {
         validate(username, streamKey, protocol, filename);
 
         // 해당 파일에 대한 URL 리다이렉트
-        return String.format("%s/video/live/%s/%s", mediaServerUrl, streamKey, filename);
+        return String.format("%s/video/%s/live/%s/%s", mediaServerUrl, protocol, streamKey, filename);
     }
 
     @Transactional(readOnly = true)
@@ -52,20 +51,16 @@ public class VideoService {
 
         validate(username, streamKey, protocol, filename);
 
-        // filename : streamKey-1641900000000.m3u8
-        int timestampStartIdx = filename.indexOf("-") + 1;
-        int timestampEndIdx = filename.indexOf(".");
-        long timestamp = Long.parseLong(filename.substring(timestampStartIdx, timestampEndIdx));
-        LocalDate date = LocalDateTime
-                .ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId())
-                .toLocalDate();
+        // filename : streamKey-1641900000000.m3u8 or streamKey-1641900000000-001.ts
+        long timestamp = Long.parseLong(filename.split("[.]")[0].split("-")[1]);
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 
         // 실제 다시보기 파일 경로 : /streamKey/년/월/일/파일명
         String replayVideoRealPath = Paths.get(
                                             streamKey,
-                                            Integer.toString(date.getYear()),
-                                            Integer.toString(date.getMonth().getValue()),
-                                            Integer.toString(date.getDayOfMonth()),
+                                            Integer.toString(dateTime.getYear()),
+                                            Integer.toString(dateTime.getMonth().getValue()),
+                                            Integer.toString(dateTime.getDayOfMonth()),
                                             filename
                                     ).toString();
 
