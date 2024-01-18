@@ -34,7 +34,7 @@ public class UserRepositoryTest {
         user.setPersonName("hajoo");
         user.setPhoneNumber("010-1234-2323");
 
-        userRepository.save(user);
+        userRepository.signUp(user);
         // when
         UsmsUser foundUser = userRepository.findByUsername("testUser");
 
@@ -64,7 +64,7 @@ public class UserRepositoryTest {
         user.setPersonName("hajoo");
         user.setPhoneNumber("010-1234-2323");
 
-        userRepository.save(user);
+        userRepository.signUp(user);
 
         // when
         boolean exists = userRepository.existsByUsername("testUser");
@@ -94,7 +94,7 @@ public class UserRepositoryTest {
         user.setPersonName("hajoo");
         user.setPhoneNumber("010-1234-2323");
 
-        userRepository.save(user);
+        userRepository.signUp(user);
         // when
         boolean exists = userRepository.existsByPhoneNumber("010-1234-2323");
 

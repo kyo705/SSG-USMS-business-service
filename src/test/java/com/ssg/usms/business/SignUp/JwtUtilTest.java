@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +49,7 @@ public class JwtUtilTest {
 
 
 
-        String jwt = jwtUtil.createJwt(hashMap, 1800L);
+        String jwt = jwtUtil.createJwt(hashMap, 1800L,"Identification");
 
         assertNotNull(jwt, "jwt에 null이 들어가면 안된다.");
     }
@@ -65,15 +66,12 @@ public class JwtUtilTest {
         hashMap.put(str.get(0),"0");
         hashMap.put(str.get(1),"tkfka123@gmail.com");
         Long expiredMs = 3600000L; // 1 hour
-        String token = jwtUtil.createJwt(hashMap, expiredMs);
+        String token = jwtUtil.createJwt(hashMap, expiredMs,"Identification");
 
 
         Claims claims= jwtUtil.getClaim(token);
-        String extractedCode = jwtUtil.verifyClaim(claims,str.get(0));
-        String extractedValue = jwtUtil.verifyClaim(claims,str.get(1));
+        assertThat(jwtUtil.verifyClaim(claims)).isEqualTo("Identification");
 
-        assertEquals("0", extractedCode);
-        assertEquals("tkfka123@gmail.com", extractedValue);
     }
 
     @DisplayName("토큰의 유효기간이 유효할때")
@@ -89,7 +87,7 @@ public class JwtUtilTest {
         hashMap.put(str.get(1),"tkfka123@gmail.com");
         // Given
         Long expiredMs = 3600000L; // 1 hour
-        String token = jwtUtil.createJwt(hashMap, expiredMs);
+        String token = jwtUtil.createJwt(hashMap, expiredMs,"Identification");
 
         // When
         boolean result = jwtUtil.isExpired(token);
@@ -111,7 +109,7 @@ public class JwtUtilTest {
         hashMap.put(str.get(1),"tkfka123@gmail.com");
         // Given
         Long expiredMs = 0L;
-        String token = jwtUtil.createJwt(hashMap, expiredMs);
+        String token = jwtUtil.createJwt(hashMap, expiredMs,"Identification");
 
         // When Then
         assertThrows(ExpiredJwtException.class,() -> jwtUtil.isExpired(token));

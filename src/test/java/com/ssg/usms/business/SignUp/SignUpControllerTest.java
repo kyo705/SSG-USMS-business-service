@@ -58,7 +58,7 @@ public class SignUpControllerTest {
         hashMap.put("code","0");
         hashMap.put("value","tkfka123@gmail.com");
         Long expiredMs = 3600000L; // 1 hour
-        token = jwtUtil.createJwt(hashMap, expiredMs);
+        token = jwtUtil.createJwt(hashMap, expiredMs,"Identification");
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
@@ -141,7 +141,7 @@ public class SignUpControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
-                    Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_ALLOWED_ID_FORM);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_ALLOWED_USERNAME_FORM);
                 });
     }
 
@@ -168,7 +168,7 @@ public class SignUpControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is(409))
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
-                    Assertions.assertThat(resultBody.getCode()).isEqualTo(ALREADY_EXIST_ID);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(ALREADY_EXIST_USERNAME);
                 });
     }
 

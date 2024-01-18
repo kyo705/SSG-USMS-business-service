@@ -91,7 +91,6 @@ public class SignUpServiceTest {
                 .id(1L)
                 .build();
 
-        given(repository.save(any())).willReturn(user);
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("httpRequestSign");
         dto.setPassword("hashedpassword123@");
