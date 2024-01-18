@@ -1,4 +1,4 @@
-package com.ssg.usms.business.user.Repository;
+package com.ssg.usms.business.user.repository;
 
 
 import com.ssg.usms.business.user.dto.UserRole;

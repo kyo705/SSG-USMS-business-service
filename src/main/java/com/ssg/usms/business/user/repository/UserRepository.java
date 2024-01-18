@@ -1,4 +1,4 @@
-package com.ssg.usms.business.user.Repository;
+package com.ssg.usms.business.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

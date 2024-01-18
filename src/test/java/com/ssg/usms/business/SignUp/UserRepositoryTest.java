@@ -2,8 +2,8 @@ package com.ssg.usms.business.SignUp;
 
 
 
-import com.ssg.usms.business.user.Repository.UsmsUser;
-import com.ssg.usms.business.user.Repository.UserRepository;
+import com.ssg.usms.business.user.repository.UsmsUser;
+import com.ssg.usms.business.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

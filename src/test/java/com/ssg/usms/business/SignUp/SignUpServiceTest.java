@@ -4,16 +4,23 @@ package com.ssg.usms.business.SignUp;
 import com.ssg.usms.business.user.exception.AlreadyExistIdException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
-import com.ssg.usms.business.user.Repository.UsmsUser;
-import com.ssg.usms.business.user.Repository.UserRepository;
+import com.ssg.usms.business.user.repository.UsmsUser;
+import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Incubating;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,8 +29,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class SignUpServiceTest {
+
     private SignUpService service;
 
     @Mock
