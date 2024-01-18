@@ -1,9 +1,13 @@
 package com.ssg.usms.business.store.repository;
 
 import com.ssg.usms.business.store.constant.StoreState;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StoreRepository extends JpaRepository<Store, Long> {
+import java.util.List;
 
-    Store findByBusinessLicenseCodeAndStoreState(String businessLicenseCode, StoreState state);
+public interface StoreRepository {
+
+    Store save(Store store);
+    List<Store> findAll(Long userId, String businessCode, StoreState state, int offset, int size);
+
+    List<Store> findByUserId(Long userId, int offset, int size);
 }

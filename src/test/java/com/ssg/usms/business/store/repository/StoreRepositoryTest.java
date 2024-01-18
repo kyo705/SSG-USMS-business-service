@@ -1,30 +1,32 @@
 package com.ssg.usms.business.store.repository;
 
 import com.ssg.usms.business.store.constant.StoreState;
-import org.assertj.core.api.Assertions;
+import com.ssg.usms.business.store.dto.HttpRequestRetrievingStoreDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+
+@Transactional(readOnly = true)
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest
 public class StoreRepositoryTest {
 
     @Autowired
     private StoreRepository storeRepository;
 
+    @DisplayName("Store 저장 테스트")
     @Test
-    @Transactional
-    @DisplayName("JPA 저장 테스트")
     public void testSave() {
 
         //given
@@ -45,5 +47,35 @@ public class StoreRepositoryTest {
         assertThat(store.getId()).isNotNull();
         assertThat(savedStore.getId()).isNotNull();
         assertThat(store).isEqualTo(savedStore);
+    }
+
+    @DisplayName("Store 조회 테스트")
+    @MethodSource("com.ssg.usms.business.store.StoreTestSetup#getHttpRequestRetrievingStoreDto")
+    @ParameterizedTest
+    public void testFindAll(HttpRequestRetrievingStoreDto requestParam) {
+
+        //given
+
+        //when
+        List<Store> stores = storeRepository.findAll(requestParam.getUserId(),
+                                                    requestParam.getBusinessLicenseCode(),
+                                                    requestParam.getStoreState(),
+                                                    requestParam.getOffset(),
+                                                    requestParam.getSize());
+
+        //then
+        assertThat(stores.size()).isLessThanOrEqualTo(requestParam.getSize());
+        for(Store store : stores) {
+            if(requestParam.getUserId() != null) {
+                assertThat(store.getUserId()).isEqualTo(requestParam.getUserId());
+            }
+            if(requestParam.getBusinessLicenseCode() != null) {
+                assertThat(store.getBusinessLicenseCode()).isEqualTo(requestParam.getBusinessLicenseCode());
+            }
+            if(requestParam.getStoreState() != null) {
+                assertThat(store.getStoreState()).isEqualTo(requestParam.getStoreState());
+            }
+        }
+
     }
 }
