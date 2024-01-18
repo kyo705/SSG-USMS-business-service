@@ -13,6 +13,10 @@ spring:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
 
 
+usms:
+  media-server:
+    url: 1234
+
 cloud:
   aws:
     region:
