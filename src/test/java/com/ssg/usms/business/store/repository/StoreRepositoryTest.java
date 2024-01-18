@@ -2,6 +2,7 @@ package com.ssg.usms.business.store.repository;
 
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.HttpRequestRetrievingStoreDto;
+import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ public class StoreRepositoryTest {
         assertThat(store).isEqualTo(savedStore);
     }
 
-    @DisplayName("Store 조회 테스트")
+    @DisplayName("Store 전체 조회 테스트")
     @MethodSource("com.ssg.usms.business.store.StoreTestSetup#getHttpRequestRetrievingStoreDto")
     @ParameterizedTest
     public void testFindAll(HttpRequestRetrievingStoreDto requestParam) {
@@ -76,6 +78,74 @@ public class StoreRepositoryTest {
                 assertThat(store.getStoreState()).isEqualTo(requestParam.getStoreState());
             }
         }
+    }
+
+    @DisplayName("특정 유저 ID로 조회 테스트")
+    @Test
+    public void testFindByUserId() {
+
+        //given
+        Long userId = 1L;
+        int offset = 0;
+        int size = 20;
+
+        //when
+        List<Store> stores = storeRepository.findByUserId(userId, offset, size);
+
+        //then
+        assertThat(stores.size()).isLessThanOrEqualTo(size);
+        for(Store store : stores) {
+            assertThat(store.getUserId()).isEqualTo(userId);
+        }
+    }
+
+    @DisplayName("pk로 조회 테스트")
+    @Test
+    public void testFindById() {
+
+        //given
+        Long storeId = 1L;
+
+        //when
+        Store store = storeRepository.findById(storeId);
+
+        //then
+        assertThat(store.getId()).isEqualTo(storeId);
+    }
+
+    @DisplayName("업데이트 테스트")
+    @Test
+    public void testUpdate() {
+
+        //given
+        Long storeId = 1L;
+        String updatingStoreName = "업데이트된 매장명";
+        Store store = storeRepository.findById(storeId);
+        store.setStoreName(updatingStoreName);
+
+        //when
+        storeRepository.update(store);
+
+        //then
+        Store updatedStore = storeRepository.findById(storeId);
+        assertThat(updatedStore.getStoreName()).isEqualTo(updatingStoreName);
+    }
+
+    @DisplayName("삭제 테스트")
+    @Test
+    public void testDelete() {
+
+        //given
+        Long storeId = 1L;
+        String updatingStoreName = "업데이트된 매장명";
+        Store store = storeRepository.findById(storeId);
+        store.setStoreName(updatingStoreName);
+
+        //when
+        storeRepository.delete(store);
+
+        //then
+        assertThrows(NotExistingStoreException.class, () -> storeRepository.findById(storeId));
 
     }
 }

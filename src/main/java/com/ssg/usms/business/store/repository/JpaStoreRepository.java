@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.repository;
 
 import com.ssg.usms.business.store.constant.StoreState;
+import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +20,11 @@ public class JpaStoreRepository implements StoreRepository {
     @Override
     public Store save(Store store) {
         return springDataJpaStoreRepository.save(store);
+    }
+
+    @Override
+    public Store findById(Long id) {
+        return springDataJpaStoreRepository.findById(id).orElseThrow(NotExistingStoreException::new);
     }
 
     @Override
@@ -41,5 +47,15 @@ public class JpaStoreRepository implements StoreRepository {
     public List<Store> findByUserId(Long userId, int offset, int size) {
 
         return springDataJpaStoreRepository.findByUserId(userId, PageRequest.of(offset, size));
+    }
+
+    @Override
+    public void update(Store store) {
+
+    }
+
+    @Override
+    public void delete(Store store) {
+        springDataJpaStoreRepository.delete(store);
     }
 }
