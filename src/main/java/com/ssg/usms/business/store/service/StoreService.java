@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,4 +48,23 @@ public class StoreService {
         imageRepository.save(businessLicenseImgId, businessLicenseImgFile);
 
     }
+
+    @Transactional
+    public List<StoreDto> findByUserId(Long userId,  int offset, int size) {
+
+        return storeRepository.findByUserId(userId, offset, size)
+                .stream()
+                .map(StoreDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<StoreDto> findAll(Long userId, String businessLicenseCode, StoreState storeState, int offset, int size) {
+
+        return storeRepository.findAll(userId, businessLicenseCode, storeState, offset, size)
+                .stream()
+                .map(StoreDto::new)
+                .collect(Collectors.toList());
+    }
+
 }
