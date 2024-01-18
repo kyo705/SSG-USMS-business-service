@@ -10,8 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.ssg.usms.business.user.constant.UserConstants.ALREADY_EXISTS_ID_LITERAL;
-import static com.ssg.usms.business.user.constant.UserConstants.ALREADY_EXISTS_PHONE_LITERAL;
+import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +34,14 @@ public class SignUpService {
                 .email(httpRequestSignUpDto.getEmail())
                 .build();
 
-        userRepository.save(user);
+        userRepository.signUp(user);
     }
 
 
     private void CheckDuplicatedId(String username) {
 
         if (userRepository.existsByUsername(username)) {
-            throw new AlreadyExistIdException(ALREADY_EXISTS_ID_LITERAL);
+            throw new AlreadyExistIdException(ALREADY_EXISTS_USERNAME_LITERAL);
         }
     }
 

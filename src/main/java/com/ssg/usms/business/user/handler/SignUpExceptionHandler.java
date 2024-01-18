@@ -91,9 +91,9 @@ public class SignUpExceptionHandler {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(errorResponseDto);
         }
-        if (exception.getBindingResult().getAllErrors().get(0).getDefaultMessage().equals(NOT_ALLOWED_ID_FORM_LITERAL)) {
+        if (exception.getBindingResult().getAllErrors().get(0).getDefaultMessage().equals(NOT_ALLOWED_USERNAME_FORM_LITERAL)) {
 
-            ErrorResponseDto errorResponseDto = new ErrorResponseDto(NOT_ALLOWED_ID_FORM, NOT_ALLOWED_ID_FORM_LITERAL);
+            ErrorResponseDto errorResponseDto = new ErrorResponseDto(NOT_ALLOWED_USERNAME_FORM, NOT_ALLOWED_USERNAME_FORM_LITERAL);
 
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

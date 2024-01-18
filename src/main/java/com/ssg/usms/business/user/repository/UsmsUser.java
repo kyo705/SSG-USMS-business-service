@@ -1,6 +1,7 @@
 package com.ssg.usms.business.user.repository;
 
 
+import com.ssg.usms.business.user.dto.SecurityState;
 import com.ssg.usms.business.user.dto.UserRole;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -38,7 +39,7 @@ public class UsmsUser {
 
     @Builder.Default
     @Column(name = "security_state")
-    private Integer securityState = 0;
+    private SecurityState securityState = SecurityState.BASIC;
 
     @Builder.Default
     @Column(name = "is_lock")

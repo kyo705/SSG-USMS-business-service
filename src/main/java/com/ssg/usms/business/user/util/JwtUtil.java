@@ -31,18 +31,13 @@ public class JwtUtil {
         );
     }
 
-//    본인인증이면 code value
-//    다른인증이 code key value
-
-
-
     public Claims getClaim(String token){
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
-    public String verifyClaim(Claims claims,String value){
+    public String verifyClaim(Claims claims){
 
-        return claims.get(value, String.class);
+        return claims.getSubject();
     }
 
     public Boolean isExpired(String token) {
@@ -50,20 +45,15 @@ public class JwtUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-
-//    토큰 발급.
-    public String createJwt(HashMap<String , String> claims,Long expiredMs){
+    public String createJwt(HashMap<String , String> claims,Long expiredMs,String subject){
 
         return Jwts.builder()
                 .claims(claims)
+                .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
     }
-
-    //  토큰 검증
-
-
 
 }

@@ -60,9 +60,13 @@ public class SignupController {
 
             throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
         }
+
         Claims claims = jwtUtil.getClaim(authorization);
-        jwtUtil.verifyClaim(claims,"code");
-        jwtUtil.verifyClaim(claims,"value");
+
+        if(!jwtUtil.verifyClaim(claims).equals("Identification")){
+
+            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
+        }
 
     }
 
