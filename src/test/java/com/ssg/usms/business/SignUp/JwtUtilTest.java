@@ -3,6 +3,7 @@ package com.ssg.usms.business.SignUp;
 
 import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
 import com.ssg.usms.business.user.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -34,9 +39,16 @@ public class JwtUtilTest {
     @Value("${spring.jwt.secret}")
     private String secret;
     @DisplayName("jwt토큰 을 반환하는 createJwt테스트")
+    @Test
     public void jwtCreateTest() {
 
-        String jwt = jwtUtil.createJwt("0", "ans109912@asdf.com", 1800L);
+        HashMap<String , String> hashMap = new HashMap<>();
+        hashMap.put("code","1");
+        hashMap.put("value", "010-4046-7715");
+
+
+
+        String jwt = jwtUtil.createJwt(hashMap, 1800L);
 
         assertNotNull(jwt, "jwt에 null이 들어가면 안된다.");
     }
@@ -45,24 +57,39 @@ public class JwtUtilTest {
     @Test
     void getCodeAndValueFromValidToken() {
 
-        String code = "0";
-        String value = "tkfka123@gmail.com";
+        ArrayList<String> str = new ArrayList<>();
+        str.add("code");
+        str.add("value");
+
+        HashMap<String , String> hashMap = new HashMap<>();
+        hashMap.put(str.get(0),"0");
+        hashMap.put(str.get(1),"tkfka123@gmail.com");
         Long expiredMs = 3600000L; // 1 hour
-        String token = jwtUtil.createJwt(code, value, expiredMs);
+        String token = jwtUtil.createJwt(hashMap, expiredMs);
 
-        String extractedCode = jwtUtil.getCode(token);
-        String extractedValue = jwtUtil.getValue(token);
 
-        assertEquals(code, extractedCode);
-        assertEquals(value, extractedValue);
+        Claims claims= jwtUtil.getClaim(token);
+        String extractedCode = jwtUtil.verifyClaim(claims,str.get(0));
+        String extractedValue = jwtUtil.verifyClaim(claims,str.get(1));
+
+        assertEquals("0", extractedCode);
+        assertEquals("tkfka123@gmail.com", extractedValue);
     }
 
     @DisplayName("토큰의 유효기간이 유효할때")
     @Test
     void isExpiredWithValidToken() {
+
+        ArrayList<String> str = new ArrayList<>();
+        str.add("code");
+        str.add("value");
+
+        HashMap<String , String> hashMap = new HashMap<>();
+        hashMap.put(str.get(0),"0");
+        hashMap.put(str.get(1),"tkfka123@gmail.com");
         // Given
         Long expiredMs = 3600000L; // 1 hour
-        String token = jwtUtil.createJwt("code", "value", expiredMs);
+        String token = jwtUtil.createJwt(hashMap, expiredMs);
 
         // When
         boolean result = jwtUtil.isExpired(token);
@@ -74,46 +101,21 @@ public class JwtUtilTest {
     @DisplayName("토큰의 유효기간이 유효하지않을때 ExpiredJwtExcetpion")
     @Test
     void isExpiredWithExpiredToken() {
+
+        ArrayList<String> str = new ArrayList<>();
+        str.add("code");
+        str.add("value");
+
+        HashMap<String , String> hashMap = new HashMap<>();
+        hashMap.put(str.get(0),"0");
+        hashMap.put(str.get(1),"tkfka123@gmail.com");
         // Given
         Long expiredMs = 0L;
-        String token = jwtUtil.createJwt("code", "value", expiredMs);
+        String token = jwtUtil.createJwt(hashMap, expiredMs);
 
         // When Then
         assertThrows(ExpiredJwtException.class,() -> jwtUtil.isExpired(token));
     }
-
-    @DisplayName("올바른 헤더로 들어왔을때")
-    @Test
-    void verifyTokenWithValidToken() {
-        // Given
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtUtil.createJwt("code", "value", 3600000L));
-
-        boolean result = jwtUtil.VerifyToken(request);
-
-        assertTrue(result);
-    }
-
-    @DisplayName("제대로된 헤더로 들어왔지만 토큰의 유효기간이 expired됐을때")
-    @Test
-    void verifyTokenWithExpiredToken() {
-        // Given
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtUtil.createJwt("code", "value", 0L));
-
-        // When and Then
-        assertThrows(ExpiredJwtException.class, () -> jwtUtil.VerifyToken(request));
-    }
-
-    @DisplayName("헤더에 Bearer이아닌 다른값이 들어갔을때")
-    @Test
-    void verifyTokenWithInvalidAuthorizationHeader() {
-        // Given
-        when(request.getHeader("Authorization")).thenReturn("InvalidHeader " + jwtUtil.createJwt("code", "value", 3600000L));
-
-        // When and Then
-        assertThrows(NotAllowedKeyExcetpion.class, () -> jwtUtil.VerifyToken(request));
-    }
-
-
 
 
 }

@@ -1,4 +1,4 @@
-package com.ssg.usms.business.user.persistence;
+package com.ssg.usms.business.user.dto;
 
 
 import com.ssg.usms.business.user.annotation.*;

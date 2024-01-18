@@ -3,9 +3,8 @@ package com.ssg.usms.business.SignUp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.user.Repository.UserRepository;
 import com.ssg.usms.business.user.exception.*;
-import com.ssg.usms.business.user.persistence.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
 import com.ssg.usms.business.user.service.SignUpService;
 import com.ssg.usms.business.user.util.JwtUtil;
 import org.assertj.core.api.Assertions;
@@ -29,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,14 +48,19 @@ public class SignUpControllerTest {
     private WebApplicationContext applicationContext;
     @MockBean
     private SignUpService signUpService;
-    @MockBean
+    @Autowired
     private JwtUtil jwtUtil;
-
-
+    private String token;
 
 
     @BeforeEach
     public void setup() {
+
+        HashMap<String , String> hashMap = new HashMap<>();
+        hashMap.put("code","0");
+        hashMap.put("value","tkfka123@gmail.com");
+        Long expiredMs = 3600000L; // 1 hour
+        token = jwtUtil.createJwt(hashMap, expiredMs);
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
@@ -74,13 +79,13 @@ public class SignUpControllerTest {
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
-        given(jwtUtil.VerifyToken(any())).willReturn(true);
 
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(201));
 
@@ -104,6 +109,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -132,6 +138,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -158,6 +165,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(409))
                 .andExpect(result -> {
@@ -186,6 +194,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(409))
                 .andExpect(result -> {
@@ -213,6 +222,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -239,6 +249,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -265,6 +276,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -287,13 +299,13 @@ public class SignUpControllerTest {
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
-        given(jwtUtil.VerifyToken(any())).willThrow(new NotAllowedKeyExcetpion("잘못된 본인인증 키 입니다."));
 
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token+"asdf")
                 )
                 .andExpect(MockMvcResultMatchers.status().is(401))
                 .andExpect(result -> {
@@ -320,6 +332,7 @@ public class SignUpControllerTest {
                                 .post("/api/users")
                                 .content(objectMapper.writeValueAsString(dto))
                                 .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(500));
     }

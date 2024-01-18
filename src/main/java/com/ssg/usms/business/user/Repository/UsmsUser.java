@@ -1,6 +1,7 @@
-package com.ssg.usms.business.user.persistence;
+package com.ssg.usms.business.user.Repository;
 
 
+import com.ssg.usms.business.user.dto.UserRole;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 

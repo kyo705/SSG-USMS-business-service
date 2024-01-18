@@ -1,11 +1,11 @@
 package com.ssg.usms.business.SignUp;
 
 
-import com.ssg.usms.business.user.Repository.UserRepository;
 import com.ssg.usms.business.user.exception.AlreadyExistIdException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.user.persistence.HttpRequestSignUpDto;
-import com.ssg.usms.business.user.persistence.UsmsUser;
+import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.Repository.UsmsUser;
+import com.ssg.usms.business.user.Repository.UserRepository;
 import com.ssg.usms.business.user.service.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

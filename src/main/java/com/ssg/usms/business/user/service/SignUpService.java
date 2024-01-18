@@ -3,12 +3,15 @@ package com.ssg.usms.business.user.service;
 import com.ssg.usms.business.user.Repository.UserRepository;
 import com.ssg.usms.business.user.exception.AlreadyExistIdException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.user.persistence.HttpRequestSignUpDto;
-import com.ssg.usms.business.user.persistence.UsmsUser;
+import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.Repository.UsmsUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.ssg.usms.business.user.constant.UserConstants.ALREADY_EXISTS_ID_LITERAL;
+import static com.ssg.usms.business.user.constant.UserConstants.ALREADY_EXISTS_PHONE_LITERAL;
 
 @Service
 @RequiredArgsConstructor
@@ -39,14 +42,14 @@ public class SignUpService {
     private void CheckDuplicatedId(String username) {
 
         if (userRepository.existsByUsername(username)) {
-            throw new AlreadyExistIdException("이미 존재하는 아이디입니다.");
+            throw new AlreadyExistIdException(ALREADY_EXISTS_ID_LITERAL);
         }
     }
 
     private void CheckDuplicatePhoneNumber(String phoneNumber) {
 
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
-            throw new AlreadyExistPhoneNumException("이미 존재하는 전화번호입니다.");
+            throw new AlreadyExistPhoneNumException(ALREADY_EXISTS_PHONE_LITERAL);
         }
     }
 
