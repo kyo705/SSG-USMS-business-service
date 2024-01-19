@@ -12,6 +12,10 @@ spring:
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
 
+coolsms:
+  api:
+    key: "NCSQNTIL1B7Q2GUY"
+    secret: "SJAIGP82XYHV6JGJHJAW8OTM3H0ZJ0GG"
 
 usms:
   media-server:
