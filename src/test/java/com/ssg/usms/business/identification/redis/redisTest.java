@@ -25,60 +25,59 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-//@ActiveProfiles("test")
-////@Import(EmbeddedRedis.class)
-//@SpringBootTest
+@ActiveProfiles("test")
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class redisTest {
 
-//    @Autowired
-//    private SmsCertificationDao smsCertificationDao ;
-//
-//    private final String keyAndCertificationNumber = "verificationKey";
-//    private final String user = "jsonString";
-//
-//    @Autowired
-//    private StringRedisTemplate redisTemplate;
-//
-//    @DisplayName("redis서버에 키와 벨류형태로 성공적으로 저장한 경우")
-//    @Test
-//    public void testCreateSmsCertification() {
-//        // Arrange
-//
-//        // Act
-//        smsCertificationDao.createSmsCertification(keyAndCertificationNumber, user);
-//        String stored = redisTemplate.opsForValue().get(keyAndCertificationNumber);
-//
-//        // Assert
-//        assertThat(stored).isEqualTo(user);
-//    }
-//
-//    @DisplayName("redis서버에서 키로 데이터를 성공적으로 가져온다.")
-//    @Test
-//    public void getSmsCertificationTest() {
-//        // Arrange
-//        String keyAndCertificationNumber = "verificationKey";
-//        String user = "jsonString";
-//
-//        redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
-//        // Act
-//        String stored = smsCertificationDao.getSmsCertification(keyAndCertificationNumber);
-//
-//        // Assert
-//        assertThat(stored).isEqualTo(user);
-//    }
-//
-//    @DisplayName("redis서버에 성공적으로 데이터를 지운다.")
-//    @Test
-//    public void removeSmsCertificationTest() {
-//        // Arrange
-//        redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
-//        // Act
-//        smsCertificationDao.removeSmsCertification(keyAndCertificationNumber);
-//        // Assert
-//        assertFalse(redisTemplate.hasKey(keyAndCertificationNumber));
-//    }
-//
-//
+    @Autowired
+    private SmsCertificationDao smsCertificationDao ;
+
+    private final String keyAndCertificationNumber = "verificationKey";
+    private final String user = "jsonString";
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    @DisplayName("redis서버에 키와 벨류형태로 성공적으로 저장한 경우")
+    @Test
+    public void testCreateSmsCertification() {
+        // Arrange
+
+        // Act
+        smsCertificationDao.createSmsCertification(keyAndCertificationNumber, user);
+        String stored = redisTemplate.opsForValue().get(keyAndCertificationNumber);
+
+        // Assert
+        assertThat(stored).isEqualTo(user);
+    }
+
+    @DisplayName("redis서버에서 키로 데이터를 성공적으로 가져온다.")
+    @Test
+    public void getSmsCertificationTest() {
+        // Arrange
+        String keyAndCertificationNumber = "verificationKey";
+        String user = "jsonString";
+
+        redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
+        // Act
+        String stored = smsCertificationDao.getSmsCertification(keyAndCertificationNumber);
+
+        // Assert
+        assertThat(stored).isEqualTo(user);
+    }
+
+    @DisplayName("redis서버에 성공적으로 데이터를 지운다.")
+    @Test
+    public void removeSmsCertificationTest() {
+        // Arrange
+        redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
+        // Act
+        smsCertificationDao.removeSmsCertification(keyAndCertificationNumber);
+        // Assert
+        assertFalse(redisTemplate.hasKey(keyAndCertificationNumber));
+    }
+
+
 
 
 
