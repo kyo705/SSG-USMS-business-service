@@ -5,6 +5,8 @@ import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
 import com.ssg.usms.business.user.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,9 +18,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -73,6 +79,41 @@ public class JwtUtilTest {
         assertThat(jwtUtil.verifyClaim(claims)).isEqualTo("Identification");
 
     }
+
+
+
+
+    @DisplayName("잘못된 시크릿 키가 들어왔을경우")
+    @Test
+    void getCodeAndValueFromInValidToken() {
+
+        ArrayList<String> str = new ArrayList<>();
+        str.add("code");
+        str.add("value");
+
+        HashMap<String , String> hashMap = new HashMap<>();
+        hashMap.put(str.get(0),"0");
+        hashMap.put(str.get(1),"tkfka123@gmail.com");
+        Long expiredMs = 3600000L;
+
+        String sec="vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbc";
+
+        Key secret = new SecretKeySpec(sec.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+
+        String token =Jwts.builder()
+                .claims(hashMap)
+                .subject("Identification")
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .signWith(secret)
+                .compact();
+
+        assertThrows(SignatureException.class, () -> {
+            jwtUtil.getClaim(token);
+        });
+
+    }
+
 
     @DisplayName("토큰의 유효기간이 유효할때")
     @Test
