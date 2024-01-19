@@ -21,6 +21,7 @@ public class Store {
     private String businessLicenseImgId;
     @Convert(converter = StoreStateConverter.class)
     private StoreState storeState;
+    private String adminComment;
 
     public static Store init(long userId,
                              String storeName,
@@ -39,27 +40,29 @@ public class Store {
         return store;
     }
 
-    public void approve() {
+    public void approve(String approvalMessage) {
         this.storeState = StoreState.APPROVAL;
+        this.adminComment = approvalMessage;
     }
 
-    public void disapprove() {
+    public void disapprove(String disapprovalMessage) {
         this.storeState = StoreState.DISAPPROVAL;
+        this.adminComment = disapprovalMessage;
     }
 
-    public void updateStoreName(String storeName) {
-        this.storeName = storeName;
+    public void lock(String adminComment) {
+        this.storeState = StoreState.STOPPED;
+        this.adminComment = adminComment;
     }
-
-    public void retry(String storeName,
-                      String storeAddress,
-                      String businessLicenseCode,
-                      String businessLicenseImgId) {
+    public void update(String storeName,
+                       String storeAddress,
+                       String businessLicenseCode) {
 
         this.storeName = storeName;
         this.storeAddress = storeAddress;
         this.businessLicenseCode = businessLicenseCode;
-        this.businessLicenseImgId = businessLicenseImgId;
         this.storeState = StoreState.READY;
     }
+
+
 }

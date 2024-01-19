@@ -81,4 +81,13 @@ public class StoreTestSetup {
                 )
         );
     }
+
+    public static Stream<Arguments> getStoreStateAndComment() {
+
+        return Stream.of(
+                Arguments.of(StoreState.APPROVAL, "매장 승인 완료"),
+                Arguments.of(StoreState.DISAPPROVAL, "사업자 등록증 사본 이미지가 더 선명해야 합니다."),
+                Arguments.of(StoreState.STOPPED, "이상 상태 발견.. 관리자 검토 중입니다.")
+        );
+    }
 }

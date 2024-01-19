@@ -7,5 +7,6 @@ CREATE TABLE store (
     store_address VARCHAR(50) NOT NULL,
     business_license_code VARCHAR(50)  NOT NULL,
     business_license_img_id VARCHAR(50) NOT NULL,
-    store_state SMALLINT NOT NULL
+    store_state SMALLINT NOT NULL,
+    admin_comment VARCHAR(50)
 );
