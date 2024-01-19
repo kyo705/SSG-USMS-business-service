@@ -52,6 +52,26 @@ public class ImageRepositoryTest {
         assertThat(resource.getInputStream().readAllBytes()).isEqualTo(s3Object.getObjectContent().readAllBytes());
     }
 
+    @DisplayName("이미지 저장 테스트")
+    @Test
+    public void testFind() throws IOException {
+
+        //given
+        amazonS3.createBucket(bucket);
+
+        String filename = UUID.randomUUID().toString().replace("-", "");
+        String filePath = "beach.jpg";
+        ClassPathResource resource = new ClassPathResource(filePath);
+
+        amazonS3.putObject(bucket, filename, resource.getInputStream(), null);
+
+        //when
+        byte[] image = imageRepository.find(filename);
+
+        //then
+        assertThat(image).isEqualTo(resource.getInputStream().readAllBytes());
+    }
+
     @AfterEach
     public void shutdownMockS3(){
         s3Mock.stop();

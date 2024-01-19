@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Repository
@@ -19,5 +20,14 @@ public class AwsS3ImageRepository implements ImageRepository {
     public void save(String key, InputStream inputStream) {
 
         amazonS3.putObject(imageBucket, key, inputStream, null);
+    }
+
+    @Override
+    public byte[] find(String key) {
+        try {
+            return amazonS3.getObject(imageBucket, key).getObjectContent().readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
