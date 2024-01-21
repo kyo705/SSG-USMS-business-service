@@ -9,8 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
@@ -40,15 +45,6 @@ public class UsmsAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         Authentication authentication = getAuthenticationManager().authenticate(usernamePasswordAuthenticationToken);
 
         return authentication;
-    }
-
-    private void writeResponse(HttpServletResponse res,int code, String message) throws IOException {
-
-        ResponseLoginDto responseBody = new ResponseLoginDto(code , message);
-
-        res.setStatus(code);
-        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        res.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 
     private RequestLoginDto parseRequestLoginDto(HttpServletRequest request){

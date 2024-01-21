@@ -1,10 +1,13 @@
 package com.ssg.usms.business.Security.login;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssg.usms.business.user.dto.SecurityState;
 import com.ssg.usms.business.user.repository.UsmsUser;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,6 +17,9 @@ import java.util.List;
 
 
 @Slf4j
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UsmsUserDetails implements UserDetails {
 
     private Long id;

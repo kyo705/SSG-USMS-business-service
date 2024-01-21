@@ -1,10 +1,9 @@
 package com.ssg.usms.business.Security.login.persistence;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.ssg.usms.business.Security.login.UsmsUserDetails;
+import com.ssg.usms.business.user.repository.UsmsUser;
+import lombok.*;
 
 @Getter
 @Setter
@@ -16,4 +15,6 @@ public class ResponseLoginDto {
     private int code;
 
     private String message;
+
+    private UsmsUserDetails user;
 }

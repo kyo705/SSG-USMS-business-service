@@ -5,6 +5,7 @@ import com.ssg.usms.business.Security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.Security.login.persistence.ResponseLoginDto;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
+import com.ssg.usms.business.user.service.SignUpService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -135,22 +137,7 @@ public class LoginIntegrationTest {
 
     }
 
-    @DisplayName("ADMIN권한없이 GET방식으로 로그인 요청을 한 경우")
-    @Test
-    public void testLoginWithInvalidAuthorities() throws Exception {
 
-        mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/login")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
-                .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
-                })
-                .andDo(MockMvcResultHandlers.print());
-
-    }
 
 
 

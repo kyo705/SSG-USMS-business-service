@@ -1,5 +1,6 @@
 package com.ssg.usms.business.Security.login.authority;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
