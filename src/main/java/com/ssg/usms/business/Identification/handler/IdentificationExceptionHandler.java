@@ -6,6 +6,7 @@ import com.ssg.usms.business.Identification.Contorller.IdentificationController;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.Identification.error.NotMatchedValueAndCodeException;
 import com.ssg.usms.business.error.ErrorResponseDto;
+import com.ssg.usms.business.notification.exception.NotificationFailureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,19 @@ public class IdentificationExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponseDto);
+    }
+
+
+    @ExceptionHandler(NotificationFailureException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotificationException(NotificationFailureException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), ERROR_SEND_MESSAGE);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .body(errorResponseDto);
     }
 
