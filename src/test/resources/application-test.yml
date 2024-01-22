@@ -7,8 +7,8 @@ spring:
       mode: always
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:~/test;MODE=MySQL;DB_CLOSE_DELAY=-1
-    username: sa
+    url: jdbc:h2:mem:test
+    username: root
     password:
   jpa:
     defer-datasource-initialization: true
@@ -18,6 +18,14 @@ spring:
   redis:
     host: localhost
     port: 6379
+
+  jwt:
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
+
+
+usms:
+  media-server:
+    url: 1234
 
 cloud:
   aws:

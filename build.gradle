@@ -40,6 +40,12 @@ dependencies {
 	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 	testImplementation 'io.findify:s3mock_2.13:0.2.6'
 
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	implementation 'net.nurigo:sdk:4.3.0'
+
 	testRuntimeOnly 'com.h2database:h2'
 
 	testCompileOnly 'org.projectlombok:lombok'
