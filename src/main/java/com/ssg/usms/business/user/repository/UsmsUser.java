@@ -47,5 +47,5 @@ public class UsmsUser {
 
     @Builder.Default
     @Column(name= "role")
-    private UserRole role = UserRole.STORE_OWNER;
+    private UserRole role = UserRole.ROLE_STORE_OWNER;
 }

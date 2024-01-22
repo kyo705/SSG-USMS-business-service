@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum UserRole {
-    ADMIN(0)
-    ,STORE_OWNER(1);
+    ROLE_ADMIN(0)
+    ,ROLE_STORE_OWNER(1);
 
     private final int code;
 
