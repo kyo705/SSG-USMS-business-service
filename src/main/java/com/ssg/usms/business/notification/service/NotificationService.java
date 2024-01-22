@@ -1,4 +1,4 @@
-package com.ssg.usms.business.notification;
+package com.ssg.usms.business.notification.service;
 
 public interface NotificationService {
 
