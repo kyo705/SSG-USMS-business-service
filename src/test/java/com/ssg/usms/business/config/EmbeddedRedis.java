@@ -10,21 +10,21 @@ import javax.annotation.PreDestroy;
 @TestConfiguration
 public class EmbeddedRedis {
 
+    @Value("${spring.redis.port}")
+    private int redisPort;
+
     private RedisServer redisServer;
 
-    public EmbeddedRedis(RedisProperties redisProperties) {
-
-        this.redisServer = new RedisServer(redisProperties.getPort());
-
-    }
-
     @PostConstruct
-    public void postConstruct() {
-        redisServer.start();
+    public void redisServer() throws IOException {
+            redisServer = new RedisServer(redisPort);
+            redisServer.start();
     }
 
     @PreDestroy
-    public void preDestroy() {
-        redisServer.stop();
+    public void stopRedis() {
+        if (redisServer != null) {
+            redisServer.stop();
+        }
     }
 }
