@@ -14,6 +14,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
+import static com.ssg.usms.business.user.dto.UserRole.ROLE_ADMIN;
+import static com.ssg.usms.business.user.dto.UserRole.ROLE_STORE_OWNER;
+
 @Configuration
 public class SecurityConfig {
 
@@ -27,9 +30,18 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .antMatchers(HttpMethod.GET,("/api/users")).hasRole("ADMIN")
+                        .antMatchers(HttpMethod.GET,("/api/users")).hasRole(ROLE_ADMIN.getRole())
                         .antMatchers(HttpMethod.POST,("/api/users")).permitAll()
                         .antMatchers(HttpMethod.POST,("/api/identification")).permitAll()
+
+                        .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores")).hasAnyRole(ROLE_ADMIN.getRole(), ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}")).hasAnyRole(ROLE_ADMIN.getRole(), ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/license/{licenseKey}")).hasAnyRole(ROLE_ADMIN.getRole(), ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.POST,("/api/users/{userId}/stores")).hasRole(ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.POST,("/api/users/{userId}/stores/{storeId}")).hasRole(ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.PATCH,("/api/users/{userId}/stores/{storeId}")).hasRole(ROLE_ADMIN.getRole())
+                        .antMatchers(HttpMethod.DELETE,("/api/users/{userId}/stores/{storeId}")).hasRole(ROLE_STORE_OWNER.getRole())
+
                         .anyRequest().authenticated());
 
         http

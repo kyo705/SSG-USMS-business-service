@@ -1,11 +1,9 @@
 package com.ssg.usms.business.store.service;
 
 import com.amazonaws.AmazonClientException;
-import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.exception.NotExistingBusinessLicenseImgFileKeyException;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
-import com.ssg.usms.business.store.exception.NotOwnedBusinessLicenseImgIdException;
-import com.ssg.usms.business.store.exception.NotOwnedStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.Store;
 import com.ssg.usms.business.store.repository.StoreRepository;
@@ -123,38 +121,14 @@ public class StoreServiceRetrievingTest {
 
 
         //when
-        StoreDto result = storeService.findById(storeId, userId);
+        StoreDto result = storeService.findById(storeId);
 
         //then
         assertThat(result.getId()).isEqualTo(storeId);
         assertThat(result.getUserId()).isEqualTo(userId);
     }
 
-    @DisplayName("[FindById] : 고유 키 값에 해당하는 매장 데이터 조회시 해당 매장이 현재 유저의 소유가 아니라면 예외가 발생한다.")
-    @Test
-    public void testFindByIdWithMismatchingUserId() {
-
-        //given
-        Long storeId = 1L;
-        Long userId = 2L;
-
-        Store store = Store.init(3L,
-                "매장명",
-                "매장 위치",
-                "사업자등록번호",
-                "사업자등록증 사본 이미지 키");
-        store.setId(storeId);
-
-        given(mockStoreRepository.findById(storeId)).willReturn(store);
-
-
-        //when & then
-        assertThrows(NotOwnedStoreException.class,
-                () -> storeService.findById(storeId, userId));
-
-    }
-
-    @DisplayName("[FindById] : 고유 키 값에 해당하는 매장 데이터 조회시 해당 매장이 현재 유저의 소유가 아니라면 예외가 발생한다.")
+    @DisplayName("[FindById] : storeId에 해당하는 매장이 없을 경우 예외가 발생한다.")
     @Test
     public void testFindByIdWithNotExistingStore() {
 
@@ -162,12 +136,12 @@ public class StoreServiceRetrievingTest {
         Long storeId = 1L;
         Long userId = 2L;
 
-        given(mockStoreRepository.findById(storeId)).willReturn(null);
+        given(mockStoreRepository.findById(storeId)).willThrow(NotExistingStoreException.class);
 
 
         //when & then
         assertThrows(NotExistingStoreException.class,
-                () -> storeService.findById(storeId, userId));
+                () -> storeService.findById(storeId));
 
     }
 
@@ -176,102 +150,35 @@ public class StoreServiceRetrievingTest {
     public void testFindBusinessLicenseImgFileWithValidParam() throws IOException {
 
         //given
-        Long storeId = 1L;
-        long userId = 1L;
         String businessLicenseImgFileKey = "사업자 등록증 사본 이미지 키";
-
-        Store store = new Store();
-        store.setId(storeId);
-        store.setUserId(userId);
-        store.setStoreName("매장명");
-        store.setStoreAddress("매장 주소");
-        store.setBusinessLicenseCode("사업자 등록 번호");
-        store.setBusinessLicenseImgId(businessLicenseImgFileKey);
-        store.setStoreState(StoreState.READY);
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
 
-        given(mockStoreRepository.findById(storeId)).willReturn(store);
+        given(mockImageRepository.isExisting(businessLicenseImgFileKey)).willReturn(true);
         given(mockImageRepository.find(businessLicenseImgFileKey)).willReturn(resource.getInputStream().readAllBytes());
 
+
         //when
-        byte[] image = storeService.findBusinessLicenseImgFile(storeId, userId, businessLicenseImgFileKey);
+        byte[] image = storeService.findBusinessLicenseImgFile(businessLicenseImgFileKey);
 
         //then
         assertThat(image).isEqualTo(resource.getInputStream().readAllBytes());
     }
 
-    @DisplayName("[findBusinessLicenseImgFile] : 존재하지 않는 매장 id로 사업자 등록증 사본 이미지를 요청할 경우 예외가 발생한다.")
+    @DisplayName("[findBusinessLicenseImgFile] : 사업자 등록증 사본 이미지 키 값이 존재하지 않을 경우 예외가 발생한다.")
     @Test
-    public void testFindBusinessLicenseImgFileWithNotExistingStore() {
+    public void testFindBusinessLicenseImgFileWithNotExistingBusinessLicenseImgFileKey() {
 
         //given
-        Long storeId = 1L;
-        Long userId = 1L;
-        String businessLicenseImgFileKey = "사업자 등록증 사본 이미지 키";
+        String businessLicenseImgFileKey = "존재하지 않는 사업자 등록증 사본 이미지 키";
 
-        given(mockStoreRepository.findById(storeId)).willReturn(null);
+        given(mockImageRepository.isExisting(businessLicenseImgFileKey)).willReturn(false);
 
         //when & then
-        assertThrows(NotExistingStoreException.class,
-                () -> storeService.findBusinessLicenseImgFile(storeId, userId, businessLicenseImgFileKey));
+        assertThrows(NotExistingBusinessLicenseImgFileKeyException.class,
+                () -> storeService.findBusinessLicenseImgFile(businessLicenseImgFileKey));
 
-        verify(mockImageRepository, times(0)).find(any());
-    }
-
-    @DisplayName("[findBusinessLicenseImgFile] : 자기 소유가 아닌 사업자 등록증 사본 이미지를 요청할 경우 예외가 발생한다.")
-    @Test
-    public void testFindBusinessLicenseImgFileWithNotOwnedStore() {
-
-        //given
-        Long storeId = 1L;
-        Long userId = 1L;
-        String businessLicenseImgFileKey = "사업자 등록증 사본 이미지 키";
-
-        Store store = new Store();
-        store.setId(storeId);
-        store.setUserId(2L);
-        store.setStoreName("매장명");
-        store.setStoreAddress("매장 주소");
-        store.setBusinessLicenseCode("사업자 등록 번호");
-        store.setBusinessLicenseImgId(businessLicenseImgFileKey);
-        store.setStoreState(StoreState.READY);
-
-        given(mockStoreRepository.findById(storeId)).willReturn(store);
-
-        //when & then
-        assertThrows(NotOwnedStoreException.class,
-                () -> storeService.findBusinessLicenseImgFile(storeId, userId, businessLicenseImgFileKey));
-
-        verify(mockImageRepository, times(0)).find(any());
-    }
-
-    @DisplayName("[findBusinessLicenseImgFile] : 요청 매장 id와 사업자 등록증 사본 이미지 키 값이 매칭되지 않으면 예외가 발생한다.")
-    @Test
-    public void testFindBusinessLicenseImgFileWithNotMatchedStoreAndBusinessLicenseImgId() {
-
-        //given
-        Long storeId = 1L;
-        long userId = 1L;
-        String businessLicenseImgFileKey = "잘못된 사업자 등록증 사본 이미지 키";
-
-        Store store = new Store();
-        store.setId(storeId);
-        store.setUserId(userId);
-        store.setStoreName("매장명");
-        store.setStoreAddress("매장 주소");
-        store.setBusinessLicenseCode("사업자 등록 번호");
-        store.setBusinessLicenseImgId("사업자 등록즌 사본 이미지 키");
-        store.setStoreState(StoreState.READY);
-
-        given(mockStoreRepository.findById(storeId)).willReturn(store);
-
-        //when & then
-        assertThrows(NotOwnedBusinessLicenseImgIdException.class,
-                () -> storeService.findBusinessLicenseImgFile(storeId, userId, businessLicenseImgFileKey));
-
-        verify(mockImageRepository, times(0)).find(any());
     }
 
     @DisplayName("[findBusinessLicenseImgFile] : 이미지를 저장소에서 가져오는 과정에서 예외가 발생하는 경우")
@@ -279,25 +186,14 @@ public class StoreServiceRetrievingTest {
     public void testFindBusinessLicenseImgFileWithAwsError() {
 
         //given
-        Long storeId = 1L;
-        long userId = 1L;
         String businessLicenseImgFileKey = "사업자 등록증 사본 이미지 키";
 
-        Store store = new Store();
-        store.setId(storeId);
-        store.setUserId(userId);
-        store.setStoreName("매장명");
-        store.setStoreAddress("매장 주소");
-        store.setBusinessLicenseCode("사업자 등록 번호");
-        store.setBusinessLicenseImgId(businessLicenseImgFileKey);
-        store.setStoreState(StoreState.READY);
-
-        given(mockStoreRepository.findById(storeId)).willReturn(store);
+        given(mockImageRepository.isExisting(businessLicenseImgFileKey)).willReturn(true);
         given(mockImageRepository.find(businessLicenseImgFileKey)).willThrow(AmazonClientException.class);
 
         //when
         assertThrows(AmazonClientException.class,
-                () -> storeService.findBusinessLicenseImgFile(storeId, userId, businessLicenseImgFileKey));
+                () -> storeService.findBusinessLicenseImgFile(businessLicenseImgFileKey));
 
         verify(mockImageRepository, times(1)).find(any());
     }

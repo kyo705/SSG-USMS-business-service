@@ -1,6 +1,7 @@
 DROP TABLE usms_user IF EXISTS;
 DROP TABLE store IF EXISTS;
 DROP TABLE cctv IF EXISTS;
+DROP INDEX usms_store_business_license_img_id_idx IF EXISTS;
 DROP INDEX usms_cctv_stream_key_idx IF EXISTS;
 
 CREATE TABLE usms_user (
@@ -10,9 +11,9 @@ CREATE TABLE usms_user (
        person_name VARCHAR(255),
        phone_number VARCHAR(255) NOT NULL UNIQUE,
        email VARCHAR(255) NOT NULL,
-       security_state VARCHAR(255) DEFAULT 'BASIC',
+       security_state SMALLINT DEFAULT 0,
        is_lock BOOLEAN DEFAULT false,
-       role VARCHAR(255) DEFAULT 'ROLE_STORE_OWNER'
+       role SMALLINT DEFAULT 1
 );
 
 CREATE TABLE store (
@@ -34,4 +35,5 @@ CREATE TABLE cctv (
     is_expired BOOLEAN  DEFAULT false
 );
 
+CREATE UNIQUE INDEX usms_store_business_license_img_id_idx ON store (business_license_img_id);
 CREATE UNIQUE INDEX usms_cctv_stream_key_idx ON cctv (cctv_stream_key);

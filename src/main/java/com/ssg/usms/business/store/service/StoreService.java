@@ -2,6 +2,7 @@ package com.ssg.usms.business.store.service;
 
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.exception.NotExistingBusinessLicenseImgFileKeyException;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedBusinessLicenseImgIdException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
@@ -52,30 +53,16 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreDto findById(Long storeId, Long userId) {
+    public StoreDto findById(Long storeId) {
 
-        Store store = storeRepository.findById(storeId);
-        if(store == null) {
-            throw new NotExistingStoreException();
-        }
-        if(store.getUserId() != userId) {
-            throw new NotOwnedStoreException();
-        }
-        return new StoreDto(store);
+        return new StoreDto(storeRepository.findById(storeId));
     }
 
     @Transactional
-    public byte[] findBusinessLicenseImgFile(Long storeId, Long userId, String businessLicenseImgFileKey) {
+    public byte[] findBusinessLicenseImgFile(String businessLicenseImgFileKey) {
 
-        Store store = storeRepository.findById(storeId);
-        if(store == null) {
-            throw new NotExistingStoreException();
-        }
-        if(store.getUserId() != userId) {
-            throw new NotOwnedStoreException();
-        }
-        if(!store.getBusinessLicenseImgId().equals(businessLicenseImgFileKey)) {
-            throw new NotOwnedBusinessLicenseImgIdException();
+        if(!imageRepository.isExisting(businessLicenseImgFileKey)) {
+            throw new NotExistingBusinessLicenseImgFileKeyException();
         }
         return imageRepository.find(businessLicenseImgFileKey);
     }
@@ -99,15 +86,10 @@ public class StoreService {
     }
 
     @Transactional
-    public void update(Long storeId, Long userId, String storeName, String storeAddress, String businessLicenseCode, InputStream businessLicenseImgFile) {
+    public void update(Long storeId, String storeName, String storeAddress, String businessLicenseCode, InputStream businessLicenseImgFile) {
+
 
         Store store = storeRepository.findById(storeId);
-        if(store == null) {
-            throw new NotExistingStoreException();
-        }
-        if(store.getUserId() != userId) {
-            throw new NotOwnedStoreException();
-        }
         store.update(storeName, storeAddress, businessLicenseCode);
         storeRepository.update(store);
 
@@ -118,9 +100,6 @@ public class StoreService {
     public void changeStoreState(Long storeId, StoreState requestState, String message) {
 
         Store store = storeRepository.findById(storeId);
-        if(store == null) {
-            throw new NotExistingStoreException();
-        }
         if(requestState == StoreState.APPROVAL){
             store.approve(message);
         }
@@ -133,15 +112,41 @@ public class StoreService {
     }
 
     @Transactional
-    public void delete(Long storeId, Long userId) {
+    public void delete(Long storeId) {
+
+        Store store = storeRepository.findById(storeId);
+        storeRepository.delete(store);
+    }
+
+
+    @Transactional(readOnly = true)
+    public void validateStore(Long storeId) {
 
         Store store = storeRepository.findById(storeId);
         if(store == null) {
             throw new NotExistingStoreException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public void validateOwnedStore(Long storeId, Long userId) {
+
+        validateStore(storeId);
+
+        Store store = storeRepository.findById(storeId);
         if(store.getUserId() != userId) {
             throw new NotOwnedStoreException();
         }
-        storeRepository.delete(store);
+    }
+
+    @Transactional(readOnly = true)
+    public void validateOwnedBusinessLicenseImgKey(Long storeId, String businessLicenseImgFileKey) {
+
+        validateStore(storeId);
+
+        Store store = storeRepository.findById(storeId);
+        if(!store.getBusinessLicenseImgId().equals(businessLicenseImgFileKey)) {
+            throw new NotOwnedBusinessLicenseImgIdException();
+        }
     }
 }

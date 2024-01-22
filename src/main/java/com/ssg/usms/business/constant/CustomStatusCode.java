@@ -66,4 +66,7 @@ public class CustomStatusCode {
     public static final int NOT_ALLOWED_PAGE_SIZE_FORMAT_CODE = 636;
     public static final String NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE = "페이지 size 값은 반드시 0보다 커야 합니다.";
 
+    public static final int NOT_EXISTING_BUSINESS_LICENSE_IMG_KEY_CODE = 637;
+    public static final String NOT_EXISTING_BUSINESS_LICENSE_IMG_KEY_MESSAGE = "존재하지 않은 사업자등록증 사본 이미지 키입니다.";
+
 }

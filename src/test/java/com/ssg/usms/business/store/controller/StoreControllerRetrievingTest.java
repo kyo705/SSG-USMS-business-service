@@ -20,7 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -40,9 +41,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
 
 @ActiveProfiles("test")
@@ -62,11 +65,13 @@ public class StoreControllerRetrievingTest {
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
+                .apply(springSecurity())
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
     }
 
-    @DisplayName("[findStoreById] : 정상적인 파라미터로 요청시 매장 정보를 리턴한다.")
+    @WithUserDetails("admin")
+    @DisplayName("[findStoreById] : 관리자가 정상적인 파라미터로 요청시 매장 정보를 리턴한다.")
     @Test
     public void testFindStoreByIdWithValidParam() throws Exception {
 
@@ -77,7 +82,7 @@ public class StoreControllerRetrievingTest {
         StoreDto storeDto = new StoreDto();
         storeDto.setId(storeId);
         storeDto.setUserId(userId);
-        given(storeService.findById(userId, storeId)).willReturn(storeDto);
+        given(storeService.findById(storeId)).willReturn(storeDto);
 
         //when & then
         mockMvc.perform(
@@ -94,6 +99,60 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("storeOwner")
+    @DisplayName("[findStoreById] : 점주 유저가 정상적인 파라미터로 요청시 매장 정보를 리턴한다.")
+    @Test
+    public void testFindStoreByIdWithValidParam2() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+
+        StoreDto storeDto = new StoreDto();
+        storeDto.setId(storeId);
+        storeDto.setUserId(userId);
+        given(storeService.findById(storeId)).willReturn(storeDto);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(result -> {
+                    StoreDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(UTF_8), StoreDto.class);
+
+                    assertThat(responseBody.getUserId()).isEqualTo(userId);
+                    assertThat(responseBody.getUserId()).isEqualTo(storeId);
+                });
+
+    }
+
+    @WithAnonymousUser
+    @DisplayName("[findStoreById] : 접근 권한이 없는 유저는 예외가 발생한다.")
+    @Test
+    public void testFindStoreByIdWithPermissionDeniedUser() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+
+        StoreDto storeDto = new StoreDto();
+        storeDto.setId(storeId);
+        storeDto.setUserId(userId);
+        given(storeService.findById(storeId)).willReturn(storeDto);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+        ;
+
+    }
+
+    @WithUserDetails("storeOwner")
     @DisplayName("[findStoreById] : 존재하지 않는 매장 정보를 요청할 경우 예외가 발생한다.")
     @Test
     public void testFindStoreByIdWithNotExistingStore() throws Exception {
@@ -105,7 +164,8 @@ public class StoreControllerRetrievingTest {
         StoreDto storeDto = new StoreDto();
         storeDto.setId(storeId);
         storeDto.setUserId(userId);
-        given(storeService.findById(userId, storeId)).willThrow(new NotExistingStoreException());
+        given(storeService.findById(storeId)).willThrow(new NotExistingStoreException());
+
 
         //when & then
         mockMvc.perform(
@@ -122,6 +182,37 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("storeOwner")
+    @DisplayName("[findStoreById] : 존재하지 않는 매장 정보를 요청할 경우 예외가 발생한다.")
+    @Test
+    public void testFindStoreByIdWithNotExistingStore2() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+
+        StoreDto storeDto = new StoreDto();
+        storeDto.setId(storeId);
+        storeDto.setUserId(userId);
+        willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(storeId, userId);
+
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(result -> {
+                    ErrorResponseDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(UTF_8), ErrorResponseDto.class);
+
+                    assertThat(responseBody.getCode()).isEqualTo(NOT_EXISTING_STORE_CODE);
+                    assertThat(responseBody.getMessage()).isEqualTo(NOT_EXISTING_STORE_MESSAGE);
+                });
+
+    }
+
+    @WithUserDetails("storeOwner")
     @DisplayName("[findStoreById] : 현재 유저가 보유하지 않은 매장 id로 요청한 경우 예외가 발생한다.")
     @Test
     public void testFindStoreByIdWithNotOwnedStore() throws Exception {
@@ -133,7 +224,7 @@ public class StoreControllerRetrievingTest {
         StoreDto storeDto = new StoreDto();
         storeDto.setId(storeId);
         storeDto.setUserId(userId);
-        given(storeService.findById(userId, storeId)).willThrow(new NotOwnedStoreException());
+        willThrow(new NotOwnedStoreException()).given(storeService).validateOwnedStore(storeId, userId);
 
         //when & then
         mockMvc.perform(
@@ -150,7 +241,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithMockUser(roles = {"ADMIN"})
+    @WithUserDetails("admin")
     @DisplayName("[findStores] : 현재 유저가 관리자이면 요청 파라미터에 맞게 매장 정보들을 조회한다.")
     @Test
     public void testFindStoreByIdWithAdmin() throws Exception {
@@ -204,7 +295,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithMockUser(roles = {"STORE_OWNER"})
+    @WithUserDetails("storeOwner")
     @DisplayName("[findStores] : 현재 유저가 매장 점주라면 해당 유저의 매장 정보들을 조회한다.")
     @Test
     public void testFindStoreByIdWithStoreOwner() throws Exception {
@@ -258,8 +349,8 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithMockUser(roles = {"STORE_OWNER"})
-    @DisplayName("[findStores] : 현재 유저가 매장 점주라면 해당 유저의 매장 정보들을 조회한다.")
+    @WithUserDetails("storeOwner")
+    @DisplayName("[findStores] : 잘못된 page offset 파라미터가 전달되면 예외가 발생한다.")
     @Test
     public void testFindStoreByIdWithInvalidOffset() throws Exception {
 
@@ -285,7 +376,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithMockUser(roles = {"STORE_OWNER"})
+    @WithUserDetails("storeOwner")
     @DisplayName("[findStores] : page offset 파라미터가 전달되지 않으면 예외가 발생한다.")
     @Test
     public void testFindStoreByIdWithInvalidOffset2() throws Exception {
@@ -310,8 +401,8 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithMockUser(roles = {"STORE_OWNER"})
-    @DisplayName("[findStores] : 현재 유저가 매장 점주라면 해당 유저의 매장 정보들을 조회한다.")
+    @WithUserDetails("storeOwner")
+    @DisplayName("[findStores] : 잘못된 page size 파라미터가 전달되면 예외가 발생한다.")
     @ValueSource(ints = {0,-1})
     @ParameterizedTest
     public void testFindStoreByIdWithInvalidSize(Integer size) throws Exception {
@@ -337,7 +428,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithMockUser(roles = {"STORE_OWNER"})
+    @WithUserDetails("storeOwner")
     @DisplayName("[findStores] : page size 파라미터가 전달되지 않으면 예외가 발생한다.")
     @Test
     public void testFindStoreByIdWithInvalidSize2() throws Exception {
@@ -362,7 +453,8 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @DisplayName("[findBusinessLicenseImgFile] : 정상적인 파라미터로 요청시 이미지 스트림이 전송된다.")
+    @WithUserDetails("storeOwner")
+    @DisplayName("[findBusinessLicenseImgFile] : 점주 유저가 정상적인 파라미터로 요청시 이미지 스트림이 전송된다.")
     @Test
     public void testFindBusinessLicenseImgFileWithValidParam() throws Exception {
 
@@ -373,7 +465,7 @@ public class StoreControllerRetrievingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        given(storeService.findBusinessLicenseImgFile(storeId, userId, licenseKey)).willReturn(resource.getInputStream().readAllBytes());
+        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(resource.getInputStream().readAllBytes());
 
 
         //when & then
@@ -391,6 +483,62 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("admin")
+    @DisplayName("[findBusinessLicenseImgFile] : 관리자 유저가 정상적인 파라미터로 요청시 이미지 스트림이 전송된다.")
+    @Test
+    public void testFindBusinessLicenseImgFileWithValidParam2() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        String licenseKey = UUID.randomUUID().toString();
+
+        String filePath = "beach.jpg";
+        ClassPathResource resource = new ClassPathResource(filePath);
+        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(resource.getInputStream().readAllBytes());
+
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}/license/{licenseKey}", userId, storeId, licenseKey)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(APPLICATION_OCTET_STREAM_VALUE)))
+                .andExpect(result -> {
+                    byte[] resultBody = result.getResponse().getContentAsByteArray();
+                    Assertions.assertThat(resultBody).isEqualTo(resource.getInputStream().readAllBytes());
+                })
+        ;
+
+    }
+
+    @WithAnonymousUser
+    @DisplayName("[findBusinessLicenseImgFile] : 접근 권한 없는 유저인 경우 예외가 발생한다.")
+    @Test
+    public void testFindBusinessLicenseImgFileWithPermissionDeniedUser() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        String licenseKey = UUID.randomUUID().toString();
+
+        String filePath = "beach.jpg";
+        ClassPathResource resource = new ClassPathResource(filePath);
+        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(resource.getInputStream().readAllBytes());
+
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}/license/{licenseKey}", userId, storeId, licenseKey)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(403))
+        ;
+
+    }
+
+    @WithUserDetails("admin")
     @DisplayName("[findBusinessLicenseImgFile] : 잘못된 사업자 등록증 사본 이미지 키로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithInvalidLicenseKey() throws Exception {
@@ -414,6 +562,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("admin")
     @DisplayName("[findBusinessLicenseImgFile] : 존재하지 않는 매장 id로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithNotExistingStore() throws Exception {
@@ -423,7 +572,7 @@ public class StoreControllerRetrievingTest {
         Long storeId = 1L;
         String licenseKey = UUID.randomUUID().toString();
 
-        given(storeService.findBusinessLicenseImgFile(any(), any(), any())).willThrow(new NotExistingStoreException());
+        willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(any(), any());
 
         //when & then
         mockMvc.perform(
@@ -439,6 +588,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("admin")
     @DisplayName("[findBusinessLicenseImgFile] : 본인 소유가 아닌 매장 id로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithNotOwnedStore() throws Exception {
@@ -448,7 +598,7 @@ public class StoreControllerRetrievingTest {
         Long storeId = 1L;
         String licenseKey = UUID.randomUUID().toString();
 
-        given(storeService.findBusinessLicenseImgFile(any(), any(), any())).willThrow(new NotOwnedStoreException());
+        willThrow(new NotOwnedStoreException()).given(storeService).validateOwnedStore(any(), any());
 
         //when & then
         mockMvc.perform(
@@ -464,6 +614,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("admin")
     @DisplayName("[findBusinessLicenseImgFile] : 본인 소유가 아닌 사업자 등록증 사본 이미지 키로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithNotOwnedBusinessLicenseImgKey() throws Exception {
@@ -473,7 +624,9 @@ public class StoreControllerRetrievingTest {
         Long storeId = 1L;
         String licenseKey = UUID.randomUUID().toString();
 
-        given(storeService.findBusinessLicenseImgFile(any(), any(), any())).willThrow(new NotOwnedBusinessLicenseImgIdException());
+        willThrow(new NotOwnedBusinessLicenseImgIdException())
+                .given(storeService)
+                .validateOwnedBusinessLicenseImgKey(any(), any());
 
         //when & then
         mockMvc.perform(
@@ -489,6 +642,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
+    @WithUserDetails("admin")
     @DisplayName("[findBusinessLicenseImgFile] : 저장 과정에서 예외가 발생하는 경우")
     @Test
     public void testFindBusinessLicenseImgFileWithS3Error() throws Exception {
@@ -498,7 +652,7 @@ public class StoreControllerRetrievingTest {
         Long storeId = 1L;
         String licenseKey = UUID.randomUUID().toString();
 
-        given(storeService.findBusinessLicenseImgFile(any(), any(), any())).willThrow(new AmazonClientException("예외발생"));
+        given(storeService.findBusinessLicenseImgFile(any())).willThrow(new AmazonClientException("예외발생"));
 
         //when & then
         mockMvc.perform(
