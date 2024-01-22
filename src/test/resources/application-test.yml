@@ -1,6 +1,5 @@
 auto-commit: false
 
-
 spring:
   sql:
     init:
@@ -45,10 +44,6 @@ spring:
 #          timeout: 5000
 #          starttls:
 #            enable: true
-coolsms:
-  api:
-    key:
-    secret:
 
 coolsms:
   api:
