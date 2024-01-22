@@ -1,4 +1,4 @@
-package com.ssg.usms.business.store.dto;
+package com.ssg.usms.business.cctv.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package com.ssg.usms.business.store.service;
+package com.ssg.usms.business.cctv.service;
 
-import com.ssg.usms.business.store.dto.CctvDto;
+import com.ssg.usms.business.cctv.dto.CctvDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

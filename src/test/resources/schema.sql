@@ -1,5 +1,7 @@
 DROP TABLE usms_user IF EXISTS;
 DROP TABLE store IF EXISTS;
+DROP TABLE cctv IF EXISTS;
+DROP INDEX usms_cctv_stream_key_idx IF EXISTS;
 
 CREATE TABLE usms_user (
        id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -23,3 +25,13 @@ CREATE TABLE store (
     store_state SMALLINT NOT NULL,
     admin_comment VARCHAR(50)
 );
+
+CREATE TABLE cctv (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    store_id BIGINT NOT NULL,
+    cctv_name VARCHAR(50) NOT NULL,
+    cctv_stream_key VARCHAR(50) NOT NULL,
+    is_expired BOOLEAN  DEFAULT false
+);
+
+CREATE UNIQUE INDEX usms_cctv_stream_key_idx ON cctv (cctv_stream_key);

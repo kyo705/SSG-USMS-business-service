@@ -20,3 +20,11 @@ INSERT INTO store (id, user_id, store_name, store_address, business_license_code
         (18, 1, '매장명18', '매장 주소', '098-76-54321', '사업자등록증 사본 파일 키', 2),
         (19, 2, '매장명19', '매장 주소', '123-45-67890', '사업자등록증 사본 파일 키', 0),
         (20, 1, '매장명20', '매장 주소', '123-45-67890', '사업자등록증 사본 파일 키', 1);
+
+
+INSERT INTO cctv (id, store_id, cctv_name, cctv_stream_key, is_expired)
+VALUES (1, 1, '우측 상단 CCTV', '74d18bfc-14c5-46d2-a1a8-1eb627918859', false),
+       (2, 1, '우측 하단 CCTV', '74d18bfc-14c5-46d2-a1a8-1eb627918851', false),
+       (3, 1, '좌측 상단 CCTV', '74d18bfc-14c5-46d2-a3a8-1eb637918859', false),
+       (4, 1, '좌측 하단 CCTV', '74d18bfc-14c5-46d2-a2a8-1eb727918859', false),
+       (5, 1, '정면 CCTV', '74a13bfc-14c5-46d2-a1a8-1eb627918859', false);

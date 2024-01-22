@@ -1,7 +1,7 @@
 package com.ssg.usms.business.video.service;
 
-import com.ssg.usms.business.store.dto.CctvDto;
-import com.ssg.usms.business.store.service.CctvService;
+import com.ssg.usms.business.cctv.dto.CctvDto;
+import com.ssg.usms.business.cctv.service.CctvService;
 import com.ssg.usms.business.video.dto.HttpRequestCheckingStreamDto;
 import com.ssg.usms.business.video.exception.AlreadyConnectedStreamKeyException;
 import com.ssg.usms.business.video.exception.ExpiredStreamKeyException;
