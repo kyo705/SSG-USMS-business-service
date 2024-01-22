@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = EmbeddedRedis.class)
+@SpringBootTest
 public class IdentificationControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
