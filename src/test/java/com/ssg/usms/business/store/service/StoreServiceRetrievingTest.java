@@ -4,7 +4,7 @@ import com.amazonaws.AmazonClientException;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
-import com.ssg.usms.business.store.exception.NotMatchingStoreAndBusinessLicenseImgIdException;
+import com.ssg.usms.business.store.exception.NotOwnedBusinessLicenseImgIdException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.Store;
@@ -268,7 +268,7 @@ public class StoreServiceRetrievingTest {
         given(mockStoreRepository.findById(storeId)).willReturn(store);
 
         //when & then
-        assertThrows(NotMatchingStoreAndBusinessLicenseImgIdException.class,
+        assertThrows(NotOwnedBusinessLicenseImgIdException.class,
                 () -> storeService.findBusinessLicenseImgFile(storeId, userId, businessLicenseImgFileKey));
 
         verify(mockImageRepository, times(0)).find(any());

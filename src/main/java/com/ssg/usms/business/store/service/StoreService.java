@@ -3,7 +3,7 @@ package com.ssg.usms.business.store.service;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
-import com.ssg.usms.business.store.exception.NotMatchingStoreAndBusinessLicenseImgIdException;
+import com.ssg.usms.business.store.exception.NotOwnedBusinessLicenseImgIdException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.Store;
@@ -75,7 +75,7 @@ public class StoreService {
             throw new NotOwnedStoreException();
         }
         if(!store.getBusinessLicenseImgId().equals(businessLicenseImgFileKey)) {
-            throw new NotMatchingStoreAndBusinessLicenseImgIdException();
+            throw new NotOwnedBusinessLicenseImgIdException();
         }
         return imageRepository.find(businessLicenseImgFileKey);
     }
