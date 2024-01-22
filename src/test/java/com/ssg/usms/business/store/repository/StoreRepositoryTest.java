@@ -33,7 +33,7 @@ public class StoreRepositoryTest {
 
         //given
         Store store = new Store();
-        store.setUserId(1L);
+        store.setUserId(111L);
         store.setStoreName("매장명");
         store.setStoreAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
         store.setBusinessLicenseCode("123-45-67890");
