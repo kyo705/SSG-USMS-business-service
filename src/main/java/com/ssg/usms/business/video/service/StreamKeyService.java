@@ -25,7 +25,7 @@ public class StreamKeyService {
         String streamKey = requestParam.getName();
 
         // 해당 키 값이 유효한지 체크
-        CctvDto cctvDto = cctvService.getCctvByStreamKey(streamKey);
+        CctvDto cctvDto = cctvService.findByStreamKey(streamKey);
         if(cctvDto == null) {
             throw new NotExistingStreamKeyException();
         }
@@ -42,5 +42,6 @@ public class StreamKeyService {
         if(streamKeyRepository.isExistingStreamKey(streamKey)) {
             throw new AlreadyConnectedStreamKeyException();
         }
+        streamKeyRepository.saveStreamKey(streamKey);
     }
 }

@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 import static com.ssg.usms.business.video.constant.VideoConstants.SET_NAME_OF_CONNECTED_STREAM_KEY;
 
 @Repository
@@ -16,12 +14,10 @@ public class RedisStreamKeyRepository implements StreamKeyRepository {
 
     @Override
     public String saveStreamKey(String streamKey) {
-        return null;
-    }
 
-    @Override
-    public List<String> findStreamKeys(int offset, int size) {
-        return null;
+        redisTemplate.opsForSet().add(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey);
+
+        return streamKey;
     }
 
     @Override
@@ -36,6 +32,11 @@ public class RedisStreamKeyRepository implements StreamKeyRepository {
 
     @Override
     public String removeStreamKey(String streamKey) {
-        return null;
+
+        redisTemplate
+                .opsForSet()
+                .remove(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey);
+
+        return streamKey;
     }
 }

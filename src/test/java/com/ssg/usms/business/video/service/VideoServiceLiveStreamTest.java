@@ -1,9 +1,9 @@
 package com.ssg.usms.business.video.service;
 
-import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.cctv.dto.CctvDto;
-import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.store.constant.StoreState;
+import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.exception.*;
 import com.ssg.usms.business.video.repository.VideoRepository;
@@ -59,7 +59,7 @@ public class VideoServiceLiveStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         List<StoreDto> stores = new ArrayList<>();
         StoreDto store1 = new StoreDto();
@@ -76,7 +76,7 @@ public class VideoServiceLiveStreamTest {
 
         //then
         assertThat(redirectUrl).startsWith(mediaServerUrl);
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
     }
 
@@ -94,7 +94,7 @@ public class VideoServiceLiveStreamTest {
         assertThrows(NotAllowedStreamingProtocolException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(0)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -112,7 +112,7 @@ public class VideoServiceLiveStreamTest {
         assertThrows(NotMatchingStreamingProtocolAndFileFormatException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(0)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -126,13 +126,13 @@ public class VideoServiceLiveStreamTest {
         String protocol = "hls";
         String filename = "test.m3u8";
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(null);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(null);
 
         //when & then
         assertThrows(NotExistingStreamKeyException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -153,13 +153,13 @@ public class VideoServiceLiveStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(true);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         //when & then
         assertThrows(ExpiredStreamKeyException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -180,7 +180,7 @@ public class VideoServiceLiveStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         List<StoreDto> stores = new ArrayList<>();
         StoreDto store1 = new StoreDto();
@@ -196,7 +196,7 @@ public class VideoServiceLiveStreamTest {
         assertThrows(NotOwnedStreamKeyException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
     }
 

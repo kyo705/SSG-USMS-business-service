@@ -1,9 +1,9 @@
 package com.ssg.usms.business.video.service;
 
-import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.cctv.dto.CctvDto;
-import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.store.constant.StoreState;
+import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.exception.*;
 import com.ssg.usms.business.video.repository.VideoRepository;
@@ -59,7 +59,7 @@ public class VideoServiceReplayStreamTest {
         cctv.setStoreId(1L);
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(false);
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         List<StoreDto> stores = new ArrayList<>();
         StoreDto store1 = new StoreDto();
@@ -80,7 +80,7 @@ public class VideoServiceReplayStreamTest {
         //then
         Assertions.assertThat(fileData).isEqualTo(resource.getInputStream().readAllBytes());
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
         verify(videoRepository, times(1)).getVideo(anyString());
     }
@@ -99,7 +99,7 @@ public class VideoServiceReplayStreamTest {
         assertThrows(NotAllowedStreamingProtocolException.class,
                 () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(0)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
         verify(videoRepository, times(0)).getVideo(anyString());
     }
@@ -118,7 +118,7 @@ public class VideoServiceReplayStreamTest {
         assertThrows(NotMatchingStreamingProtocolAndFileFormatException.class,
                 () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(0)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
         verify(videoRepository, times(0)).getVideo(anyString());
     }
@@ -133,13 +133,13 @@ public class VideoServiceReplayStreamTest {
         String protocol = "hls";
         String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(null);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(null);
 
         //when & then
         assertThrows(NotExistingStreamKeyException.class,
                 () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
         verify(videoRepository, times(0)).getVideo(anyString());
     }
@@ -161,13 +161,13 @@ public class VideoServiceReplayStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(true);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         //when & then
         assertThrows(ExpiredStreamKeyException.class,
                 () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
         verify(videoRepository, times(0)).getVideo(anyString());
     }
@@ -189,7 +189,7 @@ public class VideoServiceReplayStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         List<StoreDto> stores = new ArrayList<>();
         StoreDto store1 = new StoreDto();
@@ -205,7 +205,7 @@ public class VideoServiceReplayStreamTest {
         assertThrows(NotOwnedStreamKeyException.class,
                 () -> videoService.getReplayVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
         verify(videoRepository, times(0)).getVideo(anyString());
     }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -26,4 +27,27 @@ public class Cctv {
 
     @Column(name = "is_expired")
     private boolean isExpired;
+
+    public static Cctv init(Long storeId, String cctvName) {
+
+        Cctv cctv = new Cctv();
+        cctv.storeId = storeId;
+        cctv.name = cctvName;
+        cctv.streamKey = UUID.randomUUID().toString();
+        cctv.isExpired = false;
+
+        return cctv;
+    }
+
+    public void changeCctvName(String name) {
+        this.name = name;
+    }
+
+    public void expire() {
+        isExpired = true;
+    }
+
+    public void makeAvailable() {
+        isExpired = false;
+    }
 }

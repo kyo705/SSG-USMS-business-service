@@ -1,6 +1,7 @@
 package com.ssg.usms.business.cctv.repository;
 
 import com.ssg.usms.business.cctv.exception.NotExistingCctvException;
+import com.ssg.usms.business.video.exception.NotExistingStreamKeyException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -158,7 +159,7 @@ public class CctvRepositoryTest {
         String streamKey = "not existing key"; // 존재하는 스트림 키
 
         //when & then
-        assertThrows(NotExistingCctvException.class,
+        assertThrows(NotExistingStreamKeyException.class,
                 () -> cctvRepository.findByStreamKey(streamKey));
 
     }

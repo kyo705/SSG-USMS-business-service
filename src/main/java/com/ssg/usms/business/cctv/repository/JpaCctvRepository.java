@@ -1,6 +1,7 @@
 package com.ssg.usms.business.cctv.repository;
 
 import com.ssg.usms.business.cctv.exception.NotExistingCctvException;
+import com.ssg.usms.business.video.exception.NotExistingStreamKeyException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -36,7 +37,7 @@ public class JpaCctvRepository implements CctvRepository {
     public Cctv findByStreamKey(String streamKey) {
 
         return springDataJpaCctvRepository.findByStreamKey(streamKey)
-                .orElseThrow(NotExistingCctvException::new);
+                .orElseThrow(NotExistingStreamKeyException::new);
     }
 
     @Override
