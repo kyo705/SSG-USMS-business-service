@@ -14,7 +14,7 @@ public class EmbeddedRedis {
 
     public EmbeddedRedis(RedisProperties redisProperties) {
 
-        this.redisServer = new RedisServer(redisProperties.getPort())
+        this.redisServer = new RedisServer(redisProperties.getPort());
 
     }
 
