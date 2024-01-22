@@ -1,10 +1,10 @@
 package com.ssg.usms.business.user.handler;
 
 
+import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.user.controller.SignupController;
 import com.ssg.usms.business.user.exception.AlreadyExistIdException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
