@@ -10,14 +10,11 @@ import javax.annotation.PreDestroy;
 @TestConfiguration
 public class EmbeddedRedis {
 
-    @Value("${spring.redis.port}")
-    private int redisPort;
-
     private RedisServer redisServer;
 
     @PostConstruct
     public void redisServer() throws IOException {
-            redisServer = new RedisServer(redisPort);
+            redisServer = new RedisServer(6379);
             redisServer.start();
     }
 
