@@ -1,20 +1,13 @@
 package com.ssg.usms.business.identification.redis;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.dto.SmsCertificationDao;
 
 import com.ssg.usms.business.config.EmbeddedRedis;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -23,8 +16,6 @@ import java.time.Duration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = EmbeddedRedis.class)

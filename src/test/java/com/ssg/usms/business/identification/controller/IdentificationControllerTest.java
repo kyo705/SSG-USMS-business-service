@@ -2,19 +2,16 @@ package com.ssg.usms.business.identification.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Identification.Service.IdentificationService;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.dto.HttpResponseIdentificationDto;
-import com.ssg.usms.business.Identification.dto.SmsCertificationDao;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
-import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,8 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import javax.persistence.Embeddable;
 
 import static com.ssg.usms.business.Identification.constant.IdenticationConstant.INVALID_AUTHENTICATION_CODE_LITERAL;
 import static com.ssg.usms.business.constant.CustomStatusCode.*;

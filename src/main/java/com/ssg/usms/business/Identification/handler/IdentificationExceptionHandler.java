@@ -2,7 +2,7 @@ package com.ssg.usms.business.Identification.handler;
 
 
 
-import com.ssg.usms.business.Identification.Contorller.IdentificationController;
+import com.ssg.usms.business.Identification.contorller.IdentificationController;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.Identification.error.NotMatchedValueAndCodeException;
 import com.ssg.usms.business.error.ErrorResponseDto;

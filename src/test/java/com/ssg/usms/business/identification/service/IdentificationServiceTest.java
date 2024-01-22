@@ -2,7 +2,7 @@ package com.ssg.usms.business.identification.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Identification.Service.IdentificationService;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.dto.SmsCertificationDao;
@@ -23,7 +23,6 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
