@@ -6,23 +6,23 @@ import redis.embedded.RedisServer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
 
 @TestConfiguration
 public class EmbeddedRedis {
 
     private RedisServer redisServer;
 
+    public EmbeddedRedis(RedisProperties redisProperties) {
+        this.redisServer = new RedisServer(redisProperties.getPort());
+    }
+
     @PostConstruct
-    public void redisServer() throws IOException {
-            redisServer = new RedisServer(6379);
-            redisServer.start();
+    public void postConstruct() {
+        redisServer.start();
     }
 
     @PreDestroy
-    public void stopRedis() {
-        if (redisServer != null) {
-            redisServer.stop();
-        }
+    public void preDestroy() {
+        redisServer.stop();
     }
 }
