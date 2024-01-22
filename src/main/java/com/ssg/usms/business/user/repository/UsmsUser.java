@@ -31,7 +31,7 @@ public class UsmsUser {
     @Column(name="person_name")
     private String personName;
 
-    @Column(name="person_number",nullable = false,unique = true)
+    @Column(name="phone_number",nullable = false,unique = true)
     private String phoneNumber;
 
     @Column(name="email",nullable = false)
@@ -47,5 +47,5 @@ public class UsmsUser {
 
     @Builder.Default
     @Column(name= "role")
-    private UserRole role = UserRole.STORE_OWNER;
+    private UserRole role = UserRole.ROLE_STORE_OWNER;
 }

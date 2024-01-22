@@ -1,6 +1,6 @@
 package com.ssg.usms.business.video;
 
-import com.ssg.usms.business.store.CctvDto;
+import com.ssg.usms.business.store.dto.CctvDto;
 import com.ssg.usms.business.video.dto.HttpRequestCheckingStreamDto;
 
 import java.util.List;
