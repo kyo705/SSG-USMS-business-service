@@ -12,21 +12,13 @@ public class EmbeddedRedis {
 
     private RedisServer redisServer;
 
-    private int port;
-
-
     public EmbeddedRedis(RedisProperties redisProperties) {
-        this.port=redisProperties.getPort();
-//        this.redisServer = RedisServer.builder()
-//                .port(6379)
-//                .setting("maxmemory 128M")
-//                .build();
+        this.redisServer = new RedisServer(redisProperties.getPort());
     }
 
     @PostConstruct
     public void postConstruct() {
-        this.redisServer = new RedisServer(port);
-        this.redisServer.start();
+        redisServer.start();
     }
 
     @PreDestroy
