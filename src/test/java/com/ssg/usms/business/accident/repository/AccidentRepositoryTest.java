@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,6 +90,29 @@ public class AccidentRepositoryTest {
                             .toLocalDate()
                             .format(DateTimeFormatter.ofPattern("yy-MM"))
                     );
+        }
+
+    }
+
+    @DisplayName("[findAllByStoreId] : 특정 매장에 해당하는 모든 이상 행동 기록 조회")
+    @Test
+    public void testFindAllByStoreId() {
+
+        //given
+        Long storeId = 1L;
+        long startTimestamp = 1000000000L;
+        long endTimestamp = System.currentTimeMillis();
+        int offset = 0;
+        int size = 20;
+        List<AccidentBehavior> behaviors = new ArrayList<>();
+        behaviors.add(AccidentBehavior.FIGHT);
+        behaviors.add(AccidentBehavior.STEAL);
+
+        //when
+        List<Accident> result = accidentRepository.findAllByStoreId(storeId, behaviors, startTimestamp, endTimestamp, offset, size);
+        assertThat(result.size()).isLessThanOrEqualTo(size);
+        for(Accident accident : result) {
+            assertThat(accident.getBehavior()).isIn(AccidentBehavior.FIGHT, AccidentBehavior.STEAL);
         }
 
     }

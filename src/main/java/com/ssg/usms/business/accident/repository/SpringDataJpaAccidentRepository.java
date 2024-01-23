@@ -16,6 +16,20 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
 
     List<Accident> findByCctvId(Long cctvId, Pageable pageable);
 
+
+    @Query(value = "SELECT a.id AS id, a.cctv_id AS cctvId, a.behavior AS behavior, a.start_timestamp AS startTimestamp" +
+            " FROM store s JOIN cctv c ON s.id = c.store_id JOIN accident a ON c.id = a.cctv_id" +
+            " WHERE s.id = :storeId" +
+            " AND a.behavior IN :behavior" +
+            " AND a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
+            " LIMIT :size OFFSET :offset ", nativeQuery = true)
+    List<Accident> findAllByStoreId(@Param("storeId") long storeId,
+                                    @Param("behavior") List<Integer> behaviors,
+                                    @Param("startTimestamp") long startTimestamp,
+                                    @Param("endTimestamp") long endTimestamp,
+                                    @Param("offset") int offset,
+                                    @Param("size") int size);
+
     @Query(value = "SELECT s.id AS storeId, a.behavior AS behavior, COUNT(*) AS count" +
             " FROM store s JOIN cctv c ON s.id = c.store_id JOIN accident a ON c.id = a.cctv_id" +
             " WHERE s.id = :storeId AND a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
