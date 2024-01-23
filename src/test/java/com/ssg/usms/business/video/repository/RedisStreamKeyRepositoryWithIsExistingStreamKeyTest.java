@@ -1,16 +1,21 @@
 package com.ssg.usms.business.video.repository;
 
 import com.ssg.usms.business.config.EmbeddedRedis;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 import static com.ssg.usms.business.video.constant.VideoConstants.SET_NAME_OF_CONNECTED_STREAM_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(classes = EmbeddedRedis.class)
 public class RedisStreamKeyRepositoryWithIsExistingStreamKeyTest {
@@ -19,6 +24,11 @@ public class RedisStreamKeyRepositoryWithIsExistingStreamKeyTest {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private StreamKeyRepository redisStreamKeyRepository;
+
+    @BeforeEach
+    public void setup() {
+        Objects.requireNonNull(stringRedisTemplate.getConnectionFactory()).getConnection().flushAll();
+    }
 
     @DisplayName("[saveStreamKey] : 특정 value를 저장한다.")
     @Test
