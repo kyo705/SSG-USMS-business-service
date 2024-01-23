@@ -69,4 +69,12 @@ public class CustomStatusCode {
     public static final int NOT_EXISTING_BUSINESS_LICENSE_IMG_KEY_CODE = 637;
     public static final String NOT_EXISTING_BUSINESS_LICENSE_IMG_KEY_MESSAGE = "존재하지 않은 사업자등록증 사본 이미지 키입니다.";
 
+    public static final int INVALID_CCTV_NAME_FORMAT_CODE = 611;
+    public static final String INVALID_CCTV_NAME_FORMAT_MESSAGE = "허용되지 않은 CCTV 별칭입니다.";
+
+    public static final int NOT_EXISTING_CCTV_CODE = 638;
+    public static final String NOT_EXISTING_CCTV_MESSAGE = "존재하지 않는 CCTV 입니다.";
+
+    public static final int NOT_OWNED_CCTV_CODE = 639;
+    public static final String NOT_OWNED_CCTV_MESSAGE = "본인 소유의 CCTV가 아닙니다.";
 }

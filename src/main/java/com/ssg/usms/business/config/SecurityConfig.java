@@ -42,6 +42,12 @@ public class SecurityConfig {
                         .antMatchers(HttpMethod.PATCH,("/api/users/{userId}/stores/{storeId}")).hasRole(ROLE_ADMIN.getRole())
                         .antMatchers(HttpMethod.DELETE,("/api/users/{userId}/stores/{storeId}")).hasRole(ROLE_STORE_OWNER.getRole())
 
+                        .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/")).hasAnyRole(ROLE_ADMIN.getRole(), ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}")).hasAnyRole(ROLE_ADMIN.getRole(), ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.POST,("/api/users/{userId}/stores/{storeId}/cctvs")).hasRole(ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.PATCH,("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}")).hasRole(ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.DELETE,("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}")).hasRole(ROLE_STORE_OWNER.getRole())
+
                         .anyRequest().authenticated());
 
         http
