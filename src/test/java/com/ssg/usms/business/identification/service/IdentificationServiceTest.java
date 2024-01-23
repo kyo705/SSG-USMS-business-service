@@ -2,14 +2,15 @@ package com.ssg.usms.business.identification.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Identification.Service.IdentificationService;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
-import com.ssg.usms.business.Identification.dto.SmsCertificationDao;
+import com.ssg.usms.business.Identification.repository.SmsCertificationRepository;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.notification.exception.NotificationFailureException;
 import com.ssg.usms.business.notification.service.NotificationService;
 import com.ssg.usms.business.notification.service.SmsNotificationService;
+import com.ssg.usms.business.user.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +24,6 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,7 +33,7 @@ public class IdentificationServiceTest {
 
 
     @Mock
-    private SmsCertificationDao smsCertificationDao;
+    private SmsCertificationRepository smsCertificationRepository;
     @Mock
     private ObjectMapper objectMapper;
 
@@ -45,6 +45,9 @@ public class IdentificationServiceTest {
 
     @InjectMocks
     private IdentificationService service;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
 
 
@@ -61,10 +64,10 @@ public class IdentificationServiceTest {
 
         given(notificationService.get(any())).willReturn(smsNotificationService);
 
-        service.createIdentification(requestdto,"1234");
+        service.createIdentification(requestdto);
 
 
-        verify(smsCertificationDao, times(1)).createSmsCertification(any(),any());
+        verify(smsCertificationRepository, times(1)).createSmsCertification(any(),any());
     }
 
 
@@ -83,18 +86,16 @@ public class IdentificationServiceTest {
                         .value("161321")
                         .build();
 
-        when(smsCertificationDao.getSmsCertification(any())).thenReturn(requestdto.toString());
+        when(smsCertificationRepository.getSmsCertification(any())).thenReturn(requestdto.toString());
         when(objectMapper.readValue(requestdto.toString(), HttpRequestIdentificationDto.class)).thenReturn(new HttpRequestIdentificationDto());
+        given(jwtUtil.createJwt(any(),any(),any())).willReturn("asdf");
 
-        Object result = service.verifyIdentification(dto);
+        String result = service.verifyIdentification(dto);
+        String Key = dto.getKey()+" "+dto.getValue();
 
-        assertThat(result).isInstanceOf(HttpRequestIdentificationDto.class);
 
-        HttpRequestIdentificationDto resultDto = (HttpRequestIdentificationDto) result;
-
-        assertThat(resultDto.getCode()).isEqualTo(resultDto.getCode());
-        assertThat(resultDto.getValue()).isEqualTo(resultDto.getValue());
-        verify(smsCertificationDao, times(1)).removeSmsCertification(dto.toString());
+        assertThat(result).isEqualTo("asdf");
+        verify(smsCertificationRepository, times(1)).removeSmsCertification(Key);
 
     }
 
@@ -107,7 +108,7 @@ public class IdentificationServiceTest {
                 .value("010-4046-7715")
                 .build();
 
-        when(smsCertificationDao.getSmsCertification(requestdto.toString())).thenReturn(null);
+        given(smsCertificationRepository.getSmsCertification(any())).willReturn(null);
 
         assertThatThrownBy(() -> service.verifyIdentification(requestdto)).isInstanceOf(NotIdentificationException.class);
     }
@@ -123,11 +124,10 @@ public class IdentificationServiceTest {
                 .value("010-4046-7715")
                 .build();
 
-
         given(notificationService.get(any())).willReturn(smsNotificationService);
         doThrow(new NotificationFailureException("실패")).when(smsNotificationService).send(any(),any(),any());
 
-        assertThatThrownBy(() -> service.createIdentification(requestdto,"1234")).isInstanceOf(NotificationFailureException.class);
+        assertThatThrownBy(() -> service.createIdentification(requestdto)).isInstanceOf(NotificationFailureException.class);
     }
 
 

@@ -5,6 +5,7 @@ import com.ssg.usms.business.notification.exception.NotificationFailureException
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,6 @@ import static com.ssg.usms.business.notification.constants.NotificationConstants
 public class EmailNotificationService implements NotificationService {
 
     private final JavaMailSender mailSender;
-
     @Override
     public void send(String destination, String subject, String message) {
 

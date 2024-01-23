@@ -1,7 +1,7 @@
 package com.ssg.usms.business.identification.redis;
 
 
-import com.ssg.usms.business.Identification.dto.SmsCertificationDao;
+import com.ssg.usms.business.Identification.repository.SmsCertificationRepository;
 
 import com.ssg.usms.business.config.EmbeddedRedis;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
+
 
 import java.time.Duration;
 
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class redisTest {
 
     @Autowired
-    private SmsCertificationDao smsCertificationDao ;
+    private SmsCertificationRepository smsCertificationRepository;
 
     private final String keyAndCertificationNumber = "verificationKey";
     private final String user = "jsonString";
@@ -35,7 +36,7 @@ public class redisTest {
         // Arrange
 
         // Act
-        smsCertificationDao.createSmsCertification(keyAndCertificationNumber, user);
+        smsCertificationRepository.createSmsCertification(keyAndCertificationNumber, user);
         String stored = redisTemplate.opsForValue().get(keyAndCertificationNumber);
 
         // Assert
@@ -51,11 +52,27 @@ public class redisTest {
 
         redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
         // Act
-        String stored = smsCertificationDao.getSmsCertification(keyAndCertificationNumber);
+        String stored = smsCertificationRepository.getSmsCertification(keyAndCertificationNumber);
 
         // Assert
         assertThat(stored).isEqualTo(user);
     }
+
+    @DisplayName("redis서버에서 키가 존재하지 않는경우 null 리턴")
+    @Test
+    public void FailedgetSmsCertificationTest() {
+        // Arrange
+        String keyAndCertificationNumber = "verificationKe1y";
+        String user = "jsonString";
+
+        // Act
+        String stored = smsCertificationRepository.getSmsCertification(keyAndCertificationNumber);
+
+        // Assert
+        assertThat(stored).isEqualTo(null);
+    }
+
+
 
     @DisplayName("redis서버에 성공적으로 데이터를 지운다.")
     @Test
@@ -63,13 +80,21 @@ public class redisTest {
         // Arrange
         redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
         // Act
-        smsCertificationDao.removeSmsCertification(keyAndCertificationNumber);
+        smsCertificationRepository.removeSmsCertification(keyAndCertificationNumber);
         // Assert
         assertFalse(redisTemplate.hasKey(keyAndCertificationNumber));
     }
 
+    @DisplayName("redis서버에 데이터가 없는 경우 hasKey에서 null 리턴")
+    @Test
+    public void FailedremoveSmsCertificationTest() {
+
+        assertThat(smsCertificationRepository.getSmsCertification("2")).isEqualTo(null);
+        smsCertificationRepository.removeSmsCertification(keyAndCertificationNumber);
+    }
 
 
+// 타임 아웃 체크
 
 
-}
+} 

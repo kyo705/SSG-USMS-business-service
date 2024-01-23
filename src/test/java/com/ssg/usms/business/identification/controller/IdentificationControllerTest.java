@@ -2,19 +2,15 @@ package com.ssg.usms.business.identification.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Identification.Service.IdentificationService;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
-import com.ssg.usms.business.Identification.dto.HttpResponseIdentificationDto;
-import com.ssg.usms.business.Identification.dto.SmsCertificationDao;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
-import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,17 +24,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import javax.persistence.Embeddable;
-
 import static com.ssg.usms.business.Identification.constant.IdenticationConstant.INVALID_AUTHENTICATION_CODE_LITERAL;
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = EmbeddedRedis.class)
+@SpringBootTest
 public class IdentificationControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -58,7 +51,7 @@ public class IdentificationControllerTest {
                 .build();
     }
 
-    @DisplayName("인증번호 발송이 성공한 경우 x-authenticate-key 헤더와 함께 200리턴")
+    @DisplayName("인증번호 발송이 성공한 경우 x-authenticate-key 헤더와 함께 201리턴")
     @Test
     public void testSuccessSendVerificationCode() throws Exception {
 
@@ -67,19 +60,39 @@ public class IdentificationControllerTest {
                 .value("010-4046-7715")
                 .build();
 
-        doNothing().when(service).createIdentification(any(),any());
+        given(service.createIdentification(any())).willReturn("tmp");
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/identification")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestdto))
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.header().exists("x-authenticate-key"))
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
+                .andExpect(MockMvcResultMatchers.header().exists("x-authenticate-key"));
+
+    }
+
+    @DisplayName("code값 없이 요청이 들어온 경우 NotAllowedKey Exception 및 400 리턴")
+    @Test
+    public void testFailedSendVerificationCode() throws Exception {
+
+        HttpRequestIdentificationDto requestdto = HttpRequestIdentificationDto.builder()
+                .value("010-4046-7715")
+                .build();
+
+        given(service.createIdentification(any())).willReturn("tmp");
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/identification")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestdto))
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(result -> {
-                    HttpResponseIdentificationDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), HttpResponseIdentificationDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.OK.value());
+                    ErrorResponseDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorResponseDto.class);
+                    assertThat(responseBody.getCode()).isEqualTo(NOT_MATCHED_CODE_VALUE);
                 });
+
     }
 
     @DisplayName("존재하지 않는 요청 코드인 경우 BAD REQUEST와 함께 605 코드 리턴")
@@ -91,7 +104,7 @@ public class IdentificationControllerTest {
                 .value("010-4046-7715")
                 .build();
 
-        doNothing().when(service).createIdentification(any(),any());
+        given(service.createIdentification(any())).willReturn("tmp");
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/identification")
@@ -117,7 +130,7 @@ public class IdentificationControllerTest {
                 .value(values)
                 .build();
 
-        doNothing().when(service).createIdentification(any(),any());
+        given(service.createIdentification(any())).willReturn("tmp");
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/identification")
@@ -141,7 +154,8 @@ public class IdentificationControllerTest {
                 .value(values)
                 .build();
 
-        doNothing().when(service).createIdentification(any(),any());
+        given(service.createIdentification(any())).willReturn("tmp");
+
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/identification")
@@ -164,7 +178,7 @@ public class IdentificationControllerTest {
                 .value("010-4046-7715")
                 .build();
 
-        doThrow(new RuntimeException()).when(service).createIdentification(any(),any());
+        given(service.createIdentification(any())).willThrow(new RuntimeException());
 
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/identification")
@@ -178,16 +192,11 @@ public class IdentificationControllerTest {
                 });
     }
 
-    @DisplayName("인증번호로 본인인증을 시도했는데 성공한경우 200 상태코드,jwt 토큰 발급")
+    @DisplayName("인증번호로 본인인증을 시도했는데 성공한경우 201 상태코드,jwt 토큰 발급")
     @Test
     public void testSuccessVerify() throws Exception {
 
-        HttpRequestIdentificationDto requestdto = HttpRequestIdentificationDto.builder()
-                .code(1)
-                .value("010-4046-7715")
-                .build();
-
-        given(service.verifyIdentification(any())).willReturn(requestdto);
+        given(service.verifyIdentification(any())).willReturn("token");
 
 
         mockMvc.perform(
@@ -196,12 +205,9 @@ public class IdentificationControllerTest {
                                 .header("x-authenticate-key","uuid")
                                 .param("identificationCode","12345")
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(result -> {
-                    HttpResponseIdentificationDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), HttpResponseIdentificationDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.OK.value());
-                    assertThat(result.getResponse().getHeader("Authorization")).isNotNull();
-                });
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
+                .andExpect(MockMvcResultMatchers.header().exists("Authorization"));
+
     }
 
     @DisplayName("인증번호로 본인인증을 시도했는데 실패한경우 400 상태코드 리턴")

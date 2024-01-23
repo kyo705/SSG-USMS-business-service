@@ -1,14 +1,12 @@
-package com.ssg.usms.business.Identification.Contorller;
+package com.ssg.usms.business.Identification.contorller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssg.usms.business.Identification.Service.IdentificationService;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
-import com.ssg.usms.business.Identification.dto.HttpResponseIdentificationDto;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.Identification.error.NotMatchedValueAndCodeException;
-import com.ssg.usms.business.user.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.UUID;
 
 import static com.ssg.usms.business.Identification.constant.IdenticationConstant.*;
 import static com.ssg.usms.business.Identification.dto.CertificationCode.EMAIL;
@@ -34,12 +30,8 @@ public class IdentificationController {
 
     private final IdentificationService identificationService;
 
-    private final JwtUtil jwtUtil;
-
     @PostMapping("/api/identification")
-    public ResponseEntity<HttpResponseIdentificationDto> identification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
-
-        String Key = UUID.randomUUID().toString();
+    public ResponseEntity Createidentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
 
         if(httpRequestIdentificationDto.getCode() == EMAIL.getCode()){
 
@@ -47,8 +39,6 @@ public class IdentificationController {
 
                 throw new NotMatchedValueAndCodeException(NOT_MATCHED_CODE_AND_VALUE_LITERAL);
             }
-
-
         }
         if(httpRequestIdentificationDto.getCode() == SMS.getCode()){
 
@@ -59,22 +49,18 @@ public class IdentificationController {
 
         }
 
-        identificationService.createIdentification(httpRequestIdentificationDto,Key);
+        String Key = identificationService.createIdentification(httpRequestIdentificationDto);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(IDENTIFICATION_HEADER, Key );
 
-        HttpResponseIdentificationDto responsedto = HttpResponseIdentificationDto.builder()
-                .code(HttpStatus.OK.value())
-                .message(SUCCESS_SEND_VERIFICATION_CODE_LITERAL).build();
-
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(headers)
-                .body(responsedto);
+                .build();
     }
 
     @GetMapping("/api/identification")
-    public ResponseEntity<HttpResponseIdentificationDto> identificationVerify(HttpServletRequest request, @RequestParam("identificationCode") String identificationCode ) throws JsonProcessingException {
+    public ResponseEntity identificationVerify(HttpServletRequest request, @RequestParam("identificationCode") String identificationCode ) throws JsonProcessingException {
 
         String Key = String.valueOf(request.getHeaders(IDENTIFICATION_HEADER));
 
@@ -87,21 +73,14 @@ public class IdentificationController {
                 .value(identificationCode)
                 .build();
 
-        HttpRequestIdentificationDto httpRequestIdentificationDto = identificationService.verifyIdentification(dto);
+        String jwtToken = identificationService.verifyIdentification(dto);
 
-        HashMap<String,String> token = new HashMap<>();
-        token.put("code", String.valueOf(httpRequestIdentificationDto.getCode()) );
-        token.put("value", httpRequestIdentificationDto.getValue());
-
-        String jwtToken = jwtUtil.createJwt(token,18000L,"Identification");
-
-        HttpResponseIdentificationDto responseBody = HttpResponseIdentificationDto.builder().code(HttpStatus.OK.value()).message(IDENTIFICATION_SUCCESS_MESSAGE).build();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION,jwtToken);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .headers(headers) 
-                .body(responseBody);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .headers(headers)
+                .build();
     }
 
 }
