@@ -21,4 +21,14 @@ public class Accident {
     private AccidentBehavior behavior;
 
     private Long startTimestamp;
+
+    public static Accident init(Long cctvId, AccidentBehavior behavior, Long timestamp) {
+
+        Accident accident = new Accident();
+        accident.setCctvId(cctvId);
+        accident.setBehavior(behavior);
+        accident.setStartTimestamp(timestamp);
+
+        return accident;
+    }
 }
