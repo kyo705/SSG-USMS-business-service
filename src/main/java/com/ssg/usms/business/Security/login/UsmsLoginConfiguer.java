@@ -1,6 +1,5 @@
 package com.ssg.usms.business.Security.login;
 
-import com.ssg.usms.business.Security.login.service.UsmsUserDetailsService;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;

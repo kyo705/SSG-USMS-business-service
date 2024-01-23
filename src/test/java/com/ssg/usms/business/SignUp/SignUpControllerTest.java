@@ -3,23 +3,21 @@ package com.ssg.usms.business.SignUp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.user.exception.*;
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.exception.AlreadyExistIdException;
+import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
 import com.ssg.usms.business.user.service.SignUpService;
 import com.ssg.usms.business.user.util.JwtUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -32,7 +30,6 @@ import java.util.HashMap;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 
 @ActiveProfiles("test")
