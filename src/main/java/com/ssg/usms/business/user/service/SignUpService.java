@@ -1,16 +1,17 @@
 package com.ssg.usms.business.user.service;
 
-import com.ssg.usms.business.user.repository.UserRepository;
+import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
 import com.ssg.usms.business.user.exception.AlreadyExistIdException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.ssg.usms.business.user.constant.UserConstants.*;
+import static com.ssg.usms.business.user.constant.UserConstants.ALREADY_EXISTS_PHONE_LITERAL;
+import static com.ssg.usms.business.user.constant.UserConstants.ALREADY_EXISTS_USERNAME_LITERAL;
 
 @Service
 @RequiredArgsConstructor

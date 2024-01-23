@@ -19,6 +19,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,10 +54,12 @@ public class StoreControllerUpdatingTest {
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
+                .apply(springSecurity())
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
     }
 
+    @WithUserDetails("admin")
     @DisplayName("[changeStoreState] : 정상적인 파라미터로 요청시 204 상태코드를 리턴한다.")
     @Test
     public void testChangeStoreStateWithValidParam() throws Exception {
@@ -74,6 +79,47 @@ public class StoreControllerUpdatingTest {
                 .andExpect(MockMvcResultMatchers.status().is(204));
     }
 
+    @WithUserDetails("storeOwner")
+    @DisplayName("[changeStoreState] : 접근 권한이 없는 유저인 경우 예외가 발생한다.")
+    @Test
+    public void testChangeStoreStateWithPermissionDeniedUser() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .patch("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"state\" : 1, \"message\" : \"승인 완료\"}")
+                )
+                .andExpect(MockMvcResultMatchers.status().is(403));
+    }
+
+    @WithAnonymousUser
+    @DisplayName("[changeStoreState] : 접근 권한이 없는 유저인 경우 예외가 발생한다.(2)")
+    @Test
+    public void testChangeStoreStateWithPermissionDeniedUser2() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .patch("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"state\" : 1, \"message\" : \"승인 완료\"}")
+                )
+                .andExpect(MockMvcResultMatchers.status().is(403));
+    }
+
+    @WithUserDetails("admin")
     @DisplayName("[changeStoreState] : 올바르지 못한 매장 상태 코드로 요청시 400 상태코드를 리턴한다.")
     @Test
     public void testChangeStoreStateWithNotAllowedStoreState() throws Exception {
@@ -98,6 +144,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("admin")
     @DisplayName("[changeStoreState] : 존재하지 않은 매장 id로 요청시 400 상태코드를 리턴한다.")
     @Test
     public void testChangeStoreStateWithNotExistingStore() throws Exception {
@@ -123,6 +170,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 정상적인 파라미터로 요청시 204 상태코드를 리턴한다.")
     @Test
     public void testUpdatingStoreWithValidParam() throws Exception {
@@ -160,6 +208,83 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("admin")
+    @DisplayName("[updateStore] : 접근 권한이 없는 유저인 경우 예외가 발생한다.")
+    @Test
+    public void testUpdatingStoreWithPermissionDeniedUser() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        HttpRequestCreatingStoreDto requestParams = new HttpRequestCreatingStoreDto();
+        requestParams.setStoreName("매장 명");
+        requestParams.setStoreAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
+        requestParams.setBusinessLicenseCode("123-45-67890");
+
+        String fileName = "testImg";
+        String contentType = "pdf";
+        String filePath = "beach.jpg";
+        ClassPathResource resource = new ClassPathResource(filePath);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "businessLicenseImg", //name
+                fileName + "." + contentType, //originalFilename
+                contentType,
+                resource.getInputStream()
+        );
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .multipart("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                                .file(file)
+                                .param("storeName", requestParams.getStoreName())
+                                .param("storeAddress", requestParams.getStoreAddress())
+                                .param("businessLicenseCode", requestParams.getBusinessLicenseCode())
+                )
+                .andExpect(MockMvcResultMatchers.status().is(403))
+        ;
+    }
+
+    @WithAnonymousUser
+    @DisplayName("[updateStore] : 접근 권한이 없는 유저인 경우 예외가 발생한다.(2)")
+    @Test
+    public void testUpdatingStoreWithPermissionDeniedUser2() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        HttpRequestCreatingStoreDto requestParams = new HttpRequestCreatingStoreDto();
+        requestParams.setStoreName("매장 명");
+        requestParams.setStoreAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
+        requestParams.setBusinessLicenseCode("123-45-67890");
+
+        String fileName = "testImg";
+        String contentType = "pdf";
+        String filePath = "beach.jpg";
+        ClassPathResource resource = new ClassPathResource(filePath);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "businessLicenseImg", //name
+                fileName + "." + contentType, //originalFilename
+                contentType,
+                resource.getInputStream()
+        );
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .multipart("/api/users/{userId}/stores/{storeId}", userId, storeId)
+                                .file(file)
+                                .param("storeName", requestParams.getStoreName())
+                                .param("storeAddress", requestParams.getStoreAddress())
+                                .param("businessLicenseCode", requestParams.getBusinessLicenseCode())
+                )
+                .andExpect(MockMvcResultMatchers.status().is(403))
+        ;
+    }
+
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 존재하지 않은 매장 id로 요청시 예외가 발생한다.")
     @Test
     public void testUpdatingStoreWithNotExistingStore() throws Exception {
@@ -185,7 +310,7 @@ public class StoreControllerUpdatingTest {
         );
 
 
-        willThrow(new NotExistingStoreException()).given(storeService).update(any(), any(), any(), any(),any(), any());
+        willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(storeId, userId);
 
         // when & then
         mockMvc.perform(
@@ -204,6 +329,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 본인 소유의 매장이 아니면 예외가 발생한다.")
     @Test
     public void testUpdatingStoreWithNotOwnedStore() throws Exception {
@@ -229,7 +355,7 @@ public class StoreControllerUpdatingTest {
         );
 
 
-        willThrow(new NotOwnedStoreException()).given(storeService).update(any(), any(), any(), any(),any(), any());
+        willThrow(new NotOwnedStoreException()).given(storeService).validateOwnedStore(storeId, userId);
 
         // when & then
         mockMvc.perform(
@@ -248,6 +374,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 사업자 등록증 사본을 보내지 않은 경우 예외가 발생한다.")
     @Test
     public void testUpdatingStoreWithEmptyImgFile() throws Exception {
@@ -287,6 +414,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 허용되지 않은 파일 확장자명으로 사업자등록증을 등록 요청한 경우 예외가 발생한다.")
     @ValueSource(strings = {"jpg", "png", "mp4", "jpeg"})
     @ParameterizedTest
@@ -327,6 +455,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 사업자 등록 번호 양식이 잘못된 경우 예외가 발생한다.")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "1234567890", "123-145-67890", "123-56-7890", "123_45_67890"})
@@ -369,6 +498,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 허용되지 않은 매장 명 양식으로 등록 요청한 경우 예외가 발생한다.")
     @NullAndEmptySource
     @ValueSource(strings = {" ", "매장명!", " 매장-명", "123456789012345678901" /* 21 자리 수 */})
@@ -411,6 +541,7 @@ public class StoreControllerUpdatingTest {
         ;
     }
 
+    @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 허용되지 않은 매장 주소 양식으로 등록 요청한 경우 예외가 발생한다.")
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "서울 중구 남대문시장10길 2 메사빌딩 21층 ##", "123456789012345678901234567890123456789012345678901" /* 51 자리 */})

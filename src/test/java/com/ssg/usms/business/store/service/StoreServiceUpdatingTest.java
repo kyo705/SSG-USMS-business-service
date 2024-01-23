@@ -3,7 +3,6 @@ package com.ssg.usms.business.store.service;
 import com.amazonaws.AmazonClientException;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
-import com.ssg.usms.business.store.exception.NotOwnedStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.Store;
 import com.ssg.usms.business.store.repository.StoreRepository;
@@ -69,7 +68,7 @@ public class StoreServiceUpdatingTest {
         given(mockStoreRepository.findById(storeId)).willReturn(store);
 
         //when
-        storeService.update(storeId, userId, storeName, storeAddress, storeAddress, businessLicenseImgFile);
+        storeService.update(storeId, storeName, storeAddress, storeAddress, businessLicenseImgFile);
 
         //then
         assertThat(store.getStoreState()).isEqualTo(StoreState.READY);      // 승인 대기 상태로 전환
@@ -93,51 +92,16 @@ public class StoreServiceUpdatingTest {
         String businessLicenseImgId = "사업자등록증 사본 이미지 키";
         InputStream businessLicenseImgFile = resource.getInputStream();
 
-        given(mockStoreRepository.findById(storeId)).willReturn(null);
+        given(mockStoreRepository.findById(storeId)).willThrow(new NotExistingStoreException());
 
         //when
         assertThrows(NotExistingStoreException.class,
-                () -> storeService.update(storeId, userId, storeName, storeAddress, storeAddress, businessLicenseImgFile));
+                () -> storeService.update(storeId, storeName, storeAddress, storeAddress, businessLicenseImgFile));
 
         //then
         verify(mockStoreRepository, times(1)).findById(storeId);
         verify(mockStoreRepository, times(0)).update(any());
         verify(mockiImageRepository, times(0)).save(businessLicenseImgId, businessLicenseImgFile);
-    }
-
-    @DisplayName("[update] : 자신의 매장이 아닌 매장 id로 요청 파라미터가 전달될 경우 예외가 발생한다.")
-    @Test
-    public void testUpdateWithNotOwnedStore() throws IOException {
-
-        //given
-        String filePath = "beach.jpg";
-        ClassPathResource resource = new ClassPathResource(filePath);
-
-        Long storeId = 1L;
-        Long userId = 1L;
-        String storeName = "매장명";
-        String storeAddress = "매장위치";
-        String businessLicenseCode = "사업자등록번호";
-        String businessLicenseImgId = "사업자등록증 사본 이미지 키";
-        InputStream businessLicenseImgFile = resource.getInputStream();
-
-        Store store = Store.init(2L,
-                storeName,
-                storeAddress,
-                businessLicenseCode,
-                businessLicenseImgId);
-        store.setId(storeId);
-
-        given(mockStoreRepository.findById(storeId)).willReturn(store);
-
-        //when
-        assertThrows(NotOwnedStoreException.class,
-                () -> storeService.update(storeId, userId, storeName, storeAddress, storeAddress, businessLicenseImgFile));
-
-        //then
-        verify(mockStoreRepository, times(1)).findById(storeId);
-        verify(mockStoreRepository, times(0)).update(any());
-        verify(mockiImageRepository, times(0)).save(any(), any());
     }
 
     @DisplayName("[update] : 이미지 저장 과정에서 예외가 발생하는 상황.")
@@ -168,7 +132,7 @@ public class StoreServiceUpdatingTest {
 
         //when
         assertThrows(AmazonClientException.class,
-                () -> storeService.update(storeId, userId, storeName, storeAddress, storeAddress, businessLicenseImgFile));
+                () -> storeService.update(storeId, storeName, storeAddress, storeAddress, businessLicenseImgFile));
 
         //then
         verify(mockStoreRepository, times(1)).findById(storeId);

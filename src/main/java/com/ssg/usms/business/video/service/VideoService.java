@@ -1,8 +1,8 @@
 package com.ssg.usms.business.video.service;
 
-import com.ssg.usms.business.store.dto.CctvDto;
+import com.ssg.usms.business.cctv.dto.CctvDto;
+import com.ssg.usms.business.cctv.service.CctvService;
 import com.ssg.usms.business.store.dto.StoreDto;
-import com.ssg.usms.business.store.service.CctvService;
 import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.exception.ExpiredStreamKeyException;
 import com.ssg.usms.business.video.exception.NotExistingStreamKeyException;
@@ -68,7 +68,7 @@ public class VideoService {
         String fileFormat = filename.split("[.]")[1];
         ProtocolAndFileFormatMatcher.matches(protocol, fileFormat);
 
-        CctvDto cctvDto = cctvService.getCctvByStreamKey(streamKey);
+        CctvDto cctvDto = cctvService.findByStreamKey(streamKey);
         if(cctvDto == null) {
             throw new NotExistingStreamKeyException();
         }

@@ -1,5 +1,6 @@
 package com.ssg.usms.business.store.controller;
 
+import com.ssg.usms.business.Security.login.UsmsUserDetails;
 import com.ssg.usms.business.store.annotation.BusinessLicenseImgKey;
 import com.ssg.usms.business.store.dto.HttpRequestChangingStoreStateDto;
 import com.ssg.usms.business.store.dto.HttpRequestCreatingStoreDto;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.ssg.usms.business.store.constant.StoreConstants.ALLOWED_IMG_FILE_FORMATS;
+import static com.ssg.usms.business.user.dto.UserRole.ROLE_ADMIN;
+import static com.ssg.usms.business.user.dto.UserRole.ROLE_STORE_OWNER;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Validated
@@ -39,7 +42,7 @@ public class StoreController {
                                             @RequestPart(name = "businessLicenseImg") MultipartFile businessLicenseImgFile)
             throws IOException {
 
-        // 로그인된 모든 유저가 접근 가능
+        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
         //multipartFile 포맷 확인
         if(businessLicenseImgFile.isEmpty()) {
@@ -67,6 +70,8 @@ public class StoreController {
                                      @ModelAttribute @Valid HttpRequestRetrievingStoreDto requestParam)
             throws IllegalAccessException {
 
+        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+
         // 현재 세션의 권한에 따라 아래 실행할 서비스 달라짐 ( 1. 관리자일 경우, 2. 점주 고객일 경우 )
         List<? extends GrantedAuthority> authorities = (List<? extends GrantedAuthority>) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -76,14 +81,14 @@ public class StoreController {
             throw new IllegalStateException("유저 권한 갯수가 현재 이상함");
         }
 
-        if (authorities.get(0).getAuthority().equals("ROLE_ADMIN")) {
+        if (authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
             return storeService.findAll(requestParam.getUserId(),
                     requestParam.getBusinessLicenseCode(),
                     requestParam.getStoreState(),
                     requestParam.getOffset(),
                     requestParam.getSize());
         }
-        if (authorities.get(0).getAuthority().equals("ROLE_STORE_OWNER")) {
+        if (authorities.get(0).getAuthority().equals(ROLE_STORE_OWNER.name())) {
             return storeService.findAllByUserId(userId, requestParam.getOffset(), requestParam.getSize());
         }
         throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
@@ -93,9 +98,11 @@ public class StoreController {
     public StoreDto findStoreById(@PathVariable Long userId,
                                   @PathVariable Long storeId) {
 
-        // 로그인된 모든 유저가 접근 가능
+        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        return storeService.findById(storeId, userId);
+        storeService.validateOwnedStore(storeId, userId);
+
+        return storeService.findById(storeId);
     }
 
     @GetMapping("/api/users/{userId}/stores/{storeId}/license/{licenseKey}")
@@ -103,9 +110,12 @@ public class StoreController {
                                              @PathVariable Long storeId,
                                              @PathVariable @BusinessLicenseImgKey String licenseKey) {
 
-        // 로그인된 모든 유저가 접근 가능
+        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        return storeService.findBusinessLicenseImgFile(storeId, userId, licenseKey);
+        storeService.validateOwnedStore(storeId, userId);
+        storeService.validateOwnedBusinessLicenseImgKey(storeId, licenseKey);
+
+        return storeService.findBusinessLicenseImgFile(licenseKey);
     }
 
     @PostMapping("/api/users/{userId}/stores/{storeId}")
@@ -114,8 +124,6 @@ public class StoreController {
                                             @ModelAttribute @Valid HttpRequestCreatingStoreDto requestBody,
                                             @RequestPart(name = "businessLicenseImg") MultipartFile businessLicenseImgFile) throws IOException {
 
-        // 해당 매장 소유자만 접근 가능
-
         if(businessLicenseImgFile.isEmpty()) {
             throw new EmptyImgFileException();
         }
@@ -123,9 +131,10 @@ public class StoreController {
         if(!ALLOWED_IMG_FILE_FORMATS.contains(fileFormat)) {
             throw new NotAllowedImgFileFormatException();
         }
+        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        storeService.validateOwnedStore(storeId, userId);
 
         storeService.update(userId,
-                storeId,
                 requestBody.getStoreName(),
                 requestBody.getStoreAddress(),
                 requestBody.getBusinessLicenseCode(),
@@ -139,8 +148,6 @@ public class StoreController {
                                                  @PathVariable Long storeId,
                                                  @RequestBody HttpRequestChangingStoreStateDto requestBody) {
 
-        // 관리자 계정만 접근 가능
-
         storeService.changeStoreState(storeId, requestBody.getState(), requestBody.getMessage());
 
         return ResponseEntity.status(NO_CONTENT).build();
@@ -150,9 +157,11 @@ public class StoreController {
     public ResponseEntity<Void> deleteStore(@PathVariable Long userId,
                                             @PathVariable Long storeId) {
 
-        // 해당 매장 소유자만 접근 가능
+        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        storeService.delete(userId, storeId);
+        storeService.validateOwnedStore(storeId, userId);
+
+        storeService.delete(storeId);
 
         return ResponseEntity.status(NO_CONTENT).build();
     }

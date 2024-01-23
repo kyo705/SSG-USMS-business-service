@@ -52,7 +52,7 @@ public class ImageRepositoryTest {
         assertThat(resource.getInputStream().readAllBytes()).isEqualTo(s3Object.getObjectContent().readAllBytes());
     }
 
-    @DisplayName("이미지 저장 테스트")
+    @DisplayName("이미지 조회 테스트")
     @Test
     public void testFind() throws IOException {
 
@@ -70,6 +70,25 @@ public class ImageRepositoryTest {
 
         //then
         assertThat(image).isEqualTo(resource.getInputStream().readAllBytes());
+    }
+
+    @DisplayName("이미지 존재 유무 확인 테스트")
+    @Test
+    public void testIsExisting() throws IOException {
+
+        //given
+        amazonS3.createBucket(bucket);
+
+        String filename = UUID.randomUUID().toString().replace("-", "");
+        String filePath = "beach.jpg";
+        ClassPathResource resource = new ClassPathResource(filePath);
+
+        assertThat(imageRepository.isExisting(filename)).isFalse();
+
+        amazonS3.putObject(bucket, filename, resource.getInputStream(), null);
+
+        //when & then
+        assertThat(imageRepository.isExisting(filename)).isTrue();
     }
 
     @AfterEach

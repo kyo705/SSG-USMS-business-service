@@ -2,7 +2,6 @@ package com.ssg.usms.business.store.service;
 
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
-import com.ssg.usms.business.store.exception.NotOwnedStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.Store;
 import com.ssg.usms.business.store.repository.StoreRepository;
@@ -52,7 +51,7 @@ public class StoreServiceDeletingTest {
         given(mockStoreRepository.findById(storeId)).willReturn(store);
 
         //when
-        storeService.delete(storeId, userId);
+        storeService.delete(storeId);
 
         //then
         verify(mockStoreRepository, times(1)).findById(storeId);
@@ -71,25 +70,7 @@ public class StoreServiceDeletingTest {
         given(mockStoreRepository.findById(storeId)).willThrow(NotExistingStoreException.class);
 
         //when & then
-        assertThrows(NotExistingStoreException.class, () -> storeService.delete(storeId, userId));
-
-        verify(mockStoreRepository, times(1)).findById(storeId);
-        verify(mockStoreRepository, times(0)).delete(any());
-
-    }
-
-    @DisplayName("정상적인 매장 삭제 요청시 성공한다.")
-    @Test
-    public void testDeletingWithNotOwnedStore() {
-
-        //given
-        Long storeId = 1L;
-        Long userId = 1L;
-
-        given(mockStoreRepository.findById(storeId)).willThrow(NotOwnedStoreException.class);
-
-        //when & then
-        assertThrows(NotOwnedStoreException.class, () -> storeService.delete(storeId, userId));
+        assertThrows(NotExistingStoreException.class, () -> storeService.delete(storeId));
 
         verify(mockStoreRepository, times(1)).findById(storeId);
         verify(mockStoreRepository, times(0)).delete(any());

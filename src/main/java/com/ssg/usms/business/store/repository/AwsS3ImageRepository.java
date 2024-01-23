@@ -24,10 +24,17 @@ public class AwsS3ImageRepository implements ImageRepository {
 
     @Override
     public byte[] find(String key) {
+
         try {
             return amazonS3.getObject(imageBucket, key).getObjectContent().readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isExisting(String key) {
+
+        return amazonS3.doesObjectExist(imageBucket, key);
     }
 }
