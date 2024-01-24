@@ -1,4 +1,4 @@
-package com.ssg.usms.business.SignUp;
+package com.ssg.usms.business.signUp;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -9,6 +9,8 @@ public class UserConstants {
     public static final String USERNAME_PATTERN = "[a-zA-Z0-9]{5,20}";
     public static final String PHONENUMBER_PATTERN = "^010-\\d{4}-\\d{4}";
 
+    public static final String SECONDPASSWORD_PATTERN = "^(?!.*(\\d)(?:.*\\1){2})\\d{6}$";
+
 
     public static final String NOT_ALLOWED_KEY_LITERAL = "잘못된 본인인증 키입니다.";
 
@@ -21,7 +23,11 @@ public class UserConstants {
     public static final String ALREADY_EXISTS_USER_LITERAL = "이미 존재하는 유저정보입니다.";
     public static final String ALREADY_EXISTS_USERNAME_LITERAL = "이미 존재하는 아이디입니다.";
     public static final String ALREADY_EXISTS_PHONE_LITERAL = "이미 존재하는 전화번호입니다.";
+    public static final String NOT_ALLOWED_SECONDPASSWORD_LITERAL = "올바르지 못한 2차 비밀번호 양식입니다.";
 
+    public static final String NOT_MATCHED_SESSION_USRID_LITERAL = "요청한 유저 id와 실제 유저 id가 다릅니다.";
+
+    public static final String NOT_ALLOWED_SESSION_LITERAL = "허용되지 않은 세션 상태입니다.";
 
 
 

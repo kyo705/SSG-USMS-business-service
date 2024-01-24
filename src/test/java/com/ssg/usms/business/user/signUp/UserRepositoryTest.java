@@ -1,8 +1,9 @@
-package com.ssg.usms.business.SignUp;
+package com.ssg.usms.business.user.signUp;
 
 
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -109,4 +112,5 @@ public class UserRepositoryTest {
         // then
         assertFalse(exists);
     }
+
 }

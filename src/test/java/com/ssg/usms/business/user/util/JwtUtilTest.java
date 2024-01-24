@@ -1,4 +1,4 @@
-package com.ssg.usms.business.SignUp;
+package com.ssg.usms.business.user.util;
 
 
 import com.ssg.usms.business.user.util.JwtUtil;

@@ -1,9 +1,14 @@
 package com.ssg.usms.business.user.controller;
 
 
+import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.dto.HttpResponseUserDto;
+import com.ssg.usms.business.user.dto.SecurityState;
 import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
+import com.ssg.usms.business.user.exception.NotAllowedSecondPasswordException;
 import com.ssg.usms.business.user.service.SignUpService;
+import com.ssg.usms.business.user.service.UserService;
 import com.ssg.usms.business.user.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +22,19 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import static com.ssg.usms.business.user.constant.UserConstants.NOT_ALLOWED_KEY_LITERAL;
+import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class SignupController {
+public class UserController {
 
-    private final SignUpService signUpService;
     private final JwtUtil jwtUtil;
+
+    private final UserService userService;
+    private final SignUpService signUpService;
 
     @GetMapping("/users")
     public String users(){
@@ -39,35 +46,29 @@ public class SignupController {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        VerifyToken(authorization);
+        jwtUtil.VerifyToken(authorization,"Identification");
 
         signUpService.SignUp(httpRequestSignUpDto);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    private void VerifyToken(String authorization){
 
-        if (authorization == null ){
+    @GetMapping("/user")
+    public ResponseEntity FindUserWithJwt(HttpServletRequest request){
 
-            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
-        }
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (jwtUtil.isExpired(authorization)){
+        jwtUtil.VerifyToken(authorization,"Identification");
 
-            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
-        }
+        HttpResponseUserDto userDto = userService.findUserByValue(authorization);
 
-        Claims claims = jwtUtil.getClaim(authorization);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION,authorization);
 
-        if(!jwtUtil.verifyClaim(claims).equals("Identification")){
-
-            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
-        }
-
+        return ResponseEntity.status(HttpStatus.OK)
+                .headers(headers)
+                .body(userDto);
     }
-
-
-
 
 }

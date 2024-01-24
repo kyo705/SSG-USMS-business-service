@@ -2,10 +2,9 @@ package com.ssg.usms.business.user.handler;
 
 
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.user.controller.SignupController;
-import com.ssg.usms.business.user.exception.AlreadyExistIdException;
-import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
+import com.ssg.usms.business.user.controller.UserController;
+import com.ssg.usms.business.user.exception.*;
+import com.ssg.usms.business.user.controller.UserSessionController;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,8 @@ import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {SignupController.class})
-public class SignUpExceptionHandler {
+@RestControllerAdvice(assignableTypes = {UserController.class , UserSessionController.class})
+public class UserExceptionHandler {
 
     @ExceptionHandler(AlreadyExistIdException.class)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistIdException (AlreadyExistIdException exception){
@@ -125,6 +124,68 @@ public class SignUpExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(errorResponseDto);
     }
+
+    @ExceptionHandler(NotAllowedSessionIdException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotAllowedSessionIdException(NotAllowedSessionIdException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(BAD_REQUEST_SESSIONID, ALREADY_EXISTS_USER_LITERAL);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponseDto);
+    }
+
+
+    @ExceptionHandler(AlreadyExistEmailException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyExistEmailException(AlreadyExistEmailException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.CONFLICT.value(), ALREADY_EXISTS_USER_LITERAL);
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT.value())
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(NotAllowedSecondPasswordException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotAllowedSecondPasswordException(NotAllowedSecondPasswordException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), NOT_ALLOWED_SECONDPASSWORD_LITERAL);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalAccessException(IllegalAccessException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), NOT_ALLOWED_SECONDPASSWORD_LITERAL);
+
+         return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .body(errorResponseDto);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(IllegalArgumentException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(),exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
+                .body(errorResponseDto);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleOtherExceptions(Exception exception) {

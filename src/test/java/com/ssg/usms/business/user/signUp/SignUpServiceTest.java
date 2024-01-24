@@ -1,4 +1,4 @@
-package com.ssg.usms.business.SignUp;
+package com.ssg.usms.business.user.signUp;
 
 
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
