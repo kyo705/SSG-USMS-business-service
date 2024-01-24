@@ -2,14 +2,12 @@ package com.ssg.usms.business.user;
 
 
 import com.ssg.usms.business.config.EmbeddedRedis;
-import com.ssg.usms.business.config.TestContainerConfig;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -23,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 
 @ActiveProfiles("test")
-@ExtendWith(TestContainerConfig.class)
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 @Transactional
 public class UserRepositoryTest {
 

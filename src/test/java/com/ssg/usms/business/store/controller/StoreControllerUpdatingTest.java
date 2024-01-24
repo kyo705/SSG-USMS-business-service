@@ -2,7 +2,6 @@ package com.ssg.usms.business.store.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
-import com.ssg.usms.business.config.TestContainerConfig;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.dto.HttpRequestCreatingStoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
@@ -12,7 +11,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -41,8 +39,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@ExtendWith(TestContainerConfig.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
 public class StoreControllerUpdatingTest {
 
     private MockMvc mockMvc;
