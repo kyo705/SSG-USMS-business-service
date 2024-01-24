@@ -48,7 +48,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -86,7 +86,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "ftp";
         String filename = "test.m3u8";
 
@@ -104,7 +104,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.mp4";
 
@@ -122,7 +122,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -142,7 +142,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -169,7 +169,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
