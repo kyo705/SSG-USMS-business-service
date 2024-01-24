@@ -77,4 +77,17 @@ public class CustomStatusCode {
 
     public static final int NOT_OWNED_CCTV_CODE = 639;
     public static final String NOT_OWNED_CCTV_MESSAGE = "본인 소유의 CCTV가 아닙니다.";
+
+    public static final int INVALID_DATE_FORMAT_CODE = 640;
+    public static final String INVALID_DATE_FORMAT_MESSAGE = "올바르지 못한 날짜 포맷입니다.";
+
+    public static final int INVALID_STREAM_KEY_FORMAT_CODE = 641;
+    public static final String INVALID_STREAM_KEY_FORMAT_MESSAGE = "올바르지 못한 스트림 키 포맷입니다.";
+
+    public static final int NOT_EXISTING_ACCIDENT_BEHAVIOR_CODE = 642;
+    public static final String NOT_EXISTING_ACCIDENT_BEHAVIOR_MESSAGE = "존재하지 않는 이상 행동 상태입니다.";
+
+    public static final int INVALID_TIMESTAMP_FORMAT_CODE = 643;
+    public static final String INVALID_TIMESTAMP_FORMAT_MESSAGE = "올바르지 못한 타입스탬프 포맷입니다.";
+
 }

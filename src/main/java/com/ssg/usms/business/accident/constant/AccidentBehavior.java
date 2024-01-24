@@ -1,5 +1,6 @@
 package com.ssg.usms.business.accident.constant;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -24,6 +25,7 @@ public enum AccidentBehavior {
                 .forEach(value -> CODE_MAP.put(value.code, value));
     }
 
+    @JsonValue
     private final int code;
 
     AccidentBehavior(int code) {
