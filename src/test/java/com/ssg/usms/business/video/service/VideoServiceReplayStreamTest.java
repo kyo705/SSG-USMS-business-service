@@ -49,7 +49,7 @@ public class VideoServiceReplayStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = streamKey + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 

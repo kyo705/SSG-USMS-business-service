@@ -8,12 +8,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.PARAMETER)
+import static com.ssg.usms.business.constant.CustomStatusCode.INVALID_STREAM_KEY_FORMAT_MESSAGE;
+
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = StreamKeyValidator.class)
 public @interface StreamKey {
 
-    String message() default "유효하지 않은 스트림 키 포맷입니다.";
+    String message() default INVALID_STREAM_KEY_FORMAT_MESSAGE;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
