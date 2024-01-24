@@ -85,7 +85,7 @@ public class UserSessionControllerTest {
                 .build();
     }
     @DisplayName("세션 조회: 현재 세션과 일치하는 유저")
-    @WithUserDetails("httpRequestSign")
+    @WithUserDetails("storeOwner")
     @Test
     public void testFindUserSessionFromCurrentUserWithValidParam() throws Exception{
 
@@ -108,27 +108,28 @@ public class UserSessionControllerTest {
     @Test
     public void testFindUserSessionFromCurrentUserwWithNoSession() throws Exception {
 
+        given(userSessionService.findUserBySession()).willThrow(new IllegalAccessException("허용되지 않은 세션"));
 
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/session")
                                 .content("")
                 )
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(result -> {
                     result.getResponse().getContentAsString();
                 });
     }
 
     @DisplayName("유저 삭제 요청시 현재 세션과 일치하는 유저가 있고 성공적으로 삭제했을때")
-    @WithUserDetails("httpRequestSign")
+    @WithUserDetails("storeOwner")
     @Test
     public void testDeleteUserSessionFromCurrentUserWithValidParam() throws Exception{
 
         doNothing().when(userSessionService).deleteUser(anyLong());
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/users/3")
+                                .delete("/api/users/1")
                                 .content("")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -139,7 +140,7 @@ public class UserSessionControllerTest {
 
     }
     @DisplayName("유저 삭제 요청시 현재 세션과 일치하는 유저가 없거나 권한이 없을때 401 리턴")
-    @WithUserDetails("httpRequestSign")
+    @WithUserDetails("storeOwner")
     @Test
     public void testDeleteUserSessionFromCurrentUserWithNotAllowedSession() throws Exception{
 
@@ -147,7 +148,7 @@ public class UserSessionControllerTest {
 
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/users/3")
+                                .delete("/api/users/1")
                                 .content("")
                 )
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
@@ -168,14 +169,14 @@ public class UserSessionControllerTest {
                                 .delete("/api/users/1")
                                 .content("")
                 )
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(result -> {
                     result.getResponse().getContentAsString();
                 });
     }
 
     @DisplayName("서버문제나 다른 문제로 삭제가 되지않았을때 500 리턴")
-    @WithUserDetails("httpRequestSign")
+    @WithUserDetails("storeOwner")
     @Test
     public void testDeleteUserSessionFromCurrentUserSomeProblem() throws Exception{
 
@@ -183,7 +184,7 @@ public class UserSessionControllerTest {
 
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .delete("/api/users/3")
+                                .delete("/api/users/1")
                                 .content("")
                 )
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError())
@@ -243,7 +244,7 @@ public class UserSessionControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(dto))
                                 .header(HttpHeaders.AUTHORIZATION,token))
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()));
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()));
 
     }
 
@@ -252,7 +253,7 @@ public class UserSessionControllerTest {
     @WithUserDetails("storeOwner")
     @ParameterizedTest
     @ValueSource(strings={"as","asdf2123123","asdasdf@@@@@","sadfqeisdfasdfmaaaaaaaaaaaaaaaaaaaaaaaaaa2@aaaaaaaaaaaaaaaaaaaaaaaaaaaa"})
-    public void testPatchSignUpWithNotAllowedPwd(String password) throws Exception {
+    public void testPatchModifyWithNotAllowedPwd(String password) throws Exception {
 
         //given
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
@@ -276,10 +277,6 @@ public class UserSessionControllerTest {
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_ALLOWED_PASSWORD_FORM);
                 });
     }
-
-
-
-
 
 
     @DisplayName("수정시 요청된 전화번호가 이미 존재하는 경우 예외를 발생시킨다.")

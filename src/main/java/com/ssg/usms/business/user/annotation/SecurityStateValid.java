@@ -10,9 +10,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = secondValidator.class)
-public @interface SecondPassword {
-    String message() default "유효하지 않은 2차비밀번호 형식입니다.";
+@Constraint(validatedBy = SecurityStateValidator.class)
+public @interface SecurityStateValid {
+
+    String message() default "허용되지 않은 보안 레벨 코드입니다.";
 
     Class<?>[] groups() default {};
 

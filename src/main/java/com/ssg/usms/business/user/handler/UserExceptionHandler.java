@@ -105,6 +105,15 @@ public class UserExceptionHandler {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(errorResponseDto);
         }
+        if (exception.getBindingResult().getAllErrors().get(0).getDefaultMessage().equals(NOT_ALLOWED_SECURITY_LITERAL )) {
+
+            ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), NOT_ALLOWED_SECURITY_LITERAL );
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(errorResponseDto);
+        }
+
 
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR_LITERAL);
 
@@ -167,7 +176,7 @@ public class UserExceptionHandler {
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), NOT_ALLOWED_SECONDPASSWORD_LITERAL);
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), NOT_MATCHED_SESSION_USRID_LITERAL);
 
          return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED.value())

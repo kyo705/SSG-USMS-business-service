@@ -29,6 +29,8 @@ public class UserConstants {
 
     public static final String NOT_ALLOWED_SESSION_LITERAL = "허용되지 않은 세션 상태입니다.";
 
+    public static final String NOT_ALLOWED_SECURITY_LITERAL = "허용되지 않은 보안 레벨 코드입니다.";
+
 
 
 

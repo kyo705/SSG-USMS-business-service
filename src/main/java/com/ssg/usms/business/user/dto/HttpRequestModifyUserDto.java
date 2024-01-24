@@ -1,10 +1,7 @@
 package com.ssg.usms.business.user.dto;
 
 
-import com.ssg.usms.business.user.annotation.Email;
-import com.ssg.usms.business.user.annotation.NickName;
-import com.ssg.usms.business.user.annotation.Password;
-import com.ssg.usms.business.user.annotation.PhoneNumber;
+import com.ssg.usms.business.user.annotation.*;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,6 +23,7 @@ public class HttpRequestModifyUserDto {
 
     private String secondPassword;
 
+//    @SecurityStateValid
     private SecurityState securityState;
 
 }

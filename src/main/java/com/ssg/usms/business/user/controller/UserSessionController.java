@@ -82,15 +82,17 @@ public class UserSessionController {
 
     private void validateCurrentUser(long userid) throws IllegalAccessException {
 
-        UsmsUserDetails userDetails =(UsmsUserDetails) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
+        try {
+            UsmsUserDetails userDetails = (UsmsUserDetails) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
 
-        log.info(String.valueOf(userDetails.getId()));
-        log.info(String.valueOf(userid));
-
-        if(userDetails.getId() != userid){
+            if(userDetails.getId() != userid){
+                throw new IllegalAccessException(NOT_MATCHED_SESSION_USRID_LITERAL);
+            }
+        }
+        catch (ClassCastException e){
             throw new IllegalAccessException(NOT_MATCHED_SESSION_USRID_LITERAL);
         }
     }
