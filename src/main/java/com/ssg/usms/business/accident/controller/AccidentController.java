@@ -1,7 +1,6 @@
 package com.ssg.usms.business.accident.controller;
 
-import com.ssg.usms.business.Security.login.UsmsUserDetails;
-import com.ssg.usms.business.accident.constant.AccidentBehavior;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.accident.dto.*;
 import com.ssg.usms.business.accident.exception.InvalidDateFlowException;
 import com.ssg.usms.business.accident.service.AccidentService;
