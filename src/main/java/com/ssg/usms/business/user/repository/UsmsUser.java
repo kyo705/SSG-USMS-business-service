@@ -46,6 +46,9 @@ public class UsmsUser {
     private boolean isLock = false;
 
     @Builder.Default
-    @Column(name= "role")
+    @Column(name = "role")
     private UserRole role = UserRole.ROLE_STORE_OWNER;
+
+    @Column(name = "second_password")
+    private String secondPassword;
 }
