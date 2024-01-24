@@ -3,6 +3,7 @@ package com.ssg.usms.business.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.config.TestContainerConfig;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
@@ -19,6 +20,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = EmbeddedRedis.class)
+@ExtendWith(TestContainerConfig.class)
+@SpringBootTest
 public class UserControllerTest {
 
     private MockMvc mockMvc;

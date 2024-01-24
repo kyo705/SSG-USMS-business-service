@@ -2,6 +2,7 @@ package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.config.TestContainerConfig;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
 import com.ssg.usms.business.user.repository.UserRepository;
@@ -9,6 +10,7 @@ import com.ssg.usms.business.user.repository.UsmsUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,8 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 @Transactional
 @ActiveProfiles("test")
-@SpringBootTest(classes = EmbeddedRedis.class)
+@ExtendWith(TestContainerConfig.class)
+@SpringBootTest
 public class logoutIntegrationTest {
 
     @Autowired

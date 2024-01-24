@@ -4,10 +4,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.ssg.usms.business.config.AwsS3LocalConfig;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.config.TestContainerConfig;
 import io.findify.s3mock.S3Mock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @Import(AwsS3LocalConfig.class)
-@SpringBootTest(classes = EmbeddedRedis.class)
+@ExtendWith(TestContainerConfig.class)
+@SpringBootTest
 public class ImageRepositoryTest {
 
     @Autowired

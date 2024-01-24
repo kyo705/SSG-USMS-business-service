@@ -2,6 +2,7 @@ package com.ssg.usms.business.video.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.config.TestContainerConfig;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.video.exception.*;
 import com.ssg.usms.business.video.service.VideoService;
@@ -9,6 +10,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -36,7 +38,8 @@ import static org.mockito.BDDMockito.given;
 
 @WithMockUser(username = USERNAME)
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
+@ExtendWith(TestContainerConfig.class)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class VideoControllerLiveStreamTest {
 
     private MockMvc mockMvc;
