@@ -48,7 +48,7 @@ public class VideoService {
         validate(username, streamKey, protocol, filename);
 
         // filename : streamKey-1641900000000.m3u8 or streamKey-1641900000000-001.ts
-        long timestamp = Long.parseLong(filename.split("[.]")[0].split("-")[1]);
+        long timestamp = Long.parseLong(filename.split("[.]")[0].split("-")[5]);
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId());
 
         // 실제 다시보기 파일 경로 : /streamKey/년/월/일/파일명

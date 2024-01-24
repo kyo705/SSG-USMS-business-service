@@ -1,6 +1,8 @@
 DROP TABLE usms_user IF EXISTS;
 DROP TABLE store IF EXISTS;
 DROP TABLE cctv IF EXISTS;
+DROP TABLE accident IF EXISTS;
+
 DROP INDEX usms_store_business_license_img_id_idx IF EXISTS;
 DROP INDEX usms_cctv_stream_key_idx IF EXISTS;
 
@@ -33,6 +35,13 @@ CREATE TABLE cctv (
     cctv_name VARCHAR(50) NOT NULL,
     cctv_stream_key VARCHAR(50) NOT NULL,
     is_expired BOOLEAN  DEFAULT false
+);
+
+CREATE TABLE accident (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    cctv_id BIGINT NOT NULL,
+    behavior SMALLINT NOT NULL,
+    start_timestamp BIGINT NOT NULL
 );
 
 CREATE UNIQUE INDEX usms_store_business_license_img_id_idx ON store (business_license_img_id);
