@@ -15,7 +15,7 @@ public class EmbeddedRedis {
     private RedisServer redisServer;
 
     public EmbeddedRedis(RedisProperties redisProperties) {
-        this.redisServer = new RedisServer(SocketUtils.findAvailableTcpPort());
+        this.redisServer = new RedisServer(redisProperties.getPort());
     }
 
     @PostConstruct
@@ -29,7 +29,8 @@ public class EmbeddedRedis {
     }
 
     @AfterEach
-    public void afterEach(){
+    public void afterEach() throws InterruptedException {
         this.redisServer.stop();
+        Thread.sleep(500);
     }
 }
