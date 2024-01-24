@@ -16,9 +16,7 @@ public class EmbeddedRedis {
     private RedisServer redisServer;
 
     public EmbeddedRedis(RedisProperties redisProperties) {
-        this.redisServer = RedisServer.builder()
-                .port(redisProperties.getPort())
-                .setting("maxmemory 10M").build();
+        this.redisServer = new RedisServer(redisProperties.getPort());
     }
 
     @PostConstruct
