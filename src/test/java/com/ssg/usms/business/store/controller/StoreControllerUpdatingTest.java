@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.dto.HttpRequestCreatingStoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
@@ -38,7 +39,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
 public class StoreControllerUpdatingTest {
 
     private MockMvc mockMvc;

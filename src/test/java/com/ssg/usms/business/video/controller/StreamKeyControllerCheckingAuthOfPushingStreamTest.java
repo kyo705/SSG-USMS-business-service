@@ -2,6 +2,7 @@ package com.ssg.usms.business.video.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.video.dto.HttpRequestCheckingStreamDto;
 import com.ssg.usms.business.video.exception.AlreadyConnectedStreamKeyException;
@@ -33,7 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class StreamKeyControllerCheckingAuthOfPushingStreamTest {
 
     private MockMvc mockMvc;

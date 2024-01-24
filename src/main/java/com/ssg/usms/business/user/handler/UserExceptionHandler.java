@@ -4,7 +4,6 @@ package com.ssg.usms.business.user.handler;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.user.controller.UserController;
 import com.ssg.usms.business.user.exception.*;
-import com.ssg.usms.business.user.controller.UserSessionController;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {UserController.class , UserSessionController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class})
 public class UserExceptionHandler {
 
     @ExceptionHandler(AlreadyExistIdException.class)

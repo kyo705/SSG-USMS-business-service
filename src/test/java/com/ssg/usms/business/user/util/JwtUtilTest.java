@@ -1,6 +1,7 @@
 package com.ssg.usms.business.user.util;
 
 
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.user.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -29,8 +30,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 @AutoConfigureMockMvc
 public class JwtUtilTest {
 

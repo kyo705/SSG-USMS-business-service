@@ -34,12 +34,12 @@ public class JpaUserRepository implements UserRepository{
         return springDataJpaUserRepository.findById(userid);
     }
     @Override
-    public void delete(String principal) {
+    public void delete(long userid) {
 
-        if(!springDataJpaUserRepository.existsByUsername(principal)){
+        if(!springDataJpaUserRepository.existsById(userid)){
             throw new IllegalArgumentException("존재하지 않는 유저입니다.");
         }
-        springDataJpaUserRepository.deleteByUsername(principal);
+        springDataJpaUserRepository.deleteById(userid);
     }
 
     @Override

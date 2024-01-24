@@ -14,6 +14,4 @@ public interface SpringDataJpaUserRepository extends JpaRepository<UsmsUser,Long
 
     UsmsUser findByEmail(String email);
 
-    UsmsUser deleteByUsername(String username);
-
 }
