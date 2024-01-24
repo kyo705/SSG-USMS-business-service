@@ -1,8 +1,8 @@
-package com.ssg.usms.business.Security.logout;
+package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Security.login.persistence.RequestLoginDto;
-import com.ssg.usms.business.Security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
+import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import org.junit.jupiter.api.BeforeEach;

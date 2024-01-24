@@ -1,4 +1,4 @@
-package com.ssg.usms.business.Security.login.authority;
+package com.ssg.usms.business.security.login.authority;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.error.ErrorResponseDto;

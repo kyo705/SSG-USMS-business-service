@@ -1,6 +1,6 @@
 package com.ssg.usms.business.store.controller;
 
-import com.ssg.usms.business.Security.login.UsmsUserDetails;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.store.annotation.BusinessLicenseImgKey;
 import com.ssg.usms.business.store.dto.HttpRequestChangingStoreStateDto;
 import com.ssg.usms.business.store.dto.HttpRequestCreatingStoreDto;
