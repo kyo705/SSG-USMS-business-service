@@ -65,7 +65,7 @@ public class AccidentServiceTest {
 
     }
 
-    @DisplayName("[findByStoreId] : 특정 매장에서 발생한 모든 이상 행동 기록 조회")
+    @DisplayName("[findByStoreId] : 이상행동 필터링 조건이 있을 경우 특정 매장에서 발생한 모든 이상 행동 기록 조회")
     @Test
     public void testFindByStoreId() {
 
@@ -116,6 +116,65 @@ public class AccidentServiceTest {
         List<AccidentDto> result = accidentService.findByStoreId(storeId, requestParam);
 
         //then
+        verify(mockAccidentRepository, times(0)).findAllByStoreId(anyLong(), anyLong(), anyLong(), anyInt(), anyInt());
+        verify(mockAccidentRepository, times(1)).findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyInt(), anyInt());
+        assertThat(result.size()).isEqualTo(accidents.size());
+
+
+    }
+
+    @DisplayName("[findByStoreId] : 이상행동 필터링 조건이 없을 경우 특정 매장에서 발생한 모든 이상 행동 기록 조회")
+    @Test
+    public void testFindByStoreIdWithoutBehavior() {
+
+        //given
+        Long storeId = 1L;
+
+        HttpRequestRetrievingAccidentDto requestParam = new HttpRequestRetrievingAccidentDto();
+        requestParam.setStartDate("2024-01-13");
+        requestParam.setEndDate("2024-01-23");
+        requestParam.setOffset(0);
+        requestParam.setSize(20);
+
+        Accident accident1 = new Accident();
+        accident1.setId(1L);
+        accident1.setCctvId(1L);
+        accident1.setStartTimestamp(System.currentTimeMillis());
+        accident1.setBehavior(AccidentBehavior.COME_IN);
+
+        Accident accident2 = new Accident();
+        accident2.setId(2L);
+        accident2.setCctvId(1L);
+        accident2.setStartTimestamp(System.currentTimeMillis());
+        accident2.setBehavior(AccidentBehavior.COME_IN);
+
+        Accident accident3 = new Accident();
+        accident3.setId(3L);
+        accident3.setCctvId(1L);
+        accident3.setStartTimestamp(System.currentTimeMillis());
+        accident3.setBehavior(AccidentBehavior.COME_OUT);
+
+        Accident accident4 = new Accident();
+        accident4.setId(4L);
+        accident4.setCctvId(1L);
+        accident4.setStartTimestamp(System.currentTimeMillis());
+        accident4.setBehavior(AccidentBehavior.COME_OUT);
+
+        List<Accident> accidents = new ArrayList<>();
+        accidents.add(accident1);
+        accidents.add(accident2);
+        accidents.add(accident3);
+        accidents.add(accident4);
+
+        given(mockAccidentRepository.findAllByStoreId(anyLong(), anyLong(), anyLong(), anyInt(), anyInt()))
+                .willReturn(accidents);
+
+        //when
+        List<AccidentDto> result = accidentService.findByStoreId(storeId, requestParam);
+
+        //then
+        verify(mockAccidentRepository, times(1)).findAllByStoreId(anyLong(), anyLong(), anyLong(), anyInt(), anyInt());
+        verify(mockAccidentRepository, times(0)).findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyInt(), anyInt());
         assertThat(result.size()).isEqualTo(accidents.size());
 
 

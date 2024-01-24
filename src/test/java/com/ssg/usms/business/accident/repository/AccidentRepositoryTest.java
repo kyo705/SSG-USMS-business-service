@@ -116,4 +116,21 @@ public class AccidentRepositoryTest {
         }
 
     }
+
+    @DisplayName("[findAllByStoreId] : 특정 매장에 해당하는 모든 이상 행동 기록 조회")
+    @Test
+    public void testFindAllByStoreIdWithoutBehavior() {
+
+        //given
+        Long storeId = 1L;
+        long startTimestamp = 1000000000L;
+        long endTimestamp = System.currentTimeMillis();
+        int offset = 0;
+        int size = 20;
+
+        //when
+        List<Accident> result = accidentRepository.findAllByStoreId(storeId, startTimestamp, endTimestamp, offset, size);
+        assertThat(result.size()).isLessThanOrEqualTo(size);
+
+    }
 }

@@ -38,12 +38,27 @@ public class AccidentService {
         long startTimestamp = parseTimestamp(requestParam.getStartDate());
         long endTimestamp = parseTimestamp(requestParam.getEndDate());
 
+        // 이상 행동 조건이 없을 때
+        if(requestParam.getBehavior() == null || requestParam.getBehavior().isEmpty()) {
+            return accidentRepository.findAllByStoreId(storeId,
+                                                    startTimestamp,
+                                                    endTimestamp,
+                                                    requestParam.getOffset(),
+                                                    requestParam.getSize()
+                    )
+                    .stream()
+                    .map(AccidentDto::new)
+                    .collect(Collectors.toList());
+        }
+
+        // 이상 행동에 따른 필터링 있을 때
         return accidentRepository.findAllByStoreId(storeId,
                                                 requestParam.getBehavior(),
                                                 startTimestamp,
                                                 endTimestamp,
                                                 requestParam.getOffset(),
-                                                requestParam.getSize())
+                                                requestParam.getSize()
+                )
                 .stream()
                 .map(AccidentDto::new)
                 .collect(Collectors.toList());

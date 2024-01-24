@@ -34,6 +34,12 @@ public class JpaAccidentRepository implements AccidentRepository {
     }
 
     @Override
+    public List<Accident> findAllByStoreId(long storeId, long startTimestamp, long endTimestamp, int offset, int size) {
+        return springDataJpaAccidentRepository
+                .findAllByStoreId(storeId, startTimestamp, endTimestamp, offset, size);
+    }
+
+    @Override
     public List<Accident> findAllByStoreId(long storeId, List<AccidentBehavior> behavior, long startTimestamp, long endTimestamp, int offset, int size) {
 
         List<Integer> behaviorCodes = behavior.stream().map(AccidentBehavior::getCode).collect(Collectors.toList());

@@ -13,5 +13,7 @@ public interface AccidentRepository {
 
     List<AccidentStatDto> findAccidentStats(long storeId, long startTimestamp, long endTimestamp);
 
+    List<Accident> findAllByStoreId(long storeId, long startTimestamp, long endTimestamp, int offset, int size);
+
     List<Accident> findAllByStoreId(long storeId, List<AccidentBehavior> behavior, long startTimestamp, long endTimestamp, int offset, int size);
 }
