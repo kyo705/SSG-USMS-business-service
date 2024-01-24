@@ -11,7 +11,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import static com.ssg.usms.business.notification.constants.NotificationConstants.EMAIL_SEND_FAILURE_MESSAGE;
-import static com.ssg.usms.business.notification.constants.NotificationConstants.IDENTIFICATION_EMAIL_SENDER;
 
 @Service
 @RequiredArgsConstructor
