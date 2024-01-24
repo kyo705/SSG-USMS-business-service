@@ -1,4 +1,4 @@
-package com.ssg.usms.business.Security.login;
+package com.ssg.usms.business.security.login;
 
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;

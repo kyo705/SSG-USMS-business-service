@@ -52,7 +52,7 @@ public class redisTest {
 
         redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
         // Act
-        String stored = identificationRepository.getSmsCertification(keyAndCertificationNumber);
+        String stored = identificationRepository.getIdentification(keyAndCertificationNumber);
 
         // Assert
         assertThat(stored).isEqualTo(user);
@@ -66,7 +66,7 @@ public class redisTest {
         String user = "jsonString";
 
         // Act
-        String stored = identificationRepository.getSmsCertification(keyAndCertificationNumber);
+        String stored = identificationRepository.getIdentification(keyAndCertificationNumber);
 
         // Assert
         assertThat(stored).isEqualTo(null);
@@ -80,7 +80,7 @@ public class redisTest {
         // Arrange
         redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
         // Act
-        identificationRepository.removeSmsCertification(keyAndCertificationNumber);
+        identificationRepository.removeIdentification(keyAndCertificationNumber);
         // Assert
         assertFalse(redisTemplate.hasKey(keyAndCertificationNumber));
     }
@@ -89,8 +89,8 @@ public class redisTest {
     @Test
     public void FailedremoveSmsCertificationTest() {
 
-        assertThat(identificationRepository.getSmsCertification("2")).isEqualTo(null);
-        identificationRepository.removeSmsCertification(keyAndCertificationNumber);
+        assertThat(identificationRepository.getIdentification("2")).isEqualTo(null);
+        identificationRepository.removeIdentification(keyAndCertificationNumber);
     }
 
 

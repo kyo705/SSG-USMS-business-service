@@ -22,12 +22,12 @@ public class IdentificationRepository {
         redisTemplate.opsForValue().set(keyAndCertificationNumber, User, Duration.ofSeconds(LIMIT_TIME));
     }
 
-    public String getSmsCertification(String key){
+    public String getIdentification(String key){
 
         return redisTemplate.opsForValue().get(key);
     }
 
-    public void removeSmsCertification(String key){
+    public void removeIdentification(String key){
 
         redisTemplate.delete(key);
     }

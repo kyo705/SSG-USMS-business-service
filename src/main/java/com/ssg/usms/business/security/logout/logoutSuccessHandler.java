@@ -1,7 +1,7 @@
-package com.ssg.usms.business.Security.logout;
+package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;

@@ -51,13 +51,13 @@ public class IdentificationService {
     public String verifyIdentification(CertificationDto dto) throws JsonProcessingException {
 
         String verifyKey = dto.getKey()+" "+dto.getValue();
-        String result = identificationRepository.getSmsCertification(verifyKey);
+        String result = identificationRepository.getIdentification(verifyKey);
 
         if( result == null ){
             throw new NotIdentificationException(INVALID_AUTHENTICATION_CODE_LITERAL);
         }
 
-        identificationRepository.removeSmsCertification(verifyKey);
+        identificationRepository.removeIdentification(verifyKey);
 
         HttpRequestIdentificationDto httpRequestIdentificationDto = objectMapper.readValue(result, HttpRequestIdentificationDto.class);;
 

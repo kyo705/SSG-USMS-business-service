@@ -86,7 +86,7 @@ public class IdentificationServiceTest {
                         .value("161321")
                         .build();
 
-        when(identificationRepository.getSmsCertification(any())).thenReturn(requestdto.toString());
+        when(identificationRepository.getIdentification(any())).thenReturn(requestdto.toString());
         when(objectMapper.readValue(requestdto.toString(), HttpRequestIdentificationDto.class)).thenReturn(new HttpRequestIdentificationDto());
         given(jwtUtil.createJwt(any(),any(),any())).willReturn("asdf");
 
@@ -95,7 +95,7 @@ public class IdentificationServiceTest {
 
 
         assertThat(result).isEqualTo("asdf");
-        verify(identificationRepository, times(1)).removeSmsCertification(Key);
+        verify(identificationRepository, times(1)).removeIdentification(Key);
 
     }
 
@@ -108,7 +108,7 @@ public class IdentificationServiceTest {
                 .value("010-4046-7715")
                 .build();
 
-        given(identificationRepository.getSmsCertification(any())).willReturn(null);
+        given(identificationRepository.getIdentification(any())).willReturn(null);
 
         assertThatThrownBy(() -> service.verifyIdentification(requestdto)).isInstanceOf(NotIdentificationException.class);
     }

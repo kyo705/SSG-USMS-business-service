@@ -1,6 +1,6 @@
 package com.ssg.usms.business.cctv.controller;
 
-import com.ssg.usms.business.Security.login.UsmsUserDetails;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.cctv.dto.CctvDto;
 import com.ssg.usms.business.cctv.dto.HttpRequestCreatingCctvDto;
 import com.ssg.usms.business.cctv.dto.HttpRequestUpdatingCctvDto;
