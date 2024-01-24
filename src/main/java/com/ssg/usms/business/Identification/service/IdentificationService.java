@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
-import com.ssg.usms.business.Identification.repository.SmsCertificationRepository;
+import com.ssg.usms.business.Identification.repository.IdentificationRepository;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.notification.service.NotificationService;
 import com.ssg.usms.business.user.util.JwtUtil;
@@ -30,7 +30,7 @@ public class IdentificationService {
 
     private final JwtUtil jwtUtil;
 
-    private final SmsCertificationRepository smsCertificationRepository;
+    private final IdentificationRepository identificationRepository;
     private final ObjectMapper objectMapper;
 
     public String createIdentification(HttpRequestIdentificationDto dto) throws JsonProcessingException {
@@ -41,7 +41,7 @@ public class IdentificationService {
         String verificationCode = makeVerificationCode();
         String redisValue = verificationKey + " " + verificationCode;
 
-        smsCertificationRepository.createSmsCertification(redisValue, User);
+        identificationRepository.createSmsCertification(redisValue, User);
         String serviceName = makeNotificationServiceValue(dto.getCode());
         notificationServices.get(serviceName).send(dto.getValue(),IDENTIFICATION_SUBJECT,verificationCode);
 
@@ -51,13 +51,13 @@ public class IdentificationService {
     public String verifyIdentification(CertificationDto dto) throws JsonProcessingException {
 
         String verifyKey = dto.getKey()+" "+dto.getValue();
-        String result = smsCertificationRepository.getSmsCertification(verifyKey);
+        String result = identificationRepository.getSmsCertification(verifyKey);
 
         if( result == null ){
             throw new NotIdentificationException(INVALID_AUTHENTICATION_CODE_LITERAL);
         }
 
-        smsCertificationRepository.removeSmsCertification(verifyKey);
+        identificationRepository.removeSmsCertification(verifyKey);
 
         HttpRequestIdentificationDto httpRequestIdentificationDto = objectMapper.readValue(result, HttpRequestIdentificationDto.class);;
 

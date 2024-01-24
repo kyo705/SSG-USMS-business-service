@@ -11,7 +11,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 @Repository
 @Slf4j
-public class SmsCertificationRepository {
+public class IdentificationRepository {
 
     private final int LIMIT_TIME = 180;
 

@@ -1,7 +1,7 @@
 package com.ssg.usms.business.identification.redis;
 
 
-import com.ssg.usms.business.Identification.repository.SmsCertificationRepository;
+import com.ssg.usms.business.Identification.repository.IdentificationRepository;
 
 import com.ssg.usms.business.config.EmbeddedRedis;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class redisTest {
 
     @Autowired
-    private SmsCertificationRepository smsCertificationRepository;
+    private IdentificationRepository identificationRepository;
 
     private final String keyAndCertificationNumber = "verificationKey";
     private final String user = "jsonString";
@@ -36,7 +36,7 @@ public class redisTest {
         // Arrange
 
         // Act
-        smsCertificationRepository.createSmsCertification(keyAndCertificationNumber, user);
+        identificationRepository.createSmsCertification(keyAndCertificationNumber, user);
         String stored = redisTemplate.opsForValue().get(keyAndCertificationNumber);
 
         // Assert
@@ -52,7 +52,7 @@ public class redisTest {
 
         redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
         // Act
-        String stored = smsCertificationRepository.getSmsCertification(keyAndCertificationNumber);
+        String stored = identificationRepository.getSmsCertification(keyAndCertificationNumber);
 
         // Assert
         assertThat(stored).isEqualTo(user);
@@ -66,7 +66,7 @@ public class redisTest {
         String user = "jsonString";
 
         // Act
-        String stored = smsCertificationRepository.getSmsCertification(keyAndCertificationNumber);
+        String stored = identificationRepository.getSmsCertification(keyAndCertificationNumber);
 
         // Assert
         assertThat(stored).isEqualTo(null);
@@ -80,7 +80,7 @@ public class redisTest {
         // Arrange
         redisTemplate.opsForValue().set(keyAndCertificationNumber, user, Duration.ofSeconds(180));
         // Act
-        smsCertificationRepository.removeSmsCertification(keyAndCertificationNumber);
+        identificationRepository.removeSmsCertification(keyAndCertificationNumber);
         // Assert
         assertFalse(redisTemplate.hasKey(keyAndCertificationNumber));
     }
@@ -89,8 +89,8 @@ public class redisTest {
     @Test
     public void FailedremoveSmsCertificationTest() {
 
-        assertThat(smsCertificationRepository.getSmsCertification("2")).isEqualTo(null);
-        smsCertificationRepository.removeSmsCertification(keyAndCertificationNumber);
+        assertThat(identificationRepository.getSmsCertification("2")).isEqualTo(null);
+        identificationRepository.removeSmsCertification(keyAndCertificationNumber);
     }
 
 

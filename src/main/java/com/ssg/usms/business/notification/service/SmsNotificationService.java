@@ -2,7 +2,6 @@ package com.ssg.usms.business.notification.service;
 
 
 import com.ssg.usms.business.notification.exception.NotificationFailureException;
-import com.ssg.usms.business.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
@@ -25,6 +24,8 @@ public class SmsNotificationService implements NotificationService {
     private String apiKey;
     @Value("${coolsms.api.secret}")
     private String apiSecretKey;
+    @Value("${coolsms.sender}")
+    private String sender;
 
     private DefaultMessageService messageService;
 
@@ -39,7 +40,7 @@ public class SmsNotificationService implements NotificationService {
 
         Message messageForm = new Message();
 
-        messageForm.setFrom(IDENTIFICATION_SMS_SENDER);
+        messageForm.setFrom(sender);
         messageForm.setTo(destination);
         messageForm.setSubject(subject);
         messageForm.setText(IDENTIFICATION_MESSAGE + message);

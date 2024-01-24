@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
-import com.ssg.usms.business.Identification.repository.SmsCertificationRepository;
+import com.ssg.usms.business.Identification.repository.IdentificationRepository;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.notification.exception.NotificationFailureException;
 import com.ssg.usms.business.notification.service.NotificationService;
@@ -33,7 +33,7 @@ public class IdentificationServiceTest {
 
 
     @Mock
-    private SmsCertificationRepository smsCertificationRepository;
+    private IdentificationRepository identificationRepository;
     @Mock
     private ObjectMapper objectMapper;
 
@@ -67,7 +67,7 @@ public class IdentificationServiceTest {
         service.createIdentification(requestdto);
 
 
-        verify(smsCertificationRepository, times(1)).createSmsCertification(any(),any());
+        verify(identificationRepository, times(1)).createSmsCertification(any(),any());
     }
 
 
@@ -86,7 +86,7 @@ public class IdentificationServiceTest {
                         .value("161321")
                         .build();
 
-        when(smsCertificationRepository.getSmsCertification(any())).thenReturn(requestdto.toString());
+        when(identificationRepository.getSmsCertification(any())).thenReturn(requestdto.toString());
         when(objectMapper.readValue(requestdto.toString(), HttpRequestIdentificationDto.class)).thenReturn(new HttpRequestIdentificationDto());
         given(jwtUtil.createJwt(any(),any(),any())).willReturn("asdf");
 
@@ -95,7 +95,7 @@ public class IdentificationServiceTest {
 
 
         assertThat(result).isEqualTo("asdf");
-        verify(smsCertificationRepository, times(1)).removeSmsCertification(Key);
+        verify(identificationRepository, times(1)).removeSmsCertification(Key);
 
     }
 
@@ -108,7 +108,7 @@ public class IdentificationServiceTest {
                 .value("010-4046-7715")
                 .build();
 
-        given(smsCertificationRepository.getSmsCertification(any())).willReturn(null);
+        given(identificationRepository.getSmsCertification(any())).willReturn(null);
 
         assertThatThrownBy(() -> service.verifyIdentification(requestdto)).isInstanceOf(NotIdentificationException.class);
     }
