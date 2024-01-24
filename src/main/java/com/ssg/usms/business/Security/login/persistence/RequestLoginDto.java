@@ -1,4 +1,4 @@
-package com.ssg.usms.business.security.login.persistence;
+package com.ssg.usms.business.Security.login.persistence;
 
 import lombok.Getter;
 import lombok.Setter;

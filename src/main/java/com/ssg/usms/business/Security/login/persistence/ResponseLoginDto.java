@@ -1,7 +1,7 @@
-package com.ssg.usms.business.security.login.persistence;
+package com.ssg.usms.business.Security.login.persistence;
 
 
-import com.ssg.usms.business.security.login.UsmsUserDetails;
+import com.ssg.usms.business.Security.login.UsmsUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
