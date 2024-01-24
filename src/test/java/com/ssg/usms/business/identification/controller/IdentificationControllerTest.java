@@ -6,12 +6,10 @@ import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.config.EmbeddedRedis;
-import com.ssg.usms.business.config.TestContainerConfig;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ActiveProfiles("test")
-@ExtendWith(TestContainerConfig.class)
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class IdentificationControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
