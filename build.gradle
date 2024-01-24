@@ -65,4 +65,10 @@ task copyPrivate(type: Copy) {
 		include "*.yml"
 		into 'src/main/resources'
 	}
+
+	copy {
+		from './SSG-USMS-business-service-yml'
+		include "*.json"
+		into 'src/main/resources'
+	}
 }
