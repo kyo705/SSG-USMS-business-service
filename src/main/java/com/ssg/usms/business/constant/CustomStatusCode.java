@@ -90,4 +90,8 @@ public class CustomStatusCode {
     public static final int INVALID_TIMESTAMP_FORMAT_CODE = 643;
     public static final String INVALID_TIMESTAMP_FORMAT_MESSAGE = "올바르지 못한 타입스탬프 포맷입니다.";
 
+    public static final int UNAVAILABLE_STORE_CODE = 644;
+    public static final String UNAVAILABLE_STORE_MESSAGE = "접근 불가능한 매장입니다.";
+
+
 }

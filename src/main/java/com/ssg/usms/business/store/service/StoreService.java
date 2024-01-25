@@ -85,6 +85,12 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public boolean isAvailable(Long storeId) {
+
+        return storeRepository.findById(storeId).getStoreState() == StoreState.APPROVAL;
+    }
+
     @Transactional
     public void update(Long storeId, String storeName, String storeAddress, String businessLicenseCode, InputStream businessLicenseImgFile) {
 
