@@ -364,40 +364,6 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 10;
-        int size = 10;
-        String endDate = "2024-01-24";
-
-        //when & then
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
-                                .param("size", Integer.toString(size))
-                                .param("endDate", endDate)
-
-                )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(result -> {
-                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
-                    Assertions.assertThat(resultBody.getCode()).isEqualTo(INVALID_DATE_FORMAT_CODE);
-                })
-        ;
-
-        verify(storeService, times(0)).validateOwnedStore(any(), any());
-        verify(accidentService, times(0)).findByStoreId(any(), any());
-    }
-
-    @WithUserDetails("storeOwner")
-    @DisplayName("[findAllByStoreId] : 잘못된 date 값으로 요청할 경우 예외가 발생한다.")
-    @Test
-    public void testFindAllByStoreIdWithInvalidDateFormat3() throws Exception {
-
-        //given
-        Long userId = 1L;
-        Long storeId = 1L;
-
         int offset = 0;
         int size = 10;
 

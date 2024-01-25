@@ -2,6 +2,7 @@ DROP TABLE usms_user IF EXISTS;
 DROP TABLE store IF EXISTS;
 DROP TABLE cctv IF EXISTS;
 DROP TABLE accident IF EXISTS;
+DROP TABLE region_warning IF EXISTS;
 
 DROP INDEX usms_store_business_license_img_id_idx IF EXISTS;
 DROP INDEX usms_cctv_stream_key_idx IF EXISTS;
@@ -45,5 +46,14 @@ CREATE TABLE accident (
     start_timestamp BIGINT NOT NULL
 );
 
+CREATE TABLE region_warning (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    region VARCHAR(50) NOT NULL,
+    behavior SMALLINT NOT NULL,
+    occurrence_count INT NOT NULL,
+    occurrence_date DATE NOT NULL
+);
+
 CREATE UNIQUE INDEX usms_store_business_license_img_id_idx ON store (business_license_img_id);
 CREATE UNIQUE INDEX usms_cctv_stream_key_idx ON cctv (cctv_stream_key);
+CREATE INDEX usms_region_warning_region_idx ON region_warning (region);

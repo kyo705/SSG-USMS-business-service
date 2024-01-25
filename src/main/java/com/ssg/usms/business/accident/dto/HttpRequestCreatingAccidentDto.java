@@ -1,7 +1,6 @@
 package com.ssg.usms.business.accident.dto;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
-import com.ssg.usms.business.constant.CustomStatusCode;
 import com.ssg.usms.business.video.annotation.StreamKey;
 import lombok.Getter;
 import lombok.Setter;

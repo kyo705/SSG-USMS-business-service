@@ -35,8 +35,8 @@ public class AccidentService {
     @Transactional(readOnly = true)
     public List<AccidentDto> findByStoreId(Long storeId, HttpRequestRetrievingAccidentDto requestParam) {
 
-        long startTimestamp = parseTimestamp(requestParam.getStartDate());
-        long endTimestamp = parseTimestamp(requestParam.getEndDate());
+        long startTimestamp = requestParam.getStartDate() == null ? 0L : parseTimestamp(requestParam.getStartDate());
+        long endTimestamp = requestParam.getEndDate() == null ? 0L : parseTimestamp(requestParam.getEndDate());
 
         // 이상 행동 조건이 없을 때
         if(requestParam.getBehavior() == null || requestParam.getBehavior().isEmpty()) {
@@ -68,8 +68,8 @@ public class AccidentService {
     @Transactional(readOnly = true)
     public List<AccidentStatDto> findAccidentStatsByStoreId(Long storeId, String startDate, String endDate) {
 
-        long startTimestamp = parseTimestamp(startDate);
-        long endTimestamp = parseTimestamp(endDate);
+        long startTimestamp = startDate == null ? 0L : parseTimestamp(startDate);
+        long endTimestamp = endDate == null ? System.currentTimeMillis() : parseTimestamp(endDate);
 
         return accidentRepository.findAccidentStats(storeId, startTimestamp, endTimestamp);
     }

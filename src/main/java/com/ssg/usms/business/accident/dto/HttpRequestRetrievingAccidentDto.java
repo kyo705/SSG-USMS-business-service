@@ -9,9 +9,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ssg.usms.business.accident.constant.AccidentConstants.DATE_FORMAT_REGEX;
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
@@ -22,11 +20,9 @@ public class HttpRequestRetrievingAccidentDto {
 
     private List<AccidentBehavior> behavior = new ArrayList<>();
 
-    @NotNull(message = INVALID_DATE_FORMAT_MESSAGE)
     @Pattern(regexp = DATE_FORMAT_REGEX, message = INVALID_DATE_FORMAT_MESSAGE)
     private String startDate;
 
-    @NotNull(message = INVALID_DATE_FORMAT_MESSAGE)
     @Pattern(regexp = DATE_FORMAT_REGEX, message = INVALID_DATE_FORMAT_MESSAGE)
     private String endDate;
 
