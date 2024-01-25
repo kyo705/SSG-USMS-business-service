@@ -18,7 +18,7 @@ import static com.ssg.usms.business.store.constant.StoreConstants.BUSINESS_LICEN
 @AllArgsConstructor
 public class HttpRequestRetrievingStoreDto {
 
-    private Long userId;
+    private Long user;
 
     private StoreState storeState;
 

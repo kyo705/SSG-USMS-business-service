@@ -278,7 +278,7 @@ public class StoreControllerRetrievingTest {
         stores.add(store2);
         stores.add(store3);
 
-        given(storeService.findAll(any(), isNull(), any(), anyInt(), anyInt()))
+        given(storeService.findAll(isNull(), isNull(), any(), anyInt(), anyInt()))
                 .willReturn(stores);
 
         //when & then
@@ -286,7 +286,6 @@ public class StoreControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores", userId)
                                 .param("storeState", "2")
-                                .param("userId", Long.toString(userId))
                                 .param("offset", Integer.toString(offset))
                                 .param("size", Integer.toString(size))
                 )
@@ -301,7 +300,7 @@ public class StoreControllerRetrievingTest {
                 })
         ;
 
-        verify(storeService, times(1)).findAll(any(), isNull(), any(), anyInt(), anyInt());
+        verify(storeService, times(1)).findAll(isNull(), isNull(), any(), anyInt(), anyInt());
         verify(storeService, times(0)).findAllByUserId(any(), anyInt(), anyInt());
 
     }
