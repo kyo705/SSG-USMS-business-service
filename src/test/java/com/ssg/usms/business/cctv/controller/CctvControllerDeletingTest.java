@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -67,6 +68,8 @@ public class CctvControllerDeletingTest {
         Long userId = 1L;
         Long storeId = 1L;
         Long cctvId = 1L;
+
+        given(storeService.isAvailable(any())).willReturn(true);
 
         //when & then
         mockMvc.perform(
@@ -168,6 +171,33 @@ public class CctvControllerDeletingTest {
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_OWNED_STORE_CODE);
+                })
+        ;
+    }
+
+    @DisplayName("[delete] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testDeleteWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        Long cctvId = 1L;
+
+        given(storeService.isAvailable(any())).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .delete("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}", userId, storeId, cctvId)
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
                 })
         ;
     }

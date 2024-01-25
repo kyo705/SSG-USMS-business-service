@@ -1,5 +1,6 @@
 package com.ssg.usms.business.store.constant;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ public enum StoreState {
     DISAPPROVAL(2),
     STOPPED(3);
 
+    @JsonValue
     private final int code;
 
     StoreState(int code) {
