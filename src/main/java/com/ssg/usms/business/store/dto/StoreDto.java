@@ -18,6 +18,7 @@ public class StoreDto {
     private String businessLicenseCode; /* 사업자 등록 번호 */
     private String businessLicenseImgId;
     private StoreState storeState;
+    private String adminComment;
 
     public StoreDto(Store store) {
         this.id = store.getId();
@@ -27,5 +28,6 @@ public class StoreDto {
         this.businessLicenseCode = store.getBusinessLicenseCode();
         this.businessLicenseImgId = store.getBusinessLicenseImgId();
         this.storeState = store.getStoreState();
+        this.adminComment = store.getAdminComment();
     }
 }
