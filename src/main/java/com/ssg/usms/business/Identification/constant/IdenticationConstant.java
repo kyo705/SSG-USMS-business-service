@@ -1,5 +1,7 @@
 package com.ssg.usms.business.Identification.constant;
 
+import com.ssg.usms.business.Identification.dto.CertificationCode;
+
 import java.util.HashMap;
 
 public class IdenticationConstant {
@@ -18,8 +20,8 @@ public class IdenticationConstant {
     static {
 
         NOTIFICATION_SERVICE_MAP = new HashMap<>();
-        NOTIFICATION_SERVICE_MAP.put(1,"emailNotificationService");
-        NOTIFICATION_SERVICE_MAP.put(2,"smsNotificationService");
+        NOTIFICATION_SERVICE_MAP.put(CertificationCode.EMAIL.getCode(), "emailNotificationService");
+        NOTIFICATION_SERVICE_MAP.put(CertificationCode.SMS.getCode(), "smsNotificationService");
     }
 
 
