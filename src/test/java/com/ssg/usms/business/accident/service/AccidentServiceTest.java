@@ -226,4 +226,51 @@ public class AccidentServiceTest {
 
 
     }
+
+    @DisplayName("[findAccidentStatsByStoreId] : 날짜 필터링 없이 특정 매장에서 발생한 이상 행동 통계 기록 조회")
+    @Test
+    public void testFindAccidentStatsByStoreIdWithNoDate() {
+
+        //given
+        Long storeId = 1L;
+        String startDate = "2024-01-13";
+        String endDate = "2024-01-23";
+
+        AccidentStatDto accident1 = new AccidentStatDto();
+        accident1.setStoreId(storeId);
+        accident1.setBehavior(AccidentBehavior.COME_IN);
+        accident1.setStartDate(startDate);
+        accident1.setEndDate(endDate);
+        accident1.setCount(20L);
+
+        AccidentStatDto accident2 = new AccidentStatDto();
+        accident2.setStoreId(storeId);
+        accident2.setBehavior(AccidentBehavior.COME_OUT);
+        accident2.setStartDate(startDate);
+        accident2.setEndDate(endDate);
+        accident2.setCount(20L);
+
+        AccidentStatDto accident3 = new AccidentStatDto();
+        accident3.setStoreId(storeId);
+        accident3.setBehavior(AccidentBehavior.DESTROY);
+        accident3.setStartDate(startDate);
+        accident3.setEndDate(endDate);
+        accident3.setCount(20L);
+
+        List<AccidentStatDto> accidents = new ArrayList<>();
+        accidents.add(accident2);
+        accidents.add(accident2);
+        accidents.add(accident3);
+
+        given(mockAccidentRepository.findAccidentStats(anyLong(), anyLong(), anyLong()))
+                .willReturn(accidents);
+
+        //when
+        List<AccidentStatDto> result = accidentService.findAccidentStatsByStoreId(storeId, null, null);
+
+        //then
+        assertThat(result.size()).isEqualTo(accidents.size());
+
+
+    }
 }
