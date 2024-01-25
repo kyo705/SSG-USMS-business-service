@@ -4,8 +4,9 @@ import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
 import com.ssg.usms.business.user.dto.HttpResponseUserDto;
-import com.ssg.usms.business.user.exception.AlreadyExistIdException;
+import com.ssg.usms.business.user.exception.AlreadyExistEmailException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
+import com.ssg.usms.business.user.exception.AlreadyExistUsernameException;
 import com.ssg.usms.business.user.exception.NotExistingUserException;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UserSessionRepository;
@@ -22,7 +23,6 @@ import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 
 
@@ -32,10 +32,11 @@ public class UserService {
     private final UserSessionRepository userSessionRepository;
 
     //   유저 데이터 조회
-    public void SignUp(HttpRequestSignUpDto httpRequestSignUpDto) {
+    @Transactional
+    public void signUp(HttpRequestSignUpDto httpRequestSignUpDto) {
 
-        CheckDuplicatedId(httpRequestSignUpDto.getUsername());
-        CheckDuplicatePhoneNumber(httpRequestSignUpDto.getPhoneNum());
+        checkDuplicatedId(httpRequestSignUpDto.getUsername());
+        checkDuplicatePhoneNumber(httpRequestSignUpDto.getPhoneNum());
 
         String hashPwd = bCryptPasswordEncoder.encode(httpRequestSignUpDto.getPassword());
         UsmsUser user = UsmsUser.builder()
@@ -48,23 +49,6 @@ public class UserService {
 
         userRepository.signUp(user);
     }
-
-
-    private void CheckDuplicatedId(String username) {
-
-        if (userRepository.existsByUsername(username)) {
-            throw new AlreadyExistIdException(ALREADY_EXISTS_USERNAME_LITERAL);
-        }
-    }
-
-    private void CheckDuplicatePhoneNumber(String phoneNumber) {
-
-        if (userRepository.existsByPhoneNumber(phoneNumber)) {
-            throw new AlreadyExistPhoneNumException(ALREADY_EXISTS_PHONE_LITERAL);
-        }
-    }
-
-
     public HttpResponseUserDto findUserByValue(String token) {
 
         int code = Integer.parseInt((String) jwtUtil.getClaim(token).get("code"));
@@ -94,7 +78,7 @@ public class UserService {
     }
 
     @Transactional
-    public UsmsUser ModifyUser(long value, HttpRequestModifyUserDto httpRequestModifyUserDto) {
+    public UsmsUser modifyUser(long value, HttpRequestModifyUserDto httpRequestModifyUserDto) {
 
         UsmsUser user = userRepository.findById(value).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
@@ -154,6 +138,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public void deleteUser(long userId) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -162,4 +147,38 @@ public class UserService {
     }
 
 
+    public void checkExistUser(String username,String email, String phoneNumber) {
+
+        if (email != null){
+
+            if(userRepository.existsByEmail(email)){
+                throw new AlreadyExistEmailException(ALREADY_EXISTS_USER_LITERAL);
+            };
+        }if (phoneNumber != null){
+
+            if(userRepository.existsByPhoneNumber(phoneNumber)){
+                throw new AlreadyExistPhoneNumException(ALREADY_EXISTS_USER_LITERAL);
+            };
+        }if (username != null){
+
+            if(userRepository.existsByUsername(username)){
+
+                throw new AlreadyExistUsernameException(ALREADY_EXISTS_USER_LITERAL);
+            };
+        }
+    }
+
+    private void checkDuplicatedId(String username) {
+
+        if (userRepository.existsByUsername(username)) {
+            throw new AlreadyExistUsernameException(ALREADY_EXISTS_USERNAME_LITERAL);
+        }
+    }
+
+    private void checkDuplicatePhoneNumber(String phoneNumber) {
+
+        if (userRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new AlreadyExistPhoneNumException(ALREADY_EXISTS_PHONE_LITERAL);
+        }
+    }
 }

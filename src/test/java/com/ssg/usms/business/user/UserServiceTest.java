@@ -3,8 +3,9 @@ package com.ssg.usms.business.user;
 
 import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.user.dto.*;
-import com.ssg.usms.business.user.exception.AlreadyExistIdException;
+import com.ssg.usms.business.user.exception.AlreadyExistEmailException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
+import com.ssg.usms.business.user.exception.AlreadyExistUsernameException;
 import com.ssg.usms.business.user.exception.NotExistingUserException;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UserSessionRepository;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -54,7 +56,7 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    @DisplayName("중복된 아이디를 요청한 경우 AlreadyExistIdException 을 던진다.")
+    @DisplayName("중복된 아이디를 요청한 경우 AlreadyExistUsernameException 을 던진다.")
     @Test
     public void testSinupWithDupicateId() {
 
@@ -68,7 +70,7 @@ public class UserServiceTest {
         dto.setNickname("hihello");
 
 
-        assertThrows(AlreadyExistIdException.class, () -> userService.SignUp(dto));
+        assertThrows(AlreadyExistUsernameException.class, () -> userService.signUp(dto));
     }
 
     @DisplayName("중복된 전화번호를 요청한 경우 AlreadyExistPhoneNumbException 을 던진다..")
@@ -85,7 +87,7 @@ public class UserServiceTest {
         dto.setNickname("hihello");
 
 
-        assertThrows(AlreadyExistPhoneNumException.class, () -> userService.SignUp(dto));
+        assertThrows(AlreadyExistPhoneNumException.class, () -> userService.signUp(dto));
     }
 
     @DisplayName("올바른 값을 요청한 경우 200 ResponseEntity를 반환한다.")
@@ -108,7 +110,7 @@ public class UserServiceTest {
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
         // then
-        assertThatCode(() -> userService.SignUp(dto))
+        assertThatCode(() -> userService.signUp(dto))
                 .doesNotThrowAnyException();
     }
 
@@ -288,8 +290,8 @@ public class UserServiceTest {
         given(bCryptPasswordEncoder.encode(any())).willReturn(dto.getPassword());
         given(repository.findById(1L)).willReturn(Optional.of(User));
 
-        Assertions.assertThat(userService.ModifyUser(1L,dto)).isInstanceOf(UsmsUser.class);
-        Assertions.assertThat(userService.ModifyUser(1L,dto).toString()).isEqualTo(newUser.toString());
+        Assertions.assertThat(userService.modifyUser(1L,dto)).isInstanceOf(UsmsUser.class);
+        Assertions.assertThat(userService.modifyUser(1L,dto).toString()).isEqualTo(newUser.toString());
     }
 
     @DisplayName("ModifyUserDto에 필드값이 다 들어가지 않아도 성공적으로 수정기능이 작동한 경우 UsmsUser을 리턴한다.(이 경우에는 비밀번호를 제외했다)")
@@ -322,8 +324,8 @@ public class UserServiceTest {
 
         given(repository.findById(1L)).willReturn(Optional.of(User));
 
-        Assertions.assertThat(userService.ModifyUser(1L,dto)).isInstanceOf(UsmsUser.class);
-        Assertions.assertThat(userService.ModifyUser(1L,dto).toString()).isEqualTo(newUser.toString());
+        Assertions.assertThat(userService.modifyUser(1L,dto)).isInstanceOf(UsmsUser.class);
+        Assertions.assertThat(userService.modifyUser(1L,dto).toString()).isEqualTo(newUser.toString());
     }
 
 
@@ -342,7 +344,7 @@ public class UserServiceTest {
                 .build();
 
         given(repository.findById(1L)).willReturn(Optional.ofNullable(any()));
-        assertThrows(IllegalArgumentException.class , () -> userService.ModifyUser(1L,dto));
+        assertThrows(IllegalArgumentException.class , () -> userService.modifyUser(1L,dto));
     }
 
 
@@ -422,6 +424,71 @@ public class UserServiceTest {
         verify(userSessionRepository,times(1)).deleteSession(user.getUsername());
         verify(repository,times(1)).delete(anyLong());
 
+    }
+
+    @DisplayName("존재하지 않는 정보로 중복확인을 한 경우")
+    @Test
+    public void checkExistUserSuccess(){
+        String username = "hello123";
+        String email = "ver.com";
+        String phone = "010-14244-1324";
+
+        given(repository.existsByEmail(any())).willReturn(false);
+        given(repository.existsByPhoneNumber(any())).willReturn(false);
+        given(repository.existsByUsername(any())).willReturn(false);
+
+        assertDoesNotThrow(() -> userService.checkExistUser(username,email,phone));
+
+    }
+    @DisplayName("존재하지 않는 정보로 중복확인을 한 경우 2파라미터")
+    @Test
+    public void checkExistUserSuccesstwoParam(){
+        String username = "hello123";
+        String email = "ver.com";
+        String phone = null;
+
+        given(repository.existsByEmail(any())).willReturn(false);
+        given(repository.existsByUsername(any())).willReturn(false);
+
+        assertDoesNotThrow(() -> userService.checkExistUser(username,email,phone));
+
+    }
+
+    @DisplayName("존재하는 정보로 중복확인을 한 경우")
+    @Test
+    public void checkExistUserFailedwithduplicateUsername(){
+        String username = "hello123";
+        String email = "ver.com";
+        String phone = null;
+
+        given(repository.existsByEmail(any())).willReturn(false);
+        given(repository.existsByUsername(any())).willReturn(true);
+
+        assertThrows(AlreadyExistUsernameException.class , () -> userService.checkExistUser(username,email,phone));
+    }
+
+    @DisplayName("존재하는 정보로 중복확인을 한 경우")
+    @Test
+    public void checkExistUserFailedwithduplicateEmail(){
+        String phone = null;
+        String username = "hello123";
+        String email = "ver.com";
+
+        given(repository.existsByEmail(any())).willReturn(true);
+
+        assertThrows(AlreadyExistEmailException.class , () -> userService.checkExistUser(username,email,phone));
+    }
+
+    @DisplayName("존재하는 정보로 중복확인을 한 경우")
+    @Test
+    public void checkExistUserFailedwithduplicatePhoneNum(){
+        String username = "hello123";
+        String email = "ver.com";
+        String phone = "010-14244-1324";
+
+        given(repository.existsByPhoneNumber(any())).willReturn(true);
+
+        assertThrows(AlreadyExistPhoneNumException.class , () -> userService.checkExistUser(username,email,phone));
     }
 
 }
