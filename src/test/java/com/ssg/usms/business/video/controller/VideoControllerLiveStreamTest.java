@@ -63,7 +63,7 @@ public class VideoControllerLiveStreamTest {
     public void testGetLiveVideoWithValidParam(String filename) throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
 
         given(videoService.getLiveVideo(USERNAME, streamKey, protocol, filename))
@@ -85,7 +85,7 @@ public class VideoControllerLiveStreamTest {
     public void testGetLiveVideoWithExpiredStreamKey() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -110,7 +110,7 @@ public class VideoControllerLiveStreamTest {
     public void testGetLiveVideoWithNotExistingStreamKey() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -135,7 +135,7 @@ public class VideoControllerLiveStreamTest {
     public void testGetLiveVideoWithNotOwnedStreamKey() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -160,7 +160,7 @@ public class VideoControllerLiveStreamTest {
     public void testGetLiveVideoWithNotAllowedStreamingProtocol() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "ftp";
         String filename = "test.mp4";
 
@@ -186,7 +186,7 @@ public class VideoControllerLiveStreamTest {
     public void testGetLiveVideoWithNotMatchingProtocolAndFileFormat() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.mp4";
 

@@ -1,7 +1,7 @@
 package com.ssg.usms.business.video.service;
 
-import com.ssg.usms.business.store.CctvDto;
-import com.ssg.usms.business.store.CctvService;
+import com.ssg.usms.business.cctv.dto.CctvDto;
+import com.ssg.usms.business.cctv.service.CctvService;
 import com.ssg.usms.business.video.dto.HttpRequestCheckingStreamDto;
 import com.ssg.usms.business.video.exception.AlreadyConnectedStreamKeyException;
 import com.ssg.usms.business.video.exception.ExpiredStreamKeyException;
@@ -52,14 +52,16 @@ public class StreamKeyServiceCheckingAuthOfPushingStreamTest {
         cctv.setCctvStreamKey(requestParam.getName());
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(requestParam.getName())).willReturn(cctv);
+        given(cctvService.findByStreamKey(requestParam.getName())).willReturn(cctv);
         given(streamKeyRepository.isExistingStreamKey(requestParam.getName())).willReturn(false);
+        given(streamKeyRepository.saveStreamKey(requestParam.getName())).willReturn(requestParam.getName());
 
         //when & then
         streamKeyService.checkAuthOfPushingStream(requestParam);
 
-        verify(cctvService, times(1)).getCctvByStreamKey(requestParam.getName());
+        verify(cctvService, times(1)).findByStreamKey(requestParam.getName());
         verify(streamKeyRepository, times(1)).isExistingStreamKey(requestParam.getName());
+        verify(streamKeyRepository, times(1)).saveStreamKey(requestParam.getName());
     }
 
     @DisplayName("자신의 기존 연결된 스트림 키에 대해 검증 요청시 정상적으로 검증이 끝난다.")
@@ -82,13 +84,14 @@ public class StreamKeyServiceCheckingAuthOfPushingStreamTest {
         cctv.setCctvStreamKey(requestParam.getName());
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(requestParam.getName())).willReturn(cctv);
+        given(cctvService.findByStreamKey(requestParam.getName())).willReturn(cctv);
 
         //when & then
         streamKeyService.checkAuthOfPushingStream(requestParam);
 
-        verify(cctvService, times(1)).getCctvByStreamKey(requestParam.getName());
+        verify(cctvService, times(1)).findByStreamKey(requestParam.getName());
         verify(streamKeyRepository, times(0)).isExistingStreamKey(requestParam.getName());
+        verify(streamKeyRepository, times(0)).saveStreamKey(requestParam.getName());
     }
 
     @DisplayName("존재하지 않는 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
@@ -103,14 +106,15 @@ public class StreamKeyServiceCheckingAuthOfPushingStreamTest {
                 .addr("localhost:80")
                 .build();
 
-        given(cctvService.getCctvByStreamKey(requestParam.getName())).willReturn(null);
+        given(cctvService.findByStreamKey(requestParam.getName())).willReturn(null);
 
         //when & then
         assertThrows(NotExistingStreamKeyException.class,
                 () -> streamKeyService.checkAuthOfPushingStream(requestParam));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(requestParam.getName());
+        verify(cctvService, times(1)).findByStreamKey(requestParam.getName());
         verify(streamKeyRepository, times(0)).isExistingStreamKey(requestParam.getName());
+        verify(streamKeyRepository, times(0)).saveStreamKey(requestParam.getName());
     }
 
     @DisplayName("만료된 스트림 키에 매핑된 CCTV 영상 파일을 요청한 경우 예외를 발생시킨다.")
@@ -132,14 +136,15 @@ public class StreamKeyServiceCheckingAuthOfPushingStreamTest {
         cctv.setCctvStreamKey(requestParam.getName());
         cctv.setExpired(true);
 
-        given(cctvService.getCctvByStreamKey(requestParam.getName())).willReturn(cctv);
+        given(cctvService.findByStreamKey(requestParam.getName())).willReturn(cctv);
 
         //when & then
         assertThrows(ExpiredStreamKeyException.class,
                 () -> streamKeyService.checkAuthOfPushingStream(requestParam));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(requestParam.getName());
+        verify(cctvService, times(1)).findByStreamKey(requestParam.getName());
         verify(streamKeyRepository, times(0)).isExistingStreamKey(requestParam.getName());
+        verify(streamKeyRepository, times(0)).saveStreamKey(requestParam.getName());
     }
 
     @DisplayName("초기 스트림 연결시 이미 연결된 스트림 키로 스트림 연결 요청시 예외를 발생시킨다.")
@@ -161,14 +166,15 @@ public class StreamKeyServiceCheckingAuthOfPushingStreamTest {
         cctv.setCctvStreamKey(requestParam.getName());
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(requestParam.getName())).willReturn(cctv);
+        given(cctvService.findByStreamKey(requestParam.getName())).willReturn(cctv);
         given(streamKeyRepository.isExistingStreamKey(requestParam.getName())).willReturn(true);
 
         //when & then
         assertThrows(AlreadyConnectedStreamKeyException.class,
                 () -> streamKeyService.checkAuthOfPushingStream(requestParam));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(requestParam.getName());
+        verify(cctvService, times(1)).findByStreamKey(requestParam.getName());
         verify(streamKeyRepository, times(1)).isExistingStreamKey(requestParam.getName());
+        verify(streamKeyRepository, times(0)).saveStreamKey(requestParam.getName());
     }
 }

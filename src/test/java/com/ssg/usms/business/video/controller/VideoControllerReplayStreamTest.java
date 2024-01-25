@@ -60,7 +60,7 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithValidParam(String filename) throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         byte[] streamData = new byte[50];
 
@@ -82,9 +82,9 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithExpiredStreamKey() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
-        String filename = UUID.randomUUID().toString().replace("-", "") + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
+        String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
                 .willThrow(new ExpiredStreamKeyException());
@@ -107,9 +107,9 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotExistingStreamKey() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
-        String filename = UUID.randomUUID().toString().replace("-", "") + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
+        String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
 
         given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
@@ -133,9 +133,9 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotOwnedStreamKey() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
-        String filename = UUID.randomUUID().toString().replace("-", "") + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
+        String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
                 .willThrow(new NotOwnedStreamKeyException());
@@ -158,9 +158,9 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotAllowedStreamingProtocol() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "ftp";
-        String filename = UUID.randomUUID().toString().replace("-", "") + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
+        String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
                 .willThrow(new NotAllowedStreamingProtocolException("유효하지 않은 스트림 프로토콜입니다."));
@@ -184,9 +184,9 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotMatchingProtocolAndFileFormat() throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
-        String filename = UUID.randomUUID().toString().replace("-", "") + "-" + (System.currentTimeMillis()/1000) + ".mp4";
+        String filename = UUID.randomUUID()+ "-" + (System.currentTimeMillis()/1000) + ".mp4";
 
         given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
                 .willThrow(new NotMatchingStreamingProtocolAndFileFormatException("프로토콜과 파일 확장자가 매칭되지 않습니다."));
@@ -213,7 +213,7 @@ public class VideoControllerReplayStreamTest {
 
         //given
         String protocol = "hls";
-        String filename = UUID.randomUUID().toString().replace("-", "") + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
+        String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
         //when & then
         mockMvc.perform(
@@ -231,7 +231,7 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotAllowedFormOfFilename(String filename) throws Exception {
 
         //given
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
 
         //when & then

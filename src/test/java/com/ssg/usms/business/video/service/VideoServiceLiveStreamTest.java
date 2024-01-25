@@ -1,8 +1,12 @@
 package com.ssg.usms.business.video.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.ssg.usms.business.store.*;
+import com.ssg.usms.business.cctv.dto.CctvDto;
+import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.store.constant.StoreState;
+import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.exception.*;
+import com.ssg.usms.business.video.repository.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +27,10 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class VideoServiceLiveStreamTest {
 
-    private String mediaServerUrl = "https://test.com";
+    private final String mediaServerUrl = "https://test.com";
     private VideoService videoService;
     @Mock
-    private AmazonS3 amazonS3;
+    private VideoRepository videoRepository;
     @Mock
     private StoreService storeService;
     @Mock
@@ -34,7 +38,7 @@ public class VideoServiceLiveStreamTest {
 
     @BeforeEach
     public void setup() {
-        videoService = new VideoService(amazonS3, storeService, cctvService);
+        videoService = new VideoService(storeService, cctvService, videoRepository);
         videoService.setMediaServerUrl(mediaServerUrl);
     }
 
@@ -44,7 +48,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -55,7 +59,7 @@ public class VideoServiceLiveStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         List<StoreDto> stores = new ArrayList<>();
         StoreDto store1 = new StoreDto();
@@ -72,7 +76,7 @@ public class VideoServiceLiveStreamTest {
 
         //then
         assertThat(redirectUrl).startsWith(mediaServerUrl);
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
     }
 
@@ -82,7 +86,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "ftp";
         String filename = "test.m3u8";
 
@@ -90,7 +94,7 @@ public class VideoServiceLiveStreamTest {
         assertThrows(NotAllowedStreamingProtocolException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(0)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -100,7 +104,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.mp4";
 
@@ -108,7 +112,7 @@ public class VideoServiceLiveStreamTest {
         assertThrows(NotMatchingStreamingProtocolAndFileFormatException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(0)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(0)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -118,17 +122,17 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(null);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(null);
 
         //when & then
         assertThrows(NotExistingStreamKeyException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -138,7 +142,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -149,13 +153,13 @@ public class VideoServiceLiveStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(true);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         //when & then
         assertThrows(ExpiredStreamKeyException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(0)).getStoresByUsername(username);
     }
 
@@ -165,7 +169,7 @@ public class VideoServiceLiveStreamTest {
 
         //given
         String username = "kyo705";
-        String streamKey = UUID.randomUUID().toString().replace("-", "");
+        String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = "test.m3u8";
 
@@ -176,7 +180,7 @@ public class VideoServiceLiveStreamTest {
         cctv.setCctvStreamKey(streamKey);
         cctv.setExpired(false);
 
-        given(cctvService.getCctvByStreamKey(streamKey)).willReturn(cctv);
+        given(cctvService.findByStreamKey(streamKey)).willReturn(cctv);
 
         List<StoreDto> stores = new ArrayList<>();
         StoreDto store1 = new StoreDto();
@@ -192,7 +196,7 @@ public class VideoServiceLiveStreamTest {
         assertThrows(NotOwnedStreamKeyException.class,
                 () -> videoService.getLiveVideo(username, streamKey, protocol, filename));
 
-        verify(cctvService, times(1)).getCctvByStreamKey(streamKey);
+        verify(cctvService, times(1)).findByStreamKey(streamKey);
         verify(storeService, times(1)).getStoresByUsername(username);
     }
 
