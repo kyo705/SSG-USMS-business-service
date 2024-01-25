@@ -2,7 +2,6 @@ package com.ssg.usms.business.identification.redis;
 
 
 import com.ssg.usms.business.Identification.repository.IdentificationRepository;
-
 import com.ssg.usms.business.config.EmbeddedRedis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
-
 
 import java.time.Duration;
 
