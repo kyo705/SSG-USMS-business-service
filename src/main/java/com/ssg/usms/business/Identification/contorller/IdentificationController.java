@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import static com.ssg.usms.business.Identification.constant.IdenticationConstant.*;
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 import static com.ssg.usms.business.Identification.dto.CertificationCode.EMAIL;
 import static com.ssg.usms.business.Identification.dto.CertificationCode.SMS;
 import static com.ssg.usms.business.user.constant.UserConstants.EMAIL_PATTERN;
@@ -31,7 +31,7 @@ public class IdentificationController {
     private final IdentificationService identificationService;
 
     @PostMapping("/api/identification")
-    public ResponseEntity Createidentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
+    public ResponseEntity<Void> createIdentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
 
         if(httpRequestIdentificationDto.getCode() == EMAIL.getCode()){
 
@@ -60,7 +60,7 @@ public class IdentificationController {
     }
 
     @GetMapping("/api/identification")
-    public ResponseEntity identificationVerify(HttpServletRequest request, @RequestParam("identificationCode") String identificationCode ) throws JsonProcessingException {
+    public ResponseEntity<Void> identificationVerify(HttpServletRequest request, @RequestParam String identificationCode ) throws JsonProcessingException {
 
         String key = request.getHeader(IDENTIFICATION_HEADER);
 
@@ -76,7 +76,7 @@ public class IdentificationController {
         String jwtToken = identificationService.verifyIdentification(dto);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION,jwtToken);
+        headers.add(HttpHeaders.AUTHORIZATION, jwtToken);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(headers)

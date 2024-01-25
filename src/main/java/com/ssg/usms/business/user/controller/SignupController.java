@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.IDENTIFICATION_JWT_SUBJECT;
 import static com.ssg.usms.business.user.constant.UserConstants.NOT_ALLOWED_KEY_LITERAL;
 
 @Slf4j
@@ -60,7 +61,7 @@ public class SignupController {
 
         Claims claims = jwtUtil.getClaim(authorization);
 
-        if(!jwtUtil.verifyClaim(claims).equals("Identification")){
+        if(!jwtUtil.verifyClaim(claims).equals(IDENTIFICATION_JWT_SUBJECT)){
 
             throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
         }
