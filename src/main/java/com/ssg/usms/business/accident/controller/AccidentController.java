@@ -1,9 +1,9 @@
 package com.ssg.usms.business.accident.controller;
 
-import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.accident.dto.*;
 import com.ssg.usms.business.accident.exception.InvalidDateFlowException;
 import com.ssg.usms.business.accident.service.AccidentService;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +24,6 @@ public class AccidentController {
 
     @PostMapping("/live-streaming/accidents")
     public ResponseEntity<Void> createAccident(@RequestBody @Valid HttpRequestCreatingAccidentDto requestBody) {
-
-        System.out.println(requestBody.getBehavior());
 
         accidentService.createAccident(requestBody.getStreamKey(),
                 requestBody.getBehavior(),
@@ -63,6 +61,9 @@ public class AccidentController {
 
     private void validateDateFlow(String startDate, String endDate) {
 
+        if(startDate == null || endDate == null) {
+            return;
+        }
         if(LocalDate.parse(startDate).isAfter(LocalDate.parse(endDate))) {
             throw new InvalidDateFlowException();
         }

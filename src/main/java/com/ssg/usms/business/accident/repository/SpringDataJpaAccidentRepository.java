@@ -42,7 +42,8 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
 
     @Query(value = "SELECT s.id AS storeId, a.behavior AS behavior, COUNT(*) AS count" +
             " FROM store s JOIN cctv c ON s.id = c.store_id JOIN accident a ON c.id = a.cctv_id" +
-            " WHERE s.id = :storeId AND a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
+            " WHERE s.id = :storeId" +
+            " AND a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
             " GROUP BY a.behavior", nativeQuery = true)
     List<Object[]> findAccidentStatsByStoreId(@Param("storeId") long storeId,
                                                      @Param("startTimestamp") long startTimestamp,
@@ -59,10 +60,10 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
                         ((Number) row[2]).longValue(),
                         new Timestamp(startTimestamp).toLocalDateTime()
                                 .toLocalDate()
-                                .format(DateTimeFormatter.ofPattern("yy-MM")),
+                                .format(DateTimeFormatter.ofPattern("yy-MM-dd")),
                         new Timestamp(endTimestamp).toLocalDateTime()
                                 .toLocalDate()
-                                .format(DateTimeFormatter.ofPattern("yy-MM"))
+                                .format(DateTimeFormatter.ofPattern("yy-MM-dd"))
                         )
                 )
                 .collect(Collectors.toList());

@@ -81,14 +81,14 @@ public class AccidentRepositoryTest {
                     .isEqualTo(new Timestamp(startTimestamp)
                             .toLocalDateTime()
                             .toLocalDate()
-                            .format(DateTimeFormatter.ofPattern("yy-MM"))
+                            .format(DateTimeFormatter.ofPattern("yy-MM-dd"))
                     );
 
             assertThat(accidentStat.getEndDate())
                     .isEqualTo(new Timestamp(endTimestamp)
                             .toLocalDateTime()
                             .toLocalDate()
-                            .format(DateTimeFormatter.ofPattern("yy-MM"))
+                            .format(DateTimeFormatter.ofPattern("yy-MM-dd"))
                     );
         }
 
