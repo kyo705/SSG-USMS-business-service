@@ -1,10 +1,10 @@
 package com.ssg.usms.business.user.repository;
 
-import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -43,17 +43,26 @@ public class JpaUserRepository implements UserRepository{
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+
+        return springDataJpaUserRepository.existsByEmail(email);
+    }
+
+    @Override
     public UsmsUser findByUsername(String username) {
+
         return springDataJpaUserRepository.findByUsername(username);
     }
 
     @Override
     public boolean existsByUsername(String username) {
+
         return springDataJpaUserRepository.existsByUsername(username);
     }
 
     @Override
     public boolean existsByPhoneNumber(String phoneNumber) {
+
         return springDataJpaUserRepository.existsByPhoneNumber(phoneNumber);
     }
 

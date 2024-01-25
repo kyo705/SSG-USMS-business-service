@@ -1,6 +1,5 @@
 package com.ssg.usms.business.user.repository;
 
-import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
 
 import java.util.Optional;
 
@@ -14,4 +13,6 @@ public interface UserRepository  {
     UsmsUser findByEmail(String email);
     Optional<UsmsUser> findById(long userid);
     void delete(long userid);
+
+    boolean existsByEmail(String email);
 }

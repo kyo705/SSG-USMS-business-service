@@ -172,5 +172,19 @@ public class UserRepositoryTest {
         assertThrows(InvalidDataAccessApiUsageException.class,() -> userRepository.delete(5L));
     }
 
+    @DisplayName("이메일로 사용자가 존재하는지 찾는경우 있을때 true 리턴")
+    @Test
+    void existEmailSuccess(){
+
+        assertTrue(userRepository.existsByEmail("email@gmail.com"));
+    }
+
+    @DisplayName("이메일로 사용자가 존재하는지 찾는경우 없을때 false 리턴")
+    @Test
+    void existEmailFailed(){
+
+        assertFalse(userRepository.existsByEmail("email@gmail.asdfasdfcom"));
+    }
+
 
 }
