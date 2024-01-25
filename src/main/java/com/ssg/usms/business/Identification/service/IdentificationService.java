@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.ssg.usms.business.Identification.constant.IdenticationConstant.*;
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 
 @Slf4j
 @Service
@@ -65,9 +65,7 @@ public class IdentificationService {
         token.put("code", String.valueOf(httpRequestIdentificationDto.getCode()) );
         token.put("value", httpRequestIdentificationDto.getValue());
 
-        String jwtToken = jwtUtil.createJwt(token,18000L,"Identification");
-
-        return jwtToken;
+        return jwtUtil.createJwt(token, IDENTIFICATION_JWT_EXPIRED_TIME_MS, IDENTIFICATION_JWT_SUBJECT);
     }
 
     private String makeVerificationCode(){

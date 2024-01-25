@@ -13,6 +13,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static com.ssg.usms.business.user.dto.UserRole.ROLE_ADMIN;
 import static com.ssg.usms.business.user.dto.UserRole.ROLE_STORE_OWNER;
@@ -57,6 +62,8 @@ public class SecurityConfig {
         http
                 .csrf().disable();
 
+        http.cors();
+
         http.exceptionHandling()
                 .accessDeniedHandler(new UsmsAccessDeniedHandler())
                 .authenticationEntryPoint(new UsmsForbiddenEntryPoint());
@@ -71,6 +78,19 @@ public class SecurityConfig {
                 .logoutSuccessHandler(logoutSuccessHandler);
 
         return http.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
 }

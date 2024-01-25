@@ -14,7 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.ssg.usms.business.Identification.constant.IdenticationConstant.*;
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 
 @Slf4j
