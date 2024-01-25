@@ -4,8 +4,10 @@ package com.ssg.usms.business.user.dto;
 import com.ssg.usms.business.user.annotation.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
 public class HttpRequestModifyUserDto {
 

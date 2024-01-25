@@ -14,6 +14,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
+
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
 
@@ -21,15 +24,17 @@ import static com.ssg.usms.business.user.constant.UserConstants.*;
 @RestControllerAdvice(assignableTypes = {UserController.class})
 public class UserExceptionHandler {
 
-    @ExceptionHandler(AlreadyExistIdException.class)
-    public ResponseEntity<ErrorResponseDto> handleAlreadyExistIdException (AlreadyExistIdException exception){
+    @ExceptionHandler(AlreadyExistUsernameException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyExistIdException (AlreadyExistUsernameException exception){
 
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
 
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ALREADY_EXIST_USERNAME, NOT_ALLOWED_USERNAME_FORM_LITERAL);
+
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(exception.getErrorResponseDto());
+                .body(errorResponseDto);
     }
 
     @ExceptionHandler(AlreadyExistPhoneNumException.class)
@@ -38,11 +43,12 @@ public class UserExceptionHandler {
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
 
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ALREADY_EXIST_PHONE_NUM, NOT_ALLOWED_PHONENUMBER_FORM_LITERAL);
+
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(exception.getErrorResponseDto());
+                .body(errorResponseDto);
     }
-
 
     @ExceptionHandler({ExpiredJwtException.class , NotAllowedKeyExcetpion.class, SignatureException.class})
     public ResponseEntity<ErrorResponseDto> handleExpiredJwtException (Exception exception){
@@ -56,6 +62,19 @@ public class UserExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(errorResponseDto);
     }
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponseDto> handleValidationException (ValidationException exception){
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), NOT_ALLOWED_BODY);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponseDto);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleMethodArgumentNotValidException (MethodArgumentNotValidException exception) {
@@ -114,10 +133,10 @@ public class UserExceptionHandler {
         }
 
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR_LITERAL);
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), NOT_ALLOWED_BODY);
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponseDto);
     }
 
@@ -145,14 +164,24 @@ public class UserExceptionHandler {
                 .body(errorResponseDto);
     }
 
+    @ExceptionHandler(NotAllowedFormCheckException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotAllowedFormCheckException(NotAllowedFormCheckException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), NOT_ALLOWED_FORM_LITERAL);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
+                .body(errorResponseDto);
+    }
 
     @ExceptionHandler(AlreadyExistEmailException.class)
     public ResponseEntity<ErrorResponseDto> handleAlreadyExistEmailException(AlreadyExistEmailException exception) {
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.CONFLICT.value(), ALREADY_EXISTS_USER_LITERAL);
-
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.CONFLICT.value(), ALREADY_EXISTS_EMAIL_LITERAL);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT.value())
                 .body(errorResponseDto);

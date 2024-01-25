@@ -4,14 +4,10 @@ package com.ssg.usms.business.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
-import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
-import com.ssg.usms.business.user.dto.HttpResponseUserDto;
-import com.ssg.usms.business.user.dto.SecurityState;
+import com.ssg.usms.business.user.dto.*;
 import com.ssg.usms.business.user.exception.AlreadyExistEmailException;
-import com.ssg.usms.business.user.exception.AlreadyExistIdException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
-import com.ssg.usms.business.user.exception.NotAllowedSessionIdException;
+import com.ssg.usms.business.user.exception.AlreadyExistUsernameException;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import com.ssg.usms.business.user.service.UserService;
 import com.ssg.usms.business.user.util.JwtUtil;
@@ -36,7 +32,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
@@ -171,7 +166,7 @@ public class UserControllerTest {
         dto.setPhoneNum("010-1513-5454");
         dto.setNickname("hellow");
 
-        willThrow(new AlreadyExistIdException("이미 존재하는 전화번호 입니다.")).given(userService).SignUp(any());
+        willThrow(new AlreadyExistUsernameException("이미 존재하는 전화번호 입니다.")).given(userService).signUp(any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -200,7 +195,7 @@ public class UserControllerTest {
         dto.setPhoneNum("010-1513-5454");
         dto.setNickname("hellow");
 
-        willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다.")).given(userService).SignUp(any());
+        willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다.")).given(userService).signUp(any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -214,6 +209,25 @@ public class UserControllerTest {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(ALREADY_EXIST_PHONE_NUM);
                 });
+    }
+    @DisplayName("요청된 dto에 맞지않게 요청된 경우 예외 처리")
+    @Test
+    public void testInValidSignupwitNotMatchedDto() throws Exception {
+        HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
+
+        dto.setUsername("tmasdfasdf");
+        dto.setPassword("askaasddf123*");
+        dto.setEmail("aksenaksen@asdf.com");
+        dto.setPhoneNum("010-1513-5434");
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/users")
+                                .content(objectMapper.writeValueAsString(dto))
+                                .contentType("application/json; charset=utf-8")
+                                .header("Authorization",token)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(400));
     }
 
 
@@ -338,7 +352,7 @@ public class UserControllerTest {
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
-        willThrow((new RuntimeException())).given(userService).SignUp(any());
+        willThrow((new RuntimeException())).given(userService).signUp(any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -533,7 +547,7 @@ public class UserControllerTest {
                 .securityState(SecurityState.BASIC)
                 .build();
 
-        given(userService.ModifyUser(anyLong(),any())).willReturn(new UsmsUser());
+        given(userService.modifyUser(anyLong(),any())).willReturn(new UsmsUser());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -557,7 +571,7 @@ public class UserControllerTest {
                 .securityState(SecurityState.BASIC)
                 .build();
 
-        given(userService.ModifyUser(anyLong(),any())).willReturn(new UsmsUser());
+        given(userService.modifyUser(anyLong(),any())).willReturn(new UsmsUser());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -613,7 +627,7 @@ public class UserControllerTest {
                 .securityState(SecurityState.BASIC)
                 .build();
 
-        willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다.")).given(userService).ModifyUser(anyLong(),any());
+        willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다.")).given(userService).modifyUser(anyLong(),any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -642,7 +656,7 @@ public class UserControllerTest {
                 .securityState(SecurityState.BASIC)
                 .build();
 
-        willThrow(new AlreadyExistEmailException("이미 존재하는 메일 입니다.")).given(userService).ModifyUser(anyLong(),any());
+        willThrow(new AlreadyExistEmailException("이미 존재하는 메일 입니다.")).given(userService).modifyUser(anyLong(),any());
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -837,6 +851,155 @@ public class UserControllerTest {
 
     }
 
+    @DisplayName("회원 중복 확인시에 제대로된 양식으로 요청한 경우")
+    @Test
+    public void testCheckUserSuccessed() throws Exception{
+
+        String email = "ver123@nasdf.com";
+        String username = "tmasdfasdf";
+        String phoneNumber = "010-1532-5434";
+
+        doNothing().when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                                .param("phoneNumber",phoneNumber)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.NO_CONTENT.value()));
+    }
+
+    @DisplayName("회원 중복 확인시에 제대로된 양식으로 요청한 경우")
+    @Test
+    public void testCheckUserSuccessedwithNoParam() throws Exception{
+
+        String email = "ver123@nasdf.com";
+        String username = "tmasdfasdf";
+        String phoneNumber = "010-15132-5434";
+
+        doNothing().when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.NO_CONTENT.value()));
+    }
+
+    @DisplayName("회원 중복 확인시에 제대로된 양식으로 요청하지 않은 경우")
+    @Test
+    public void testCheckUserFailed() throws Exception{
+        String email = "ver123@nasdf.com";
+
+        String username = "tmasdfasdf";
+        String password ="askaasddf123*";
+        String phoneNumber = "010-15132-5434";
+
+        doNothing().when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                                .param("phoneNumber",phoneNumber)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @DisplayName("회원 중복 확인시에 제대로된 양식으로 요청하지 않은 경우 400리턴")
+    @Test
+    public void testCheckUserFailedEmail() throws Exception{
+
+
+        String username = "tmasdfasdf";
+        String password ="askaasddf123*";
+        String email = "ver.com";
+        String phoneNumber = "010-1513-5434";
+
+        doNothing().when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                                .param("phoneNumber",phoneNumber)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
+    }
+
+
+    @DisplayName("회원 중복 확인시에 회원이 존재하는 경우 409 리턴")
+
+    @Test
+    public void testCheckUserFailedEmailDuplicateUser() throws Exception{
+
+        String username = "tmasdfasdf";
+        String password ="askaasddf123*";
+        String email = "aksenaksen@asdf.com";
+        String phoneNumber = "010-1513-5434";
+
+        doThrow(new AlreadyExistUsernameException("아이디 중복")).when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                                .param("phoneNumber",phoneNumber)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CONFLICT.value()));
+    }
+
+    @DisplayName("회원 중복 확인시에 회원이 존재하는 경우 409 리턴")
+    @Test
+    public void testCheckUserFailedEmailDuplicateUserEmail() throws Exception{
+
+        String username = "tmasdfasdf";
+        String password ="askaasddf123*";
+        String email = "aksenaksen@asdf.com";
+        String phoneNumber = "010-1513-5434";
+
+
+        doThrow(new AlreadyExistEmailException("이메일 중복")).when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                                .param("phoneNumber",phoneNumber)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CONFLICT.value()));
+    }
+
+    @DisplayName("회원 중복 확인시에 회원이 존재하는 경우 409 리턴")
+    @Test
+    public void testCheckUserFailedEmailDuplicatePhone() throws Exception{
+
+        String username = "tmasdfasdf";
+        String password ="askaasddf123*";
+        String email = "aksenaksen@asdf.com";
+        String phoneNumber = "010-1513-5434";
+
+
+
+        doThrow(new AlreadyExistPhoneNumException("전화번호 중복")).when(userService).checkExistUser(any(),any(),any());
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+                                .param("username",username)
+                                .param("email",email)
+                                .param("phoneNumber",phoneNumber)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CONFLICT.value()));
+    }
 
 
 
