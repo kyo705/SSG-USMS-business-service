@@ -2,11 +2,11 @@ package com.ssg.usms.business.Identification.contorller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.Identification.error.NotMatchedValueAndCodeException;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -62,14 +62,14 @@ public class IdentificationController {
     @GetMapping("/api/identification")
     public ResponseEntity identificationVerify(HttpServletRequest request, @RequestParam("identificationCode") String identificationCode ) throws JsonProcessingException {
 
-        String Key = String.valueOf(request.getHeaders(IDENTIFICATION_HEADER));
+        String key = request.getHeader(IDENTIFICATION_HEADER);
 
-        if(Key == null){
+        if(key == null){
             throw new NotIdentificationException(INVALID_AUTHENTICATION_CODE_LITERAL);
         }
 
         CertificationDto dto = CertificationDto.builder()
-                .key(Key)
+                .key(key)
                 .value(identificationCode)
                 .build();
 
