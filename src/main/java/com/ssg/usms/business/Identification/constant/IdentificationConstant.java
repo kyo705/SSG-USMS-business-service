@@ -4,7 +4,11 @@ import com.ssg.usms.business.Identification.dto.CertificationCode;
 
 import java.util.HashMap;
 
-public class IdenticationConstant {
+public class IdentificationConstant {
+
+    public static final String IDENTIFICATION_JWT_SUBJECT = "Identification";
+    public static final long IDENTIFICATION_JWT_EXPIRED_TIME_MS = 30*60*1000L;
+
     public static final String SUCCESS_SEND_VERIFICATION_CODE_LITERAL = "인증번호 발송 성공";
     public static final String NOT_ALLOWED_VERIFICATION_CODE_LITERAL = "존재하지 않는 본인 인증 방식입니다.";
     public static final String NOT_MATCHED_CODE_AND_VALUE_LITERAL = "선택한 본인 인증방식에 부적절한 양식입니다.";
