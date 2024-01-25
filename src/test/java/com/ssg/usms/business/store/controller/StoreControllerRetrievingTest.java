@@ -258,6 +258,7 @@ public class StoreControllerRetrievingTest {
         store1.setName("무인 매장 1");
         store1.setAddress("서울특별시 강남구 강남대로42길 11");
         store1.setStoreState(StoreState.DISAPPROVAL);
+        store1.setAdminComment("사업자 등록증 사본 이미지의 사업자 등록번호와 입력 값이 일치하지 않습니다.");
 
         StoreDto store2 = new StoreDto();
         store2.setId(2L);
@@ -265,6 +266,7 @@ public class StoreControllerRetrievingTest {
         store2.setName("무인 매장 2");
         store2.setAddress("서울특별시 강남구 강남대로116길");
         store2.setStoreState(StoreState.DISAPPROVAL);
+        store2.setAdminComment("사업자 등록증 사본 이미지가 뚜렷하지 않습니다.");
 
         StoreDto store3 = new StoreDto();
         store3.setId(3L);
@@ -272,6 +274,7 @@ public class StoreControllerRetrievingTest {
         store3.setName("무인 매장 2");
         store3.setAddress("서울특별시 강남구 강남대로114길");
         store3.setStoreState(StoreState.DISAPPROVAL);
+        store3.setAdminComment("사업자 등록증의 주소와 입력한 주소가 일치하지 않습니다.");
 
         List<StoreDto> stores = new ArrayList<>();
         stores.add(store1);
