@@ -2,9 +2,9 @@ package com.ssg.usms.business.identification.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
