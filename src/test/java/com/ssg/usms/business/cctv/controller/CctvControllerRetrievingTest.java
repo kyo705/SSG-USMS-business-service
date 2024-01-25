@@ -88,6 +88,7 @@ public class CctvControllerRetrievingTest {
         cctvDto.setExpired(false);
         cctvDto.setIsConnected(false);
 
+        given(storeService.isAvailable(storeId)).willReturn(true);
         given(cctvService.findById(cctvId)).willReturn(cctvDto);
 
         //when & then
@@ -130,6 +131,7 @@ public class CctvControllerRetrievingTest {
         cctvDto.setExpired(false);
         cctvDto.setIsConnected(false);
 
+        given(storeService.isAvailable(any())).willReturn(true);
         given(cctvService.findById(cctvId)).willReturn(cctvDto);
 
         //when & then
@@ -231,6 +233,33 @@ public class CctvControllerRetrievingTest {
         ;
     }
 
+    @DisplayName("[findById] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testFindByIdWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        Long cctvId = 1L;
+
+        given(storeService.isAvailable(storeId)).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}", userId, storeId, cctvId)
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
+                })
+        ;
+    }
+
     @DisplayName("[findById] : 존재하지 않는 CCTV일 경우 예외가 발생한다.")
     @WithUserDetails("storeOwner")
     @Test
@@ -301,6 +330,7 @@ public class CctvControllerRetrievingTest {
                 .map(CctvDto::new)
                 .collect(Collectors.toList());
 
+        given(storeService.isAvailable(storeId)).willReturn(true);
         given(cctvService.findAllByStoreId(storeId, offset, size)).willReturn(cctvList);
 
         //when & then
@@ -571,5 +601,37 @@ public class CctvControllerRetrievingTest {
         ;
         verify(storeService, times(1)).validateOwnedStore(any(), any());
     }
+
+    @DisplayName("[findAllByStoreId] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testFindAllByStoreIdWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        int offset = 0;
+        int size = 10;
+
+        given(storeService.isAvailable(storeId)).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
+                                .param("offset", Integer.toString(offset))
+                                .param("size", Integer.toString(size))
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
+                })
+        ;
+        verify(storeService, times(1)).validateOwnedStore(any(), any());
+    }
+
 
 }

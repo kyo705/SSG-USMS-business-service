@@ -1,10 +1,11 @@
 package com.ssg.usms.business.cctv.controller;
 
-import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.cctv.dto.CctvDto;
 import com.ssg.usms.business.cctv.dto.HttpRequestCreatingCctvDto;
 import com.ssg.usms.business.cctv.dto.HttpRequestUpdatingCctvDto;
 import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
+import com.ssg.usms.business.store.exception.UnavailableStoreException;
 import com.ssg.usms.business.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,9 @@ public class CctvController {
         // 검증
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
+        }
 
         // 비지니스 로직
         cctvService.createCctv(storeId, requestBody.getName());
@@ -64,6 +68,9 @@ public class CctvController {
             userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
             storeService.validateOwnedStore(storeId, userId);
             cctvService.validateOwnedCctv(storeId, cctvId);
+            if(!storeService.isAvailable(userId)) {
+                throw new UnavailableStoreException();
+            }
         }
 
         // 비지니스 로직
@@ -93,6 +100,9 @@ public class CctvController {
         if (!authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
             userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
             storeService.validateOwnedStore(storeId, userId);
+            if(!storeService.isAvailable(userId)) {
+                throw new UnavailableStoreException();
+            }
         }
 
         // 비지니스 로직
@@ -109,6 +119,9 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
+        }
 
         // 비지니스 로직
         cctvService.changeCctvName(cctvId, requestBody.getName());
@@ -125,6 +138,9 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
+        }
 
         // 비지니스 로직
         cctvService.deleteCctv(cctvId);
