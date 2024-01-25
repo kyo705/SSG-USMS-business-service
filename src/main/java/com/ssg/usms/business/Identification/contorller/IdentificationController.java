@@ -2,11 +2,11 @@ package com.ssg.usms.business.Identification.contorller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssg.usms.business.Identification.service.IdentificationService;
 import com.ssg.usms.business.Identification.dto.CertificationDto;
 import com.ssg.usms.business.Identification.dto.HttpRequestIdentificationDto;
 import com.ssg.usms.business.Identification.error.NotIdentificationException;
 import com.ssg.usms.business.Identification.error.NotMatchedValueAndCodeException;
+import com.ssg.usms.business.Identification.service.IdentificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import static com.ssg.usms.business.Identification.constant.IdenticationConstant.*;
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 import static com.ssg.usms.business.Identification.dto.CertificationCode.EMAIL;
 import static com.ssg.usms.business.Identification.dto.CertificationCode.SMS;
 import static com.ssg.usms.business.user.constant.UserConstants.EMAIL_PATTERN;
@@ -31,7 +31,7 @@ public class IdentificationController {
     private final IdentificationService identificationService;
 
     @PostMapping("/api/identification")
-    public ResponseEntity Createidentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
+    public ResponseEntity<Void> createIdentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
 
         if(httpRequestIdentificationDto.getCode() == EMAIL.getCode()){
 
@@ -60,23 +60,23 @@ public class IdentificationController {
     }
 
     @GetMapping("/api/identification")
-    public ResponseEntity identificationVerify(HttpServletRequest request, @RequestParam("identificationCode") String identificationCode ) throws JsonProcessingException {
+    public ResponseEntity<Void> identificationVerify(HttpServletRequest request, @RequestParam String identificationCode ) throws JsonProcessingException {
 
-        String Key = String.valueOf(request.getHeaders(IDENTIFICATION_HEADER));
+        String key = request.getHeader(IDENTIFICATION_HEADER);
 
-        if(Key == null){
+        if(key == null){
             throw new NotIdentificationException(INVALID_AUTHENTICATION_CODE_LITERAL);
         }
 
         CertificationDto dto = CertificationDto.builder()
-                .key(Key)
+                .key(key)
                 .value(identificationCode)
                 .build();
 
         String jwtToken = identificationService.verifyIdentification(dto);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION,jwtToken);
+        headers.add(HttpHeaders.AUTHORIZATION, jwtToken);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(headers)

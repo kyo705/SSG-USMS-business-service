@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-import static com.ssg.usms.business.notification.constants.NotificationConstants.*;
+import static com.ssg.usms.business.notification.constants.NotificationConstants.IDENTIFICATION_MESSAGE;
+import static com.ssg.usms.business.notification.constants.NotificationConstants.SMS_SEND_SUCCESS_MESSAGE;
 
 
 @Service

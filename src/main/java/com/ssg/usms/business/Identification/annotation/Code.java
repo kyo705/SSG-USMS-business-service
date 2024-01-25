@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.ssg.usms.business.Identification.constant.IdenticationConstant.NOT_ALLOWED_VERIFICATION_CODE_LITERAL;
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.NOT_ALLOWED_VERIFICATION_CODE_LITERAL;
 
 
 @Target(ElementType.FIELD)

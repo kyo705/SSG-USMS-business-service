@@ -50,7 +50,7 @@ public class UserController {
 
 
     @GetMapping("/api/user")
-    public ResponseEntity findUserWithJwt(HttpServletRequest request) {
+    public ResponseEntity<HttpResponseUserDto> findUserWithJwt(HttpServletRequest request) {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
