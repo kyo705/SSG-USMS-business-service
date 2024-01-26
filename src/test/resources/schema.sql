@@ -56,9 +56,9 @@ CREATE TABLE region_warning (
 );
 
 CREATE TABLE user_device (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            user_id BIGINT NOT NULL,
-                            token VARCHAR(255) NOT NULL
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    token VARCHAR(255) NOT NULL
 );
 
 CREATE UNIQUE INDEX usms_store_business_license_img_id_idx ON store (business_license_img_id);
