@@ -46,7 +46,7 @@ public class ImageRepositoryTest {
         ClassPathResource resource = new ClassPathResource(filePath);
 
         //when
-        imageRepository.save(filename, resource.getInputStream());
+        imageRepository.save(filename, resource.getInputStream(), resource.getFile().length());
 
         //then
         S3Object s3Object = amazonS3.getObject(bucket, filename);

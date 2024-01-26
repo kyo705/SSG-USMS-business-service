@@ -1,11 +1,9 @@
 package com.ssg.usms.business.config;
 
-import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.util.SocketUtils;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
@@ -84,15 +82,6 @@ public class EmbeddedRedis {
         return StringUtils.hasText(pidInfo.toString());
     }
 
-//    @PostConstruct
-//    public void postConstruct() {
-//        redisServer.start();
-//    }
-//
-//    @PreDestroy
-//    public void preDestroy() {
-//        redisServer.stop();
-//    }
 //
 //    @AfterEach
 //    public void afterEach() throws InterruptedException {

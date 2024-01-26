@@ -33,7 +33,7 @@ public class StoreService {
     }
 
     @Transactional
-    public void createStore(StoreDto storeDto, InputStream businessLicenseImgFile) {
+    public void createStore(StoreDto storeDto, InputStream businessLicenseImgFile, long fileSize) {
 
         // 매장 메타데이터 저장
         String businessLicenseImgId = UUID.randomUUID().toString().replace("-", "");
@@ -49,7 +49,7 @@ public class StoreService {
         storeRepository.save(store);
 
         // 이미지 파일 저장
-        imageRepository.save(businessLicenseImgId, businessLicenseImgFile);
+        imageRepository.save(businessLicenseImgId, businessLicenseImgFile, fileSize);
     }
 
     @Transactional
@@ -92,14 +92,15 @@ public class StoreService {
     }
 
     @Transactional
-    public void update(Long storeId, String storeName, String storeAddress, String businessLicenseCode, InputStream businessLicenseImgFile) {
+    public void update(Long storeId, String storeName, String storeAddress, String businessLicenseCode,
+                       InputStream businessLicenseImgFile, long fileSize) {
 
 
         Store store = storeRepository.findById(storeId);
         store.update(storeName, storeAddress, businessLicenseCode);
         storeRepository.update(store);
 
-        imageRepository.save(store.getBusinessLicenseImgId(), businessLicenseImgFile);
+        imageRepository.save(store.getBusinessLicenseImgId(), businessLicenseImgFile, fileSize);
     }
 
     @Transactional
