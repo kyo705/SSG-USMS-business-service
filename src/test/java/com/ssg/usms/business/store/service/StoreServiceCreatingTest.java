@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -50,11 +51,11 @@ public class StoreServiceCreatingTest {
         ClassPathResource resource = new ClassPathResource(filePath);
 
         //when
-        storeService.createStore(storeDto, resource.getInputStream());
+        storeService.createStore(storeDto, resource.getInputStream(), resource.getFile().length());
 
         //then
         verify(mockStoreRepository, times(1)).save(any());
-        verify(mockiImageRepository, times(1)).save(any(), any());
+        verify(mockiImageRepository, times(1)).save(any(), any(), anyLong());
     }
 
     @DisplayName("매장 정보를 저장하는 과정에서 예외가 발생할 경우 사업자등록증 사본을 저장하는 로직은 실행되지 않는다.")
@@ -74,11 +75,11 @@ public class StoreServiceCreatingTest {
         ClassPathResource resource = new ClassPathResource(filePath);
 
         //when
-        assertThrows(DataIntegrityViolationException.class, () -> storeService.createStore(storeDto, resource.getInputStream()));
+        assertThrows(DataIntegrityViolationException.class, () -> storeService.createStore(storeDto, resource.getInputStream(), resource.getFile().length()));
 
         //then
         verify(mockStoreRepository, times(1)).save(any());
-        verify(mockiImageRepository, times(0)).save(any(), any());
+        verify(mockiImageRepository, times(0)).save(any(), any(), anyLong());
     }
 
     @DisplayName("사업자등록증 사본을 저장하는 과정에서 예외가 발생할 경우 해당 예외를 리턴한다.")
@@ -92,16 +93,16 @@ public class StoreServiceCreatingTest {
         storeDto.setName("매장명");
         storeDto.setAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
         storeDto.setBusinessLicenseCode("123-45-67890");
-        BDDMockito.willThrow(AmazonServiceException.class).given(mockiImageRepository).save(any(), any());
+        BDDMockito.willThrow(AmazonServiceException.class).given(mockiImageRepository).save(any(), any(), anyLong());
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
 
         //when
-        assertThrows(AmazonServiceException.class, () -> storeService.createStore(storeDto, resource.getInputStream()));
+        assertThrows(AmazonServiceException.class, () -> storeService.createStore(storeDto, resource.getInputStream(), resource.getFile().length()));
 
         //then
         verify(mockStoreRepository, times(1)).save(any());
-        verify(mockiImageRepository, times(1)).save(any(), any());
+        verify(mockiImageRepository, times(1)).save(any(), any(), anyLong());
     }
 }

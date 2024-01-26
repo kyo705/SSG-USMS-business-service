@@ -18,15 +18,12 @@ public class AwsS3ImageRepository implements ImageRepository {
     private String imageBucket;
 
     @Override
-    public void save(String key, InputStream inputStream) {
+    public void save(String key, InputStream inputStream, long fileSize) {
 
         ObjectMetadata metadata = new ObjectMetadata();
-        try {
-            metadata.setContentLength(inputStream.read());
-            amazonS3.putObject(imageBucket, key, inputStream, metadata);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        metadata.setContentLength(fileSize);
+
+        amazonS3.putObject(imageBucket, key, inputStream, metadata);
     }
 
     @Override

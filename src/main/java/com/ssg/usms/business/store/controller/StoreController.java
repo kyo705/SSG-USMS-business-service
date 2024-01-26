@@ -60,7 +60,7 @@ public class StoreController {
                 .businessLicenseCode(requestParam.getBusinessLicenseCode())
                 .build();
 
-       storeService.createStore(store, businessLicenseImgFile.getInputStream());
+       storeService.createStore(store, businessLicenseImgFile.getInputStream(), businessLicenseImgFile.getSize());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -138,7 +138,8 @@ public class StoreController {
                 requestBody.getStoreName(),
                 requestBody.getStoreAddress(),
                 requestBody.getBusinessLicenseCode(),
-                businessLicenseImgFile.getInputStream());
+                businessLicenseImgFile.getInputStream(),
+                businessLicenseImgFile.getSize());
 
         return ResponseEntity.status(NO_CONTENT).build();
     }

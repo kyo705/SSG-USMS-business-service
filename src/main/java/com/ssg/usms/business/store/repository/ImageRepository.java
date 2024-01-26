@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 public interface ImageRepository {
 
-    void save(String key, InputStream inputStream);
+    void save(String key, InputStream inputStream, long fileSize);
 
     byte[] find(String key);
 
