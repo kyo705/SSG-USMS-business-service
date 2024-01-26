@@ -1,10 +1,11 @@
 package com.ssg.usms.business.cctv.controller;
 
-import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.cctv.dto.CctvDto;
 import com.ssg.usms.business.cctv.dto.HttpRequestCreatingCctvDto;
 import com.ssg.usms.business.cctv.dto.HttpRequestUpdatingCctvDto;
 import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
+import com.ssg.usms.business.store.exception.UnavailableStoreException;
 import com.ssg.usms.business.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,6 @@ import java.util.List;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.NOT_ALLOWED_PAGE_OFFSET_FORMAT_MESSAGE;
 import static com.ssg.usms.business.constant.CustomStatusCode.NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE;
-import static com.ssg.usms.business.user.dto.UserRole.ROLE_ADMIN;
 
 @Validated
 @RestController
@@ -40,6 +40,9 @@ public class CctvController {
         // 검증
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
+        }
 
         // 비지니스 로직
         cctvService.createCctv(storeId, requestBody.getName());
@@ -52,18 +55,11 @@ public class CctvController {
                             @PathVariable Long storeId,
                             @PathVariable Long cctvId) {
 
-        List<? extends GrantedAuthority> authorities = (List<? extends GrantedAuthority>) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getAuthorities();
-
-        if (authorities.size() != 1) {
-            throw new IllegalStateException("유저 권한 갯수가 현재 이상함");
-        }
-        //관리자가 아닐 경우 자신이 소유한 cctv인지 확인
-        if (!authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
-            userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-            storeService.validateOwnedStore(storeId, userId);
-            cctvService.validateOwnedCctv(storeId, cctvId);
+        userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        storeService.validateOwnedStore(storeId, userId);
+        cctvService.validateOwnedCctv(storeId, cctvId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
         }
 
         // 비지니스 로직
@@ -86,13 +82,10 @@ public class CctvController {
                 .getAuthentication()
                 .getAuthorities();
 
-        if (authorities.size() != 1) {
-            throw new IllegalStateException("유저 권한 갯수가 현재 이상함");
-        }
-        //관리자가 아닐 경우 자신이 소유한 매장인지 확인
-        if (!authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
-            userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-            storeService.validateOwnedStore(storeId, userId);
+        userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        storeService.validateOwnedStore(storeId, userId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
         }
 
         // 비지니스 로직
@@ -109,6 +102,9 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
+        }
 
         // 비지니스 로직
         cctvService.changeCctvName(cctvId, requestBody.getName());
@@ -125,6 +121,9 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
+        }
 
         // 비지니스 로직
         cctvService.deleteCctv(cctvId);

@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -76,6 +77,8 @@ public class CctvControllerUpdatingTest {
         String cctvName = "cctv 명칭 1";
         HttpRequestUpdatingCctvDto requestBody = new HttpRequestUpdatingCctvDto();
         requestBody.setName(cctvName);
+
+        given(storeService.isAvailable(storeId)).willReturn(true);
 
         //when & then
         mockMvc.perform(
@@ -229,6 +232,38 @@ public class CctvControllerUpdatingTest {
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_OWNED_STORE_CODE);
+                })
+        ;
+    }
+
+    @DisplayName("[update] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testUpdateWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        Long cctvId = 1L;
+
+        String cctvName = "cctv 명칭 1";
+        HttpRequestUpdatingCctvDto requestBody = new HttpRequestUpdatingCctvDto();
+        requestBody.setName(cctvName);
+
+        given(storeService.isAvailable(storeId)).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .patch("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}", userId, storeId, cctvId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody))
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
                 })
         ;
     }

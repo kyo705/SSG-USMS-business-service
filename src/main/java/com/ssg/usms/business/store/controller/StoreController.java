@@ -82,7 +82,7 @@ public class StoreController {
         }
 
         if (authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
-            return storeService.findAll(requestParam.getUserId(),
+            return storeService.findAll(requestParam.getUser(),
                     requestParam.getBusinessLicenseCode(),
                     requestParam.getStoreState(),
                     requestParam.getOffset(),

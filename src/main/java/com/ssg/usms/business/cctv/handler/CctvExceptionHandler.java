@@ -6,6 +6,7 @@ import com.ssg.usms.business.cctv.exception.NotOwnedCctvException;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
+import com.ssg.usms.business.store.exception.UnavailableStoreException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +94,17 @@ public class CctvExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler({UnavailableStoreException.class})
+    public ResponseEntity<ErrorResponseDto> handleUnavailableStoreException(UnavailableStoreException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace().length == 0 ? exception.getClass() : exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getErrorResponseDto());
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(exception.getErrorResponseDto());
     }
 

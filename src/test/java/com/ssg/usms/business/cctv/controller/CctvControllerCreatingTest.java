@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -70,6 +71,8 @@ public class CctvControllerCreatingTest {
         String cctvName = "cctv 명칭 1";
         HttpRequestCreatingCctvDto requestBody = new HttpRequestCreatingCctvDto();
         requestBody.setName(cctvName);
+
+        given(storeService.isAvailable(any())).willReturn(true);
 
         //when & then
         mockMvc.perform(
@@ -203,6 +206,34 @@ public class CctvControllerCreatingTest {
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_OWNED_STORE_CODE);
+                })
+        ;
+    }
+
+    @DisplayName("[createCctv] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testCreateCctvWithUnavailableStore() throws Exception {
+
+        //given
+        String cctvName = "cctv 명칭 1";
+        HttpRequestCreatingCctvDto requestBody = new HttpRequestCreatingCctvDto();
+        requestBody.setName(cctvName);
+
+        given(storeService.isAvailable(any())).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post("/api/users/{userId}/stores/{storeId}/cctvs", 1, 1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody))
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
                 })
         ;
     }

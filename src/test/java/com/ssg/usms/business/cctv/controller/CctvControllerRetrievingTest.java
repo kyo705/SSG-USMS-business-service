@@ -89,6 +89,7 @@ public class CctvControllerRetrievingTest {
         cctvDto.setExpired(false);
         cctvDto.setIsConnected(false);
 
+        given(storeService.isAvailable(storeId)).willReturn(true);
         given(cctvService.findById(cctvId)).willReturn(cctvDto);
 
         //when & then
@@ -113,25 +114,15 @@ public class CctvControllerRetrievingTest {
         verify(cctvService, times(1)).validateOwnedCctv(any(), any());
     }
 
-    @DisplayName("[findById] : 관리자 유저로 특정 매장 cctv를 요청하는 경우 200 상태코드를 리턴한다.")
+    @DisplayName("[findById] : 접근 권한 없는 유저로 요청시 403 상태코드를 리턴한다.")
     @WithUserDetails("admin")
     @Test
-    public void testFindByIdWithAdmin() throws Exception {
+    public void testFindByIdWithPermissionDeniedUser() throws Exception {
 
         //given
         Long userId = 1L;
         Long storeId = 1L;
         Long cctvId = 1L;
-
-        CctvDto cctvDto = new CctvDto();
-        cctvDto.setId(cctvId);
-        cctvDto.setCctvName("cctv 별칭");
-        cctvDto.setStoreId(storeId);
-        cctvDto.setCctvStreamKey("스트림키");
-        cctvDto.setExpired(false);
-        cctvDto.setIsConnected(false);
-
-        given(cctvService.findById(cctvId)).willReturn(cctvDto);
 
         //when & then
         mockMvc.perform(
@@ -139,16 +130,7 @@ public class CctvControllerRetrievingTest {
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}", userId, storeId, cctvId)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(result -> {
-                    CctvDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(UTF_8), CctvDto.class);
-                    assertThat(responseBody.getId()).isEqualTo(cctvDto.getId());
-                    assertThat(responseBody.getStoreId()).isEqualTo(cctvDto.getStoreId());
-                    assertThat(responseBody.getCctvName()).isEqualTo(cctvDto.getCctvName());
-                    assertThat(responseBody.getCctvStreamKey()).isEqualTo(cctvDto.getCctvStreamKey());
-                    assertThat(responseBody.isExpired()).isEqualTo(cctvDto.isExpired());
-                    assertThat(responseBody.getIsConnected()).isEqualTo(cctvDto.getIsConnected());
-                })
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
         ;
 
         verify(storeService, times(0)).validateOwnedStore(any(), any());
@@ -158,7 +140,7 @@ public class CctvControllerRetrievingTest {
     @DisplayName("[findById] : 접근 권한 없는 유저로 요청시 403 상태코드를 리턴한다.")
     @WithAnonymousUser
     @Test
-    public void testFindByIdWithPermissionDeniedUser() throws Exception {
+    public void testFindByIdWithPermissionDeniedUser2() throws Exception {
 
         //given
         Long userId = 1L;
@@ -228,6 +210,33 @@ public class CctvControllerRetrievingTest {
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_OWNED_STORE_CODE);
+                })
+        ;
+    }
+
+    @DisplayName("[findById] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testFindByIdWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        Long cctvId = 1L;
+
+        given(storeService.isAvailable(storeId)).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}", userId, storeId, cctvId)
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
                 })
         ;
     }
@@ -302,6 +311,7 @@ public class CctvControllerRetrievingTest {
                 .map(CctvDto::new)
                 .collect(Collectors.toList());
 
+        given(storeService.isAvailable(storeId)).willReturn(true);
         given(cctvService.findAllByStoreId(storeId, offset, size)).willReturn(cctvList);
 
         //when & then
@@ -326,23 +336,16 @@ public class CctvControllerRetrievingTest {
         verify(storeService, times(1)).validateOwnedStore(any(), any());
     }
 
-    @DisplayName("[findAllByStoreId] : 관리자 유저로 특정 매장의 cctv들을 조회하는 경우 200 상태코드를 리턴한다.")
+    @DisplayName("[findAllByStoreId] : 접근 권한 없는 유저로 요청시 403 상태코드를 리턴한다.")
     @WithUserDetails("admin")
     @Test
-    public void testFindAllByStoreIdWithAdmin() throws Exception {
+    public void testFindAllByStoreIdWithPermissionDeniedUser() throws Exception {
 
         //given
         Long userId = 1L;
         Long storeId = 1L;
         int offset = 0;
         int size = 10;
-
-        List<CctvDto> cctvList = CctvTestSetup.getCctvList(storeId)
-                .stream()
-                .map(CctvDto::new)
-                .collect(Collectors.toList());
-
-        given(cctvService.findAllByStoreId(storeId, offset, size)).willReturn(cctvList);
 
         //when & then
         mockMvc.perform(
@@ -352,15 +355,7 @@ public class CctvControllerRetrievingTest {
                                 .param("size", Integer.toString(size))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(result -> {
-                    List<CctvDto> responseBody = objectMapper.readValue(result.getResponse().getContentAsString(UTF_8),  new TypeReference<>() {});
-
-                    assertThat(responseBody.size()).isEqualTo(cctvList.size());
-                    for(CctvDto cctv : responseBody) {
-                        assertThat(cctv.getStoreId()).isEqualTo(storeId);
-                    }
-                })
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
         ;
 
         verify(storeService, times(0)).validateOwnedStore(any(), any());
@@ -369,7 +364,7 @@ public class CctvControllerRetrievingTest {
     @DisplayName("[findAllByStoreId] : 접근 권한 없는 유저로 요청시 403 상태코드를 리턴한다.")
     @WithAnonymousUser
     @Test
-    public void testFindAllByStoreIdWithPermissionDeniedUser() throws Exception {
+    public void testFindAllByStoreIdWithPermissionDeniedUser2() throws Exception {
 
         //given
         Long userId = 1L;
@@ -572,5 +567,37 @@ public class CctvControllerRetrievingTest {
         ;
         verify(storeService, times(1)).validateOwnedStore(any(), any());
     }
+
+    @DisplayName("[findAllByStoreId] : 이용 불가능한 storeId로 요청시 예외가 발생한다.")
+    @WithUserDetails("storeOwner")
+    @Test
+    public void testFindAllByStoreIdWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        Long storeId = 1L;
+        int offset = 0;
+        int size = 10;
+
+        given(storeService.isAvailable(storeId)).willReturn(false);
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
+                                .param("offset", Integer.toString(offset))
+                                .param("size", Integer.toString(size))
+                                .contentType(MediaType.APPLICATION_JSON)
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
+                })
+        ;
+        verify(storeService, times(1)).validateOwnedStore(any(), any());
+    }
+
 
 }
