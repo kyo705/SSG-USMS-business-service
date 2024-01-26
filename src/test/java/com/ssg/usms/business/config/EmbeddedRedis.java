@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 @TestConfiguration
 @EnableRedisRepositories
@@ -20,17 +24,6 @@ public class EmbeddedRedis {
     public EmbeddedRedis(RedisProperties redisProperties) {
         this.redisServer = new RedisServer(redisProperties.getPort());
     }
-
-    @PostConstruct
-    public void postConstruct() {
-        redisServer.start();
-    }
-
-    @PreDestroy
-    public void preDestroy() {
-        redisServer.stop();
-    }
-/*
 
     @PostConstruct
     public void startRedis() throws IOException {
@@ -55,20 +48,16 @@ public class EmbeddedRedis {
         throw new RuntimeException();
     }
 
-    */
-/**
+    /**
      * Embedded Redis가 현재 실행중인지 확인
-     *//*
-
+     */
     private boolean isRedisRunning() throws IOException {
         return isRunning(executeGrepProcessCommand(redisPort));
     }
 
-    */
-/**
+    /**
      * 해당 port를 사용중인 프로세스를 확인하는 sh 실행
-     *//*
-
+     */
     private Process executeGrepProcessCommand(int redisPort) throws IOException {
         String command = String.format("netstat -nat | grep LISTEN|grep %d", redisPort);
         String[] shell = {"/bin/sh", "-c", command};
@@ -76,11 +65,9 @@ public class EmbeddedRedis {
         return Runtime.getRuntime().exec(shell);
     }
 
-    */
-/**
+    /**
      * 해당 Process가 현재 실행중인지 확인
-     *//*
-
+     */
     private boolean isRunning(Process process) {
         String line;
         StringBuilder pidInfo = new StringBuilder();
@@ -94,7 +81,6 @@ public class EmbeddedRedis {
         }
         return StringUtils.hasText(pidInfo.toString());
     }
-*/
 
 //
 //    @AfterEach
