@@ -37,9 +37,9 @@ public class StoreController {
     private final StoreService storeService;
 
     @PostMapping("/api/users/{userId}/stores")
-    public ResponseEntity<Void> createStore(@PathVariable Long userId,
-                                            @ModelAttribute @Valid HttpRequestCreatingStoreDto requestParam,
-                                            @RequestPart(name = "businessLicenseImg") MultipartFile businessLicenseImgFile)
+    public ResponseEntity<StoreDto> createStore(@PathVariable Long userId,
+                                                @ModelAttribute @Valid HttpRequestCreatingStoreDto requestParam,
+                                                @RequestPart(name = "businessLicenseImg") MultipartFile businessLicenseImgFile)
             throws IOException {
 
         userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
@@ -60,9 +60,9 @@ public class StoreController {
                 .businessLicenseCode(requestParam.getBusinessLicenseCode())
                 .build();
 
-       storeService.createStore(store, businessLicenseImgFile.getInputStream(), businessLicenseImgFile.getSize());
+       StoreDto storeDto = storeService.createStore(store, businessLicenseImgFile.getInputStream(), businessLicenseImgFile.getSize());
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(storeDto);
     }
 
     @GetMapping("/api/users/{userId}/stores")

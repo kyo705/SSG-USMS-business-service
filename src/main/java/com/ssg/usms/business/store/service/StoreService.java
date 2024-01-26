@@ -33,7 +33,7 @@ public class StoreService {
     }
 
     @Transactional
-    public void createStore(StoreDto storeDto, InputStream businessLicenseImgFile, long fileSize) {
+    public StoreDto createStore(StoreDto storeDto, InputStream businessLicenseImgFile, long fileSize) {
 
         // 매장 메타데이터 저장
         String businessLicenseImgId = UUID.randomUUID().toString().replace("-", "");
@@ -50,6 +50,8 @@ public class StoreService {
 
         // 이미지 파일 저장
         imageRepository.save(businessLicenseImgId, businessLicenseImgFile, fileSize);
+
+        return new StoreDto(store);
     }
 
     @Transactional
