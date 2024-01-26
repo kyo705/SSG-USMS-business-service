@@ -83,8 +83,8 @@ public class UserControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("aksenaksen3");
         dto.setPassword("hashedpasord123@");
-        dto.setPhoneNum("010-1234-2412");
-        dto.setEmail("asdf123@naer.com");
+        dto.setPhoneNumber("010-1234-2412");
+        dto.setEmail("tkfka123@gmail.com");
         dto.setNickname("hihello");
 
 
@@ -109,7 +109,7 @@ public class UserControllerTest {
         dto.setUsername("aksenaksen");
         dto.setPassword(password);
         dto.setEmail("aksenaksen@123asdf.com");
-        dto.setPhoneNum("010-1513-5454");
+        dto.setPhoneNumber("010-1513-5454");
         dto.setNickname("aksenaksen");
 
         mockMvc.perform(
@@ -137,8 +137,8 @@ public class UserControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername(id);
         dto.setPassword("akaasdf123@");
-        dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("010-1513-5454");
+        dto.setEmail("tkfka123@gmail.com");
+        dto.setPhoneNumber("010-1513-5454");
         dto.setNickname("heeee");
 
         mockMvc.perform(
@@ -162,8 +162,8 @@ public class UserControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("tmasdfasdf");
         dto.setPassword("askaasddf123*");
-        dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("010-1513-5454");
+        dto.setEmail("tkfka123@gmail.com");
+        dto.setPhoneNumber("010-1513-5454");
         dto.setNickname("hellow");
 
         willThrow(new AlreadyExistUsernameException("이미 존재하는 전화번호 입니다.")).given(userService).signUp(any());
@@ -191,8 +191,8 @@ public class UserControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("tmasdfasdf");
         dto.setPassword("askaasddf123*");
-        dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("010-1513-5454");
+        dto.setEmail("tkfka123@gmail.com");
+        dto.setPhoneNumber("010-1513-5454");
         dto.setNickname("hellow");
 
         willThrow(new AlreadyExistPhoneNumException("이미 존재하는 전화번호 입니다.")).given(userService).signUp(any());
@@ -218,7 +218,7 @@ public class UserControllerTest {
         dto.setUsername("tmasdfasdf");
         dto.setPassword("askaasddf123*");
         dto.setEmail("aksenaksen@asdf.com");
-        dto.setPhoneNum("010-1513-5434");
+        dto.setPhoneNumber("010-1513-5434");
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -241,7 +241,7 @@ public class UserControllerTest {
         dto.setUsername("aksenakse1231");
         dto.setPassword("asdf112323$");
         dto.setEmail(email);
-        dto.setPhoneNum("010-1513-5454");
+        dto.setPhoneNumber("010-1513-5454");
         dto.setNickname("hello");
 
         mockMvc.perform(
@@ -268,7 +268,7 @@ public class UserControllerTest {
         dto.setUsername("aksenakse1231");
         dto.setPassword("asdf112323$");
         dto.setEmail("as123@asdf.com");
-        dto.setPhoneNum(phoneNumber);
+        dto.setPhoneNumber(phoneNumber);
         dto.setNickname("hello");
 
         mockMvc.perform(
@@ -295,7 +295,7 @@ public class UserControllerTest {
         dto.setUsername("aksenakse1231");
         dto.setPassword("asdf112323$");
         dto.setEmail("as123@asdf.com");
-        dto.setPhoneNum("010-1234-5253");
+        dto.setPhoneNumber("010-1234-5253");
         dto.setNickname(nickname);
 
         mockMvc.perform(
@@ -322,7 +322,7 @@ public class UserControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("aksenaksen3");
         dto.setPassword("hashedpasord123@");
-        dto.setPhoneNum("010-1234-2414");
+        dto.setPhoneNumber("010-1234-2414");
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
@@ -348,8 +348,8 @@ public class UserControllerTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("aksenaksen3");
         dto.setPassword("hashedpasord123@");
-        dto.setPhoneNum("010-1234-2414");
-        dto.setEmail("asdf123@naer.com");
+        dto.setPhoneNumber("010-1234-2414");
+        dto.setEmail("tkfka123@gmail.com");
         dto.setNickname("hihello");
 
         willThrow((new RuntimeException())).given(userService).signUp(any());
@@ -376,8 +376,8 @@ public class UserControllerTest {
                 .username("hello")
                 .email("tkfka123@gmail.com")
                 .id(1L)
-                .personName("asdf")
-                .securityState(SecurityState.BASIC)
+                .nickname("asdf")
+                .securityState(0)
                 .build();
 
         given(userService.findUserByValue(any())).willReturn(dto);
@@ -409,8 +409,8 @@ public class UserControllerTest {
                 .username("hello")
                 .email("tkfka123@gmail.com")
                 .id(1L)
-                .personName("asdf")
-                .securityState(SecurityState.BASIC)
+                .nickname("asdf")
+                .securityState(0)
                 .build();
 
         given(userService.findUserByValue(any())).willReturn(dto);
@@ -540,7 +540,7 @@ public class UserControllerTest {
     public void TestSuccessModifyUserByJwt() throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("hello123@asdf.com")
                 .phoneNumber("010-1234-4242")
                 .password("tklfasdf123*")
@@ -564,7 +564,7 @@ public class UserControllerTest {
     public void TestFailedModifyUserNoSession() throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("hello123@asdf.com")
                 .phoneNumber("010-1234-4242")
                 .password("tklfasdf123*")
@@ -592,7 +592,7 @@ public class UserControllerTest {
 
         //given
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("hello123@asdf.com")
                 .phoneNumber("010-1234-4242")
                 .password(password)
@@ -620,7 +620,7 @@ public class UserControllerTest {
     public void testPatchModifyAlreadyExistPhoneNumber() throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("hello123@asdf.com")
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -649,7 +649,7 @@ public class UserControllerTest {
     public void testPatchModifyAlreadyExistEmail() throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("hello123@asdf.com")
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -678,7 +678,7 @@ public class UserControllerTest {
     public void testPatchModifyUnAuthrization() throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("hello123@asdf.com")
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -709,7 +709,7 @@ public class UserControllerTest {
     public void testPatchModifyWithNotAllowedEmail(String email) throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email(email)
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -739,7 +739,7 @@ public class UserControllerTest {
     public void testPatchModifyWithNotAllowedPhoneNumber(String phoneNumber) throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("nick123")
+                .nickname("nick123")
                 .email("email123@asdf.com")
                 .phoneNumber(phoneNumber)
                 .password("asdfsadf123*")
@@ -768,7 +768,7 @@ public class UserControllerTest {
     public void testPatchSignUpWithNotAllowedNickName(String nickname) throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName(nickname)
+                .nickname(nickname)
                 .email("eamas123@asdfa.com")
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -798,7 +798,7 @@ public class UserControllerTest {
     public void testPatchAllowedSecondPassword(String secondpassword) throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("asasdf123")
+                .nickname("asasdf123")
                 .email("eamas123@asdfa.com")
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -828,7 +828,7 @@ public class UserControllerTest {
     public void testPatchWithNotAllowedSecondPasswordCorrectSecurity(String secondpassword) throws Exception {
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("asasdf123")
+                .nickname("asasdf123")
                 .email("eamas123@asdfa.com")
                 .phoneNumber("010-1234-4242")
                 .password("asdfsadf123*")
@@ -999,6 +999,18 @@ public class UserControllerTest {
                                 .param("phoneNumber",phoneNumber)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CONFLICT.value()));
+    }
+
+    @DisplayName("회원 중복 확인시에 파라미터가 들어오지 않은 경우")
+    @Test
+    public void testCheckUserFailedEmailDuplicateNoParam() throws Exception{
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/api/check/users")
+
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
 

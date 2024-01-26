@@ -15,7 +15,7 @@ public class HttpRequestModifyUserDto {
     private String password;
 
     @NickName
-    private String personName;
+    private String nickname;
 
     @PhoneNumber
     private String phoneNumber;

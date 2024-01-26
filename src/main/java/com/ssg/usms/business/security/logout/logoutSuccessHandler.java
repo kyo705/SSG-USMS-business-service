@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.ssg.usms.business.security.login.constant.LoginConstant.NOT_SESSION;
+import static com.ssg.usms.business.security.login.constant.LoginConstant.SUCCESS_LOGOUT;
+
 
 @Component
 public class logoutSuccessHandler implements LogoutSuccessHandler {
@@ -24,11 +27,11 @@ public class logoutSuccessHandler implements LogoutSuccessHandler {
 
         if( authentication == null ){
 
-            writeResponse(response, HttpStatus.BAD_REQUEST.value(), "세션 정보가 없습니다.");
+            writeResponse(response, HttpStatus.BAD_REQUEST.value(), NOT_SESSION);
             return;
         }
 
-        writeResponse(response,HttpStatus.OK.value(), "로그아웃 성공");
+        writeResponse(response,HttpStatus.OK.value(), SUCCESS_LOGOUT);
     }
 
     private void writeResponse(HttpServletResponse response, int code, String message) {

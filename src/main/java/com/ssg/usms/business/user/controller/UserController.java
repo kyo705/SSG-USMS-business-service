@@ -1,10 +1,12 @@
 package com.ssg.usms.business.user.controller;
 
 
+import com.ssg.usms.business.Identification.dto.CertificationCode;
 import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.user.dto.*;
 import com.ssg.usms.business.user.exception.NotAllowedFormCheckException;
 import com.ssg.usms.business.user.exception.NotAllowedSecondPasswordException;
+import com.ssg.usms.business.user.exception.NotMatchedDtoJwtValueException;
 import com.ssg.usms.business.user.service.UserService;
 import com.ssg.usms.business.user.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Slf4j
@@ -40,8 +43,24 @@ public class UserController {
     public ResponseEntity<Void> signUp(@Valid @RequestBody HttpRequestSignUpDto httpRequestSignUpDto, HttpServletRequest request) {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        int code = Integer.parseInt((String) jwtUtil.getClaim(authorization).get(IDENTIFICATION_CODE));
+        String value = (String) jwtUtil.getClaim(authorization).get(IDENTIFICATION_VALUE);
 
-        jwtUtil.VerifyToken(authorization, "Identification");
+        jwtUtil.VerifyToken(authorization, IDENTIFICATION_JWT_SUBJECT);
+
+        if (code == CertificationCode.SMS.getCode()){
+
+            if(!httpRequestSignUpDto.getPhoneNumber().equals(value)){
+                throw new NotMatchedDtoJwtValueException(NOT_MATCHED_JWT_DTO_LITERAL);
+            }
+        }
+        if (code == CertificationCode.EMAIL.getCode()){
+
+            if(!httpRequestSignUpDto.getEmail().equals(value)){
+                throw new NotMatchedDtoJwtValueException(NOT_MATCHED_JWT_DTO_LITERAL);
+            }
+        }
+
 
         userService.signUp(httpRequestSignUpDto);
 
@@ -54,7 +73,7 @@ public class UserController {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        jwtUtil.VerifyToken(authorization, "Identification");
+        jwtUtil.VerifyToken(authorization, IDENTIFICATION_JWT_SUBJECT);
 
         HttpResponseUserDto userDto = userService.findUserByValue(authorization);
 
@@ -67,7 +86,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users/session")
-    public ResponseEntity getSessionFromCurrentUser() throws IllegalAccessException {
+    public ResponseEntity<HttpResponseUserDto> getSessionFromCurrentUser() throws IllegalAccessException {
 
         HttpResponseUserDto userDto = userService.findUserBySession();
 
@@ -77,7 +96,7 @@ public class UserController {
     }
 
     @DeleteMapping("/api/users/{userId}")
-    public ResponseEntity deleteUser(@PathVariable(name = "userId") long userId, HttpServletRequest request) throws IllegalAccessException {
+    public ResponseEntity<HttpResponseUserDto> deleteUser(@PathVariable(name = "userId") long userId, HttpServletRequest request) throws IllegalAccessException {
 
         validateCurrentUser(userId);
         userService.deleteUser(userId);
@@ -88,12 +107,12 @@ public class UserController {
     }
 
     @PatchMapping("/api/users/{userId}")
-    public ResponseEntity modifyUserWithJwt(HttpServletRequest request, @Valid @RequestBody HttpRequestModifyUserDto dto, @PathVariable(name = "userId") Long userid) throws IllegalAccessException {
+    public ResponseEntity<HttpResponseUserDto> modifyUserWithJwt(HttpServletRequest request, @Valid @RequestBody HttpRequestModifyUserDto dto, @PathVariable(name = "userId") Long userid) throws IllegalAccessException {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        jwtUtil.VerifyToken(authorization, "Identification");
-//        2차 비밀번호 , 시큐리티 레벨이 2인지 검증
+        jwtUtil.VerifyToken(authorization, IDENTIFICATION_JWT_SUBJECT);
+
         if (dto.getSecurityState().equals(SecurityState.SECONDPASSWORD) && !dto.getSecondPassword().matches(SECONDPASSWORD_PATTERN)) {
             throw new NotAllowedSecondPasswordException(NOT_ALLOWED_SECONDPASSWORD_LITERAL);
         }
@@ -114,10 +133,12 @@ public class UserController {
     }
 
     @GetMapping("/api/check/users")
-    public ResponseEntity checkDuplicateUserInfo(@RequestParam(required = false) String email,
+    public ResponseEntity<Void> checkDuplicateUserInfo(@RequestParam(required = false) String email,
                                                  @RequestParam(required = false) String phoneNumber,
                                                  @RequestParam(required = false) String username) {
-
+        if(username ==null && email == null && phoneNumber == null){
+            throw new NotAllowedFormCheckException(NOT_ALLOWED_FORM_LITERAL);
+        }
         if (username != null) {
             if (!username.matches(USERNAME_PATTERN)) {
 

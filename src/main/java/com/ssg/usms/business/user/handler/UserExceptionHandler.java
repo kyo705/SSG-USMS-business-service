@@ -223,6 +223,19 @@ public class UserExceptionHandler {
                 .body(errorResponseDto);
     }
 
+    @ExceptionHandler(NotMatchedDtoJwtValueException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotMatchedDtoJwtValueException(NotMatchedDtoJwtValueException exception) {
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(),NOT_MATCHED_JWT_DTO_LITERAL);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST.value())
+                .body(errorResponseDto);
+    }
+
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleOtherExceptions(Exception exception) {

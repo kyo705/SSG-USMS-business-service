@@ -19,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.IDENTIFICATION_CODE;
+import static com.ssg.usms.business.Identification.constant.IdentificationConstant.IDENTIFICATION_VALUE;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
 
 @Service
@@ -36,14 +38,15 @@ public class UserService {
     public void signUp(HttpRequestSignUpDto httpRequestSignUpDto) {
 
         checkDuplicatedId(httpRequestSignUpDto.getUsername());
-        checkDuplicatePhoneNumber(httpRequestSignUpDto.getPhoneNum());
+        checkDuplicatePhoneNumber(httpRequestSignUpDto.getPhoneNumber());
+
 
         String hashPwd = bCryptPasswordEncoder.encode(httpRequestSignUpDto.getPassword());
         UsmsUser user = UsmsUser.builder()
                 .username(httpRequestSignUpDto.getUsername())
                 .password(hashPwd)
                 .personName(httpRequestSignUpDto.getNickname())
-                .phoneNumber(httpRequestSignUpDto.getPhoneNum())
+                .phoneNumber(httpRequestSignUpDto.getPhoneNumber())
                 .email(httpRequestSignUpDto.getEmail())
                 .build();
 
@@ -51,8 +54,8 @@ public class UserService {
     }
     public HttpResponseUserDto findUserByValue(String token) {
 
-        int code = Integer.parseInt((String) jwtUtil.getClaim(token).get("code"));
-        String value = (String) jwtUtil.getClaim(token).get("value");
+        int code = Integer.parseInt((String) jwtUtil.getClaim(token).get(IDENTIFICATION_CODE));
+        String value = (String) jwtUtil.getClaim(token).get(IDENTIFICATION_VALUE);
         UsmsUser user = null;
 
         if (code == 0) {
@@ -62,16 +65,16 @@ public class UserService {
             user = userRepository.findByPhoneNumber(value);
         }
         if (user == null) {
-            throw new NotExistingUserException("존재하지 않는 유저 정보입니다.");
+            throw new NotExistingUserException(NOT_EXISTING_USER_IN_SESSION_LITERAL);
         }
 
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .personName(user.getPersonName())
+                .nickname(user.getPersonName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState())
+                .securityState(user.getSecurityState().getLevel())
                 .build();
 
         return dto;
@@ -80,10 +83,10 @@ public class UserService {
     @Transactional
     public UsmsUser modifyUser(long value, HttpRequestModifyUserDto httpRequestModifyUserDto) {
 
-        UsmsUser user = userRepository.findById(value).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        UsmsUser user = userRepository.findById(value).orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_USER_IN_SESSION_LITERAL));
 
-        if (httpRequestModifyUserDto.getPersonName() != null) {
-            user.setPersonName(httpRequestModifyUserDto.getPersonName());
+        if (httpRequestModifyUserDto.getNickname() != null) {
+            user.setPersonName(httpRequestModifyUserDto.getNickname());
         }
 
         if (httpRequestModifyUserDto.getEmail() != null) {
@@ -123,9 +126,9 @@ public class UserService {
             HttpResponseUserDto dto = HttpResponseUserDto.builder()
                     .id(userDetails.getId())
                     .username(userDetails.getUsername())
-                    .personName(userDetails.getPersonName())
+                    .nickname(userDetails.getPersonName())
                     .phoneNumber(userDetails.getPhoneNumber())
-                    .securityState(userDetails.getSecurityState())
+                    .securityState(userDetails.getSecurityState().getLevel())
                     .email(userDetails.getEmail())
                     .build();
 

@@ -65,7 +65,7 @@ public class UserServiceTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("httpRequestSign");
         dto.setPassword("hashedpassword123@");
-        dto.setPhoneNum("010-1234-24124");
+        dto.setPhoneNumber("010-1234-24124");
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
@@ -82,7 +82,7 @@ public class UserServiceTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("httpRequestSign");
         dto.setPassword("hashedpassword123@");
-        dto.setPhoneNum("010-1234-24124");
+        dto.setPhoneNumber("010-1234-24124");
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
 
@@ -106,7 +106,7 @@ public class UserServiceTest {
         HttpRequestSignUpDto dto = new HttpRequestSignUpDto();
         dto.setUsername("httpRequestSign");
         dto.setPassword("hashedpassword123@");
-        dto.setPhoneNum("010-1234-24124");
+        dto.setPhoneNumber("010-1234-24124");
         dto.setEmail("asdf123@naer.com");
         dto.setNickname("hihello");
         // then
@@ -135,10 +135,10 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .personName(user.getPersonName())
+                .nickname(user.getPersonName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState())
+                .securityState(user.getSecurityState().getLevel())
                 .build();
 
         Claims fakeClaims = Jwts.claims()
@@ -169,10 +169,10 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .personName(user.getPersonName())
+                .nickname(user.getPersonName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState())
+                .securityState(user.getSecurityState().getLevel())
                 .build();
 
         Claims fakeClaims = Jwts.claims()
@@ -205,10 +205,10 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .personName(user.getPersonName())
+                .nickname(user.getPersonName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState())
+                .securityState(user.getSecurityState().getLevel())
                 .build();
 
         Claims fakeClaims = Jwts.claims()
@@ -239,10 +239,10 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .personName(user.getPersonName())
+                .nickname(user.getPersonName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState())
+                .securityState(user.getSecurityState().getLevel())
                 .build();
 
         Claims fakeClaims = Jwts.claims()
@@ -262,7 +262,7 @@ public class UserServiceTest {
     @Test
     public void SuccessModifyUser(){
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("hihello")
+                .nickname("hihello")
                 .email("asdf123@naer.com")
                 .phoneNumber("010-1234-2412")
                 .password("hashedpassword123@")
@@ -280,7 +280,7 @@ public class UserServiceTest {
 
         UsmsUser newUser = new UsmsUser();
         newUser.setId(1L);
-        newUser.setPersonName(dto.getPersonName());
+        newUser.setPersonName(dto.getNickname());
         newUser.setEmail(dto.getEmail());
         newUser.setPhoneNumber(dto.getPhoneNumber());
         newUser.setPassword(dto.getPassword());
@@ -298,7 +298,7 @@ public class UserServiceTest {
     @Test
     public void SuccessModifyUserWithsomeArgforDto(){
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("hihello")
+                .nickname("hihello")
                 .email("asdf123@naer.com")
                 .phoneNumber("010-1234-2412")
                 .securityState(SecurityState.BASIC)
@@ -315,7 +315,7 @@ public class UserServiceTest {
 
         UsmsUser newUser = new UsmsUser();
         newUser.setId(1L);
-        newUser.setPersonName(dto.getPersonName());
+        newUser.setPersonName(dto.getNickname());
         newUser.setEmail(dto.getEmail());
         newUser.setPhoneNumber(dto.getPhoneNumber());
         newUser.setPassword(User.getPassword());
@@ -336,7 +336,7 @@ public class UserServiceTest {
 
 
         HttpRequestModifyUserDto dto = HttpRequestModifyUserDto.builder()
-                .personName("hihello")
+                .nickname("hihello")
                 .email("asdf123@naer.com")
                 .phoneNumber("010-1234-2412")
                 .password("hashedpassword123@")
@@ -367,9 +367,9 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .personName(user.getPersonName())
+                .nickname(user.getPersonName())
                 .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState())
+                .securityState(user.getSecurityState().getLevel())
                 .email(user.getEmail())
                 .build();
 

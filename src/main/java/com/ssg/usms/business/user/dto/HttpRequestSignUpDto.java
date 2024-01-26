@@ -23,6 +23,6 @@ public class HttpRequestSignUpDto {
     private String nickname;
 
     @PhoneNumber
-    private String phoneNum;
+    private String phoneNumber;
 
 }

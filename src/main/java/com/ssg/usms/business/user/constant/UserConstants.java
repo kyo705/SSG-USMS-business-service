@@ -1,5 +1,7 @@
 package com.ssg.usms.business.user.constant;
 
+import java.util.HashMap;
+
 public class UserConstants {
     public static final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     public static final String NICKNAME_PATTERN = "[a-zA-Z0-9]{1,10}";
@@ -43,6 +45,12 @@ public class UserConstants {
     public static final String NOT_ALLOWED_SECURITY_LITERAL = "허용되지 않은 보안 레벨 코드입니다.";
 
     public static final String NOT_ALLOWED_BODY = "값이 누락되어 전달되었습니다.";
+
+    public static final String NOT_MATCHED_JWT_DTO_LITERAL = "인증된 값과 제공된 값이 다릅니다.";
+
+    public static final String NOT_EXISTING_USER_IN_SESSION_LITERAL = "존재하지 않는 유저 정보입니다.";
+
+
 
 
 

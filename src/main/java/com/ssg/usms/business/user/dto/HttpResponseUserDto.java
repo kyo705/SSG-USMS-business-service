@@ -16,12 +16,12 @@ public class HttpResponseUserDto {
 
     private String username;
 
-    private String personName;
+    private String nickname;
 
     private String phoneNumber;
 
     private String email;
 
-    private SecurityState securityState;
+    private int securityState;
 
 }
