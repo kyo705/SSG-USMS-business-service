@@ -40,7 +40,7 @@ public class CctvController {
         // 검증
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
-        if(!storeService.isAvailable(userId)) {
+        if(!storeService.isAvailable(storeId)) {
             throw new UnavailableStoreException();
         }
 
