@@ -1,20 +1,27 @@
-package com.ssg.usms.business.SignUp;
+package com.ssg.usms.business.user;
 
 
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
+import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@Slf4j
+
 @ActiveProfiles("test")
+@SpringBootTest(classes = EmbeddedRedis.class)
 @Transactional
 public class UserRepositoryTest {
 
@@ -109,4 +116,75 @@ public class UserRepositoryTest {
         // then
         assertFalse(exists);
     }
+
+    @DisplayName("폰넘버로 유저를 찾을때 전화번호가 있는경우")
+    @Test
+    void findByPhoneNumberExistUser() {
+        // when
+        UsmsUser user = userRepository.findByPhoneNumber("010-1234-5678");
+        // then
+        Assertions.assertThat(user).isInstanceOf(UsmsUser.class);
+    }
+
+    @DisplayName("폰넘버로 유저를 찾을때 전화번호가 없는경우 null 리턴")
+    @Test
+    void findByPhoneNumberNotExistUser() {
+        // when
+        UsmsUser user = userRepository.findByPhoneNumber("010-1233-5448");
+        // then
+        Assertions.assertThat(user).isNull();
+    }
+
+    @DisplayName("이메일로 유저를 찾을때 전화번호가 있는경우")
+    @Test
+    void findByEmailExistUser() {
+        // when
+        UsmsUser user = userRepository.findByEmail("email@gmail.com");
+        // then
+        Assertions.assertThat(user).isInstanceOf(UsmsUser.class);
+    }
+
+    @DisplayName("이메일로 유저를 찾을때 전화번호가 있는경우")
+    @Test
+    void findByEmailNotExistUser() {
+        // when
+        UsmsUser user = userRepository.findByEmail("email@gmailasdsadf.com");
+        // then
+        Assertions.assertThat(user).isNull();
+    }
+
+    @DisplayName("유저를 삭제하는 경우에 유저가 존재하고 삭제가 정상적으로 완료된 경우")
+    @Test
+    void deleteExistUser() {
+        // when
+        userRepository.delete(1L);
+        UsmsUser user = userRepository.findByEmail("email@gmail.com");
+        // then
+        Assertions.assertThat(user).isNull();
+    }
+
+    @DisplayName("유저를 삭제하는 경우에 유저가 존재하지않을때 InvalidDataAccessApiUsageException.class 리턴")
+    @Test
+    void deleteNotExistUser() {
+        // when
+
+        // then
+        assertThrows(InvalidDataAccessApiUsageException.class,() -> userRepository.delete(5L));
+    }
+
+    @DisplayName("이메일로 사용자가 존재하는지 찾는경우 있을때 true 리턴")
+    @Test
+    void existEmailSuccess(){
+
+        assertTrue(userRepository.existsByEmail("email@gmail.com"));
+    }
+
+    @DisplayName("이메일로 사용자가 존재하는지 찾는경우 없을때 false 리턴")
+    @Test
+    void existEmailFailed(){
+
+        assertFalse(userRepository.existsByEmail("email@gmail.asdfasdfcom"));
+    }
+
+
 }

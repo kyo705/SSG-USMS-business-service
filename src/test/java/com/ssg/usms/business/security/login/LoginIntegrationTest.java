@@ -1,6 +1,7 @@
 package com.ssg.usms.business.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
 import com.ssg.usms.business.user.repository.UserRepository;
@@ -30,7 +31,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 @Transactional
 @Slf4j
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class LoginIntegrationTest {
 
     @Autowired

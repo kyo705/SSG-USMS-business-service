@@ -1,6 +1,7 @@
 package com.ssg.usms.business.cctv.repository;
 
 import com.ssg.usms.business.cctv.exception.NotExistingCctvException;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.video.exception.NotExistingStreamKeyException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional(readOnly = true)
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class CctvRepositoryTest {
 
     @Autowired

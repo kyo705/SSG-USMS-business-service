@@ -3,7 +3,9 @@ package com.ssg.usms.business.store.controller;
 import com.amazonaws.AmazonClientException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
+import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedBusinessLicenseImgIdException;
@@ -49,7 +51,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
 public class StoreControllerRetrievingTest {
 
     private MockMvc mockMvc;
@@ -254,28 +256,40 @@ public class StoreControllerRetrievingTest {
         StoreDto store1 = new StoreDto();
         store1.setId(1L);
         store1.setUserId(userId);
+        store1.setName("무인 매장 1");
+        store1.setAddress("서울특별시 강남구 강남대로42길 11");
+        store1.setStoreState(StoreState.DISAPPROVAL);
+        store1.setAdminComment("사업자 등록증 사본 이미지의 사업자 등록번호와 입력 값이 일치하지 않습니다.");
 
         StoreDto store2 = new StoreDto();
-        store2.setId(1L);
+        store2.setId(2L);
         store2.setUserId(userId);
+        store2.setName("무인 매장 2");
+        store2.setAddress("서울특별시 강남구 강남대로116길");
+        store2.setStoreState(StoreState.DISAPPROVAL);
+        store2.setAdminComment("사업자 등록증 사본 이미지가 뚜렷하지 않습니다.");
 
         StoreDto store3 = new StoreDto();
-        store3.setId(1L);
+        store3.setId(3L);
         store3.setUserId(userId);
+        store3.setName("무인 매장 2");
+        store3.setAddress("서울특별시 강남구 강남대로114길");
+        store3.setStoreState(StoreState.DISAPPROVAL);
+        store3.setAdminComment("사업자 등록증의 주소와 입력한 주소가 일치하지 않습니다.");
 
         List<StoreDto> stores = new ArrayList<>();
         stores.add(store1);
         stores.add(store2);
         stores.add(store3);
 
-        given(storeService.findAll(any(), isNull(), isNull(), anyInt(), anyInt()))
+        given(storeService.findAll(isNull(), isNull(), any(), anyInt(), anyInt()))
                 .willReturn(stores);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores", userId)
-                                .param("userId", Long.toString(userId))
+                                .param("storeState", "2")
                                 .param("offset", Integer.toString(offset))
                                 .param("size", Integer.toString(size))
                 )
@@ -290,7 +304,7 @@ public class StoreControllerRetrievingTest {
                 })
         ;
 
-        verify(storeService, times(1)).findAll(any(), isNull(), isNull(), anyInt(), anyInt());
+        verify(storeService, times(1)).findAll(isNull(), isNull(), any(), anyInt(), anyInt());
         verify(storeService, times(0)).findAllByUserId(any(), anyInt(), anyInt());
 
     }

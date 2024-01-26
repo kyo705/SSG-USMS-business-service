@@ -1,6 +1,7 @@
 package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
 import com.ssg.usms.business.user.repository.UserRepository;
@@ -30,7 +31,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 @Transactional
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class logoutIntegrationTest {
 
     @Autowired

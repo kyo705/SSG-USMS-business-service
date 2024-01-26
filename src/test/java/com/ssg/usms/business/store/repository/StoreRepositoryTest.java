@@ -1,5 +1,6 @@
 package com.ssg.usms.business.store.repository;
 
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.HttpRequestRetrievingStoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional(readOnly = true)
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class StoreRepositoryTest {
 
     @Autowired
@@ -59,7 +60,7 @@ public class StoreRepositoryTest {
         //given
 
         //when
-        List<Store> stores = storeRepository.findAll(requestParam.getUserId(),
+        List<Store> stores = storeRepository.findAll(requestParam.getUser(),
                                                     requestParam.getBusinessLicenseCode(),
                                                     requestParam.getStoreState(),
                                                     requestParam.getOffset(),
@@ -68,8 +69,8 @@ public class StoreRepositoryTest {
         //then
         assertThat(stores.size()).isLessThanOrEqualTo(requestParam.getSize());
         for(Store store : stores) {
-            if(requestParam.getUserId() != null) {
-                assertThat(store.getUserId()).isEqualTo(requestParam.getUserId());
+            if(requestParam.getUser() != null) {
+                assertThat(store.getUserId()).isEqualTo(requestParam.getUser());
             }
             if(requestParam.getBusinessLicenseCode() != null) {
                 assertThat(store.getBusinessLicenseCode()).isEqualTo(requestParam.getBusinessLicenseCode());

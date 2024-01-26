@@ -3,6 +3,7 @@ package com.ssg.usms.business.store.repository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.ssg.usms.business.config.AwsS3LocalConfig;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import io.findify.s3mock.S3Mock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @Import(AwsS3LocalConfig.class)
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class ImageRepositoryTest {
 
     @Autowired

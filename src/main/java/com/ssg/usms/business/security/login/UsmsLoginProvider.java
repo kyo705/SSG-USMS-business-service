@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import static com.ssg.usms.business.security.login.constant.LoginConstant.*;
+
 
 @Slf4j
 @Component
@@ -30,15 +32,15 @@ public class UsmsLoginProvider implements AuthenticationProvider {
 
         if(userDetails == null || !passwordEncoder.matches(password, userDetails.getPassword())){
 
-            throw new BadCredentialsException("아이디 또는 비밀번호가 일치하지 않습니다.");
+            throw new BadCredentialsException(NOT_MATCHED_USERNAME_PASSWORD_LOGIN);
         }
         if(!userDetails.isAccountNonExpired() || !userDetails.isAccountNonExpired()){
 
-            throw new AccountExpiredException("해당 계정은 만료되었습니다.");
+            throw new AccountExpiredException(ACCOUNT_EXPIRED);
         }
         if(!userDetails.isEnabled()){
 
-            throw new DisabledException("해당 계정은 사용이 불가합니다.");
+            throw new DisabledException(DISABLED_ACCOUNT);
         }
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }

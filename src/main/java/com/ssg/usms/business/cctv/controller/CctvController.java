@@ -23,7 +23,6 @@ import java.util.List;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.NOT_ALLOWED_PAGE_OFFSET_FORMAT_MESSAGE;
 import static com.ssg.usms.business.constant.CustomStatusCode.NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE;
-import static com.ssg.usms.business.user.dto.UserRole.ROLE_ADMIN;
 
 @Validated
 @RestController
@@ -56,21 +55,11 @@ public class CctvController {
                             @PathVariable Long storeId,
                             @PathVariable Long cctvId) {
 
-        List<? extends GrantedAuthority> authorities = (List<? extends GrantedAuthority>) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getAuthorities();
-
-        if (authorities.size() != 1) {
-            throw new IllegalStateException("유저 권한 갯수가 현재 이상함");
-        }
-        //관리자가 아닐 경우 자신이 소유한 cctv인지 확인
-        if (!authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
-            userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-            storeService.validateOwnedStore(storeId, userId);
-            cctvService.validateOwnedCctv(storeId, cctvId);
-            if(!storeService.isAvailable(userId)) {
-                throw new UnavailableStoreException();
-            }
+        userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        storeService.validateOwnedStore(storeId, userId);
+        cctvService.validateOwnedCctv(storeId, cctvId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
         }
 
         // 비지니스 로직
@@ -93,16 +82,10 @@ public class CctvController {
                 .getAuthentication()
                 .getAuthorities();
 
-        if (authorities.size() != 1) {
-            throw new IllegalStateException("유저 권한 갯수가 현재 이상함");
-        }
-        //관리자가 아닐 경우 자신이 소유한 매장인지 확인
-        if (!authorities.get(0).getAuthority().equals(ROLE_ADMIN.name())) {
-            userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-            storeService.validateOwnedStore(storeId, userId);
-            if(!storeService.isAvailable(userId)) {
-                throw new UnavailableStoreException();
-            }
+        userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        storeService.validateOwnedStore(storeId, userId);
+        if(!storeService.isAvailable(userId)) {
+            throw new UnavailableStoreException();
         }
 
         // 비지니스 로직

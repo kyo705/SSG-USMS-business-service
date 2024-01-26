@@ -18,7 +18,7 @@ public class CustomStatusCode {
     public static final int NOT_MATCHED_CODE_VALUE = 606;
     public static final int BAD_GATEWAY_IN_IDENTIFICATION= 607;
 
-
+    public static final int BAD_REQUEST_SESSIONID = 608;
 
 
 
