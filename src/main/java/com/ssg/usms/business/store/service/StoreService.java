@@ -135,6 +135,7 @@ public class StoreService {
         if(store == null) {
             throw new NotExistingStoreException();
         }
+        log.info("##################################3 {}", store.getStoreAddress());
     }
 
     @Transactional(readOnly = true)
