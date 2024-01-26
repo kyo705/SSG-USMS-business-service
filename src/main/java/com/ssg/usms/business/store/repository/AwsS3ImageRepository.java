@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.repository;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,13 @@ public class AwsS3ImageRepository implements ImageRepository {
     @Override
     public void save(String key, InputStream inputStream) {
 
-        amazonS3.putObject(imageBucket, key, inputStream, null);
+        ObjectMetadata metadata = new ObjectMetadata();
+        try {
+            metadata.setContentLength(inputStream.read());
+            amazonS3.putObject(imageBucket, key, inputStream, metadata);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
