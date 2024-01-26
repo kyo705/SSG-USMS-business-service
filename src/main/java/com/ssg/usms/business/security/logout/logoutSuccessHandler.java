@@ -41,7 +41,9 @@ public class logoutSuccessHandler implements LogoutSuccessHandler {
         responseBody.setMessage(message);
 
         response.setStatus(code);
+        response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
         try {
             response.getWriter().write(objectMapper.writeValueAsString(responseBody));
         } catch (IOException e) {

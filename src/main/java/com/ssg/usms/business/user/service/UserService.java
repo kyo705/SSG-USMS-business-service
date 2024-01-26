@@ -1,5 +1,6 @@
 package com.ssg.usms.business.user.service;
 
+import com.ssg.usms.business.Identification.dto.CertificationCode;
 import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
 import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
@@ -58,10 +59,10 @@ public class UserService {
         String value = (String) jwtUtil.getClaim(token).get(IDENTIFICATION_VALUE);
         UsmsUser user = null;
 
-        if (code == 0) {
+        if (code == CertificationCode.EMAIL.getCode()) {
             user = userRepository.findByEmail(value);
         }
-        if (code == 1) {
+        if (code == CertificationCode.SMS.getCode()) {
             user = userRepository.findByPhoneNumber(value);
         }
         if (user == null) {
