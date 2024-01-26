@@ -7,6 +7,7 @@ import com.ssg.usms.business.cctv.dto.CctvDto;
 import com.ssg.usms.business.cctv.exception.NotExistingCctvException;
 import com.ssg.usms.business.cctv.exception.NotOwnedCctvException;
 import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
@@ -47,7 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class CctvControllerRetrievingTest {
 
     private MockMvc mockMvc;

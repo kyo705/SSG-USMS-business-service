@@ -8,4 +8,8 @@ public enum SecurityState {
     SecurityState(int level){
         this.level = level;
     }
+
+    public int getLevel(){
+        return this.level;
+    }
 }

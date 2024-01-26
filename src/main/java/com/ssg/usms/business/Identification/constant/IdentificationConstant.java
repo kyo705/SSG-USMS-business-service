@@ -19,6 +19,9 @@ public class IdentificationConstant {
     public static final String ERROR_SEND_MESSAGE = "본인인증 코드 전송에 실패하였습니다.";
     public static final String IDENTIFICATION_HEADER = "x-authenticate-key";
 
+    public static final String IDENTIFICATION_CODE = "code";
+    public static final String IDENTIFICATION_VALUE = "value";
+
     public static final HashMap<Integer,String> NOTIFICATION_SERVICE_MAP;
 
     static {

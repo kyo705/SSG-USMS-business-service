@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 
+
 @Slf4j
 @Service
 @Transactional
@@ -62,8 +63,8 @@ public class IdentificationService {
         HttpRequestIdentificationDto httpRequestIdentificationDto = objectMapper.readValue(result, HttpRequestIdentificationDto.class);;
 
         HashMap<String,String> token = new HashMap<>();
-        token.put("code", String.valueOf(httpRequestIdentificationDto.getCode()) );
-        token.put("value", httpRequestIdentificationDto.getValue());
+        token.put(IDENTIFICATION_CODE, String.valueOf(httpRequestIdentificationDto.getCode()) );
+        token.put(IDENTIFICATION_VALUE, httpRequestIdentificationDto.getValue());
 
         return jwtUtil.createJwt(token, IDENTIFICATION_JWT_EXPIRED_TIME_MS, IDENTIFICATION_JWT_SUBJECT);
     }

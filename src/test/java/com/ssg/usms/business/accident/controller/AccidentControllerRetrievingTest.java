@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
 import com.ssg.usms.business.accident.dto.AccidentDto;
 import com.ssg.usms.business.accident.service.AccidentService;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class AccidentControllerRetrievingTest {
 
     private MockMvc mockMvc;

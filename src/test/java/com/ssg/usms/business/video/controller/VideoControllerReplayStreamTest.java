@@ -1,6 +1,7 @@
 package com.ssg.usms.business.video.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.video.exception.*;
 import com.ssg.usms.business.video.service.VideoService;
@@ -33,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 
 @WithMockUser(username = USERNAME)
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT,classes = EmbeddedRedis.class)
 public class VideoControllerReplayStreamTest {
 
     private MockMvc mockMvc;

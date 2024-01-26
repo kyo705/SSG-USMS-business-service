@@ -3,6 +3,7 @@ package com.ssg.usms.business.store.controller;
 import com.amazonaws.AmazonClientException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.StoreDto;
@@ -50,7 +51,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
 public class StoreControllerRetrievingTest {
 
     private MockMvc mockMvc;

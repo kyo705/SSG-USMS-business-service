@@ -3,6 +3,7 @@ package com.ssg.usms.business.cctv.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.cctv.dto.HttpRequestCreatingCctvDto;
 import com.ssg.usms.business.cctv.service.CctvService;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
@@ -38,7 +39,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class CctvControllerCreatingTest {
 
     private MockMvc mockMvc;
