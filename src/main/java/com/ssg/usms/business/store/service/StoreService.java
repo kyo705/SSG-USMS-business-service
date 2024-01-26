@@ -144,6 +144,7 @@ public class StoreService {
         validateStore(storeId);
 
         Store store = storeRepository.findById(storeId);
+        log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& {}", store.getStoreAddress());
         if(store.getUserId() != userId) {
             throw new NotOwnedStoreException();
         }
