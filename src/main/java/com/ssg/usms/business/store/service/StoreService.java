@@ -130,7 +130,7 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public void validateStore(Long storeId) {
-
+        log.info(" 매장 아이디 검증 : {}", storeId);
         Store store = storeRepository.findById(storeId);
         if(store == null) {
             throw new NotExistingStoreException();
