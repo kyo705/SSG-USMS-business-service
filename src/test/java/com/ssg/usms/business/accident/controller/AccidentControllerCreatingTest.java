@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
 import com.ssg.usms.business.accident.dto.HttpRequestCreatingAccidentDto;
 import com.ssg.usms.business.accident.service.AccidentService;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.service.StoreService;
 import org.assertj.core.api.Assertions;
@@ -33,7 +34,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class AccidentControllerCreatingTest {
 
     private MockMvc mockMvc;

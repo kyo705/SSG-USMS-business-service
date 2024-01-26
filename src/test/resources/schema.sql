@@ -16,6 +16,7 @@ CREATE TABLE usms_user (
        email VARCHAR(255) NOT NULL,
        security_state SMALLINT DEFAULT 0,
        is_lock BOOLEAN DEFAULT false,
+       second_password varchar(255),
        role SMALLINT DEFAULT 1
 );
 

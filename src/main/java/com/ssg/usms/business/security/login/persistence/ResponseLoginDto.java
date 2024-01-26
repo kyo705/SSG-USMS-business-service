@@ -1,7 +1,7 @@
 package com.ssg.usms.business.security.login.persistence;
 
 
-import com.ssg.usms.business.security.login.UsmsUserDetails;
+import com.ssg.usms.business.user.dto.HttpResponseUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +18,5 @@ public class ResponseLoginDto {
 
     private String message;
 
-    private UsmsUserDetails user;
+    private HttpResponseUserDto user;
 }

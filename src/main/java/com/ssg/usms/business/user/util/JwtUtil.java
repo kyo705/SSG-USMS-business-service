@@ -1,6 +1,7 @@
 package com.ssg.usms.business.user.util;
 
 
+import com.ssg.usms.business.user.exception.NotAllowedKeyExcetpion;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+
+import static com.ssg.usms.business.user.constant.UserConstants.NOT_ALLOWED_KEY_LITERAL;
 
 
 @Component
@@ -48,6 +51,27 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey)
                 .compact();
+    }
+
+    public void VerifyToken(String authorization,String subject){
+
+        if (authorization == null ){
+
+            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
+        }
+
+        if (isExpired(authorization)){
+
+            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
+        }
+
+        Claims claims = getClaim(authorization);
+
+        if(!verifyClaim(claims).equals(subject)){
+
+            throw new NotAllowedKeyExcetpion(NOT_ALLOWED_KEY_LITERAL);
+        }
+
     }
 
 }
