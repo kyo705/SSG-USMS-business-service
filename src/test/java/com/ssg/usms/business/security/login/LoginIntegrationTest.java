@@ -2,8 +2,11 @@ package com.ssg.usms.business.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.device.repository.DeviceRepository;
+import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
+import com.ssg.usms.business.device.repository.UserDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -24,7 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import javax.security.sasl.AuthenticationException;
+
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 
@@ -36,6 +46,8 @@ public class LoginIntegrationTest {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private SpringJpaDataDeviceRepository jpaDataDeviceRepository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -75,7 +87,7 @@ public class LoginIntegrationTest {
         RequestLoginDto requestBody = new RequestLoginDto();
         requestBody.setUsername("httpRequestSign");
         requestBody.setPassword("hashedpassword123@");
-
+        requestBody.setToken("tmpTokenasdfasdf");
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/login")
@@ -84,8 +96,60 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.OK.value());
+                    Optional<UserDevice> userDevice = jpaDataDeviceRepository.findById(1L);
+                    assertNotNull(userDevice);
+                    assertEquals(requestBody.getToken(),userDevice.get().getToken());
+                });
+
+    }
+
+    @DisplayName("인증이 완료된 유저로 토큰값을 넣어서 로그인 시도 경우에 이어 로그아웃 한경우 db에서 성공적으로 device token값을 지운다.")
+    @Test
+    public void testLoginWithAuthorizedUserInfoAndSuccessLogout() throws Exception {
+
+        log.info(repository.findByUsername("httpRequestSign").toString());
+
+        RequestLoginDto requestBody = new RequestLoginDto();
+        requestBody.setUsername("httpRequestSign");
+        requestBody.setPassword("hashedpassword123@");
+        requestBody.setToken("tmpTokenasdfasdf");
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody))
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                .andExpect(result -> {
+                    Optional<UserDevice> userDevice = jpaDataDeviceRepository.findById(1L);
+                    assertNotNull(userDevice);
+                    assertEquals(requestBody.getToken(),userDevice.get().getToken());
+                });
+
+
+    }
+
+    @DisplayName("인증이 완료된 유저로 로그인 시도할 경우 토큰값이 빠졌으면 400 상태코드를 리턴. AuthenticationServiceException을 던진다.")
+    @Test
+    public void testLoginWithAuthorizedUserInfoNotincludeToken() throws Exception {
+
+        log.info(repository.findByUsername("httpRequestSign").toString());
+
+        RequestLoginDto requestBody = new RequestLoginDto();
+        requestBody.setUsername("httpRequestSign");
+        requestBody.setPassword("hashedpassword123@");
+//        requestBody.setToken("tmpToken");
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody))
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(result -> {
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
+                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 });
 
     }
@@ -98,6 +162,7 @@ public class LoginIntegrationTest {
         RequestLoginDto requestBody = new RequestLoginDto();
         requestBody.setUsername("httpRequestSignasdfaa");
         requestBody.setPassword("hashedpassword123@");
+        requestBody.setToken("tmpToken");
 
         //when & then
         mockMvc.perform(
@@ -107,7 +172,7 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
                     assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 });
 
@@ -120,6 +185,7 @@ public class LoginIntegrationTest {
         RequestLoginDto requestBody = new RequestLoginDto();
         requestBody.setUsername("httpRequestSign");
         requestBody.setPassword("hashedpassword123@123");
+        requestBody.setToken("tmpToken");
 
         //when & then
         mockMvc.perform(
@@ -129,7 +195,7 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
                     assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 });
 

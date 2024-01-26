@@ -54,6 +54,12 @@ CREATE TABLE region_warning (
     occurrence_date DATE NOT NULL
 );
 
+CREATE TABLE user_device (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            user_id BIGINT NOT NULL,
+                            token VARCHAR(255) NOT NULL
+);
+
 CREATE UNIQUE INDEX usms_store_business_license_img_id_idx ON store (business_license_img_id);
 CREATE UNIQUE INDEX usms_cctv_stream_key_idx ON cctv (cctv_stream_key);
 CREATE INDEX usms_region_warning_region_idx ON region_warning (region);

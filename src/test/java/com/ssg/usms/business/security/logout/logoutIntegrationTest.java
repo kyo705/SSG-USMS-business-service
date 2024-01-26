@@ -2,8 +2,10 @@ package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
+import com.ssg.usms.business.device.repository.UserDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 
@@ -40,6 +45,9 @@ public class logoutIntegrationTest {
     @Autowired
     private WebApplicationContext context;
     private MockMvc mockMvc;
+
+    @Autowired
+    private SpringJpaDataDeviceRepository jpaDataDeviceRepository;
 
     @Autowired
     private UserRepository repository;
@@ -74,6 +82,14 @@ public class logoutIntegrationTest {
         requestBody.setUsername("httpRequestSign");
         requestBody.setPassword("hashedpassword123@");
 
+        UserDevice device = UserDevice.builder()
+                .id(1L)
+                .userid(3L)
+                .token("token")
+                .build();
+
+        jpaDataDeviceRepository.save(device);
+
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/logout")
@@ -82,8 +98,9 @@ public class logoutIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
                     assertThat(responseBody.getCode()).isEqualTo(HttpStatus.OK.value());
+                    assertThat(jpaDataDeviceRepository.deleteByUserid(3L)).isEqualTo(0);
                 });
     }
 
@@ -99,7 +116,7 @@ public class logoutIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
                     assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 });
 

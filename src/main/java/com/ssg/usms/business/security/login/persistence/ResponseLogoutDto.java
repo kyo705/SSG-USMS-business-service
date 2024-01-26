@@ -12,11 +12,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class ResponseLoginDto {
+public class ResponseLogoutDto {
 
     private int code;
 
     private String message;
 
     private HttpResponseUserDto user;
+
 }

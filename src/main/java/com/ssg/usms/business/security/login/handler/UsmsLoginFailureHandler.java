@@ -1,7 +1,7 @@
 package com.ssg.usms.business.security.login.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +31,7 @@ public class UsmsLoginFailureHandler implements AuthenticationFailureHandler {
 
     private void writeResponse(HttpServletResponse response, int code, String message) throws IOException {
 
-        ResponseLoginDto responseBody = new ResponseLoginDto(code, message, null);
+        ResponseLogoutDto responseBody = new ResponseLogoutDto(code, message, null);
 
         response.setStatus(code);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

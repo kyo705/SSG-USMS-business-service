@@ -65,3 +65,8 @@ aws:
   s3:
     transcode-video-bucket: usms-bucket-test
     image-bucket: usms-bucket-img-test
+
+firebase:
+  url:
+  path:
+  scope:
