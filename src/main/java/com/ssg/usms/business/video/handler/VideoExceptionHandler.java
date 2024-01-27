@@ -1,6 +1,7 @@
 package com.ssg.usms.business.video.handler;
 
 import com.ssg.usms.business.error.ErrorResponseDto;
+import com.ssg.usms.business.store.exception.UnavailableStoreException;
 import com.ssg.usms.business.video.controller.StreamKeyController;
 import com.ssg.usms.business.video.controller.VideoController;
 import com.ssg.usms.business.video.exception.AlreadyConnectedStreamKeyException;
@@ -34,6 +35,17 @@ public class VideoExceptionHandler {
 
     @ExceptionHandler(NotAllowedStreamingProtocolException.class)
     public ResponseEntity<ErrorResponseDto> handleIllegalStreamingProtocolException(NotAllowedStreamingProtocolException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler(UnavailableStoreException.class)
+    public ResponseEntity<ErrorResponseDto> handleUnavailableStoreException(UnavailableStoreException exception) {
 
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
