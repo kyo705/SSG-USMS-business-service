@@ -88,7 +88,7 @@ public class logoutIntegrationTest {
                 .token("token")
                 .build();
 
-        jpaDataDeviceRepository.save(device);
+//        jpaDataDeviceRepository.save(device);
 
         //when & then
         mockMvc.perform(
