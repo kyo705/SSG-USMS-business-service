@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +38,7 @@ public class deviceServiceTest {
         Long userid =1L;
         String token = "asdf";
 
-        doNothing().when(repository).deleteToken(any());
+        given(repository.deleteToken(any())).willReturn(1);
         assertDoesNotThrow(() -> deviceService.deleteToken(userid));
     }
 
