@@ -1,8 +1,6 @@
-package com.ssg.usms.business.warning;
+package com.ssg.usms.business.warning.repository;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
-import com.ssg.usms.business.warning.repository.RegionWarning;
-import com.ssg.usms.business.warning.repository.RegionWarningRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
