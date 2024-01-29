@@ -24,12 +24,6 @@ public class JpaUserRepository implements UserRepository{
     }
 
     @Override
-    public UsmsUser findByEmail(String email) {
-
-        return springDataJpaUserRepository.findByEmail(email);
-    }
-
-    @Override
     public Optional<UsmsUser> findById(long userid) {
 
         return springDataJpaUserRepository.findById(userid);

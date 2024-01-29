@@ -11,8 +11,6 @@ public interface UserRepository  {
     boolean existsByPhoneNumber(String phoneNum);
     void signUp(UsmsUser user);
     UsmsUser findByPhoneNumber(String phoneNumber);
-    UsmsUser findByEmail(String email);
-
     Optional<UsmsUser> findById(long userid);
     void delete(long userid);
 
