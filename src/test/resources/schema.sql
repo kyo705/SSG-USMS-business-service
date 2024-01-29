@@ -55,7 +55,7 @@ CREATE TABLE region_warning (
     occurrence_date DATE NOT NULL
 );
 
-CREATE TABLE user_device (
+CREATE TABLE usms_device (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
     token VARCHAR(255) NOT NULL

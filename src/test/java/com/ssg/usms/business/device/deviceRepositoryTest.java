@@ -29,7 +29,7 @@ public class deviceRepositoryTest {
     @Test
     public void TestDeleteDevice(){
         UsmsDevice device = UsmsDevice.builder()
-                .userid(1L)
+                .userid(2L)
                 .token("1234")
                 .build();
 
@@ -44,7 +44,7 @@ public class deviceRepositoryTest {
     public void TestDeleteWithNoExistUseridDevice(){
 
 
-        assertThat( deviceRepository.deleteToken(1L) ).isEqualTo(0);
+        assertThat( deviceRepository.deleteToken(2L) ).isEqualTo(0);
     }
 
     @DisplayName("성공적으로 데이터를 insert한경우 findall의 길이가 1이다.")
@@ -52,14 +52,14 @@ public class deviceRepositoryTest {
     public void TestInsertWithNoExistUseridDevice(){
 
         UsmsDevice device = UsmsDevice.builder()
-                .userid(1L)
+                .userid(2L)
                 .token("1234")
                 .build();
 
         deviceRepository.saveToken(device);
         List<UsmsDevice> list = jpaDataDeviceRepository.findAll();
 
-        assertThat( list.size() ).isEqualTo(1);
+        assertThat( list.size() ).isEqualTo(2);
     }
 
 

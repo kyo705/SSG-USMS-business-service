@@ -2,6 +2,7 @@ package com.ssg.usms.business.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.device.repository.DeviceRepository;
 import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
 import com.ssg.usms.business.device.repository.UsmsDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
@@ -33,14 +34,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 
-@Transactional
+
 @Slf4j
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(classes = EmbeddedRedis.class)
 public class LoginIntegrationTest {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private DeviceRepository deviceRepository;
     @Autowired
     private SpringJpaDataDeviceRepository jpaDataDeviceRepository;
 
@@ -54,15 +58,6 @@ public class LoginIntegrationTest {
     @BeforeEach
     public void setup() {
 
-        UsmsUser user = UsmsUser.builder()
-                .username("httpRequestSign")
-                .password(encoder.encode("hashedpassword123@"))
-                .personName("TestUser")
-                .phoneNumber("010-1423-4151")
-                .email("test@email.com")
-                .build();
-
-        repository.signUp(user);
 
 
         mockMvc = MockMvcBuilders
@@ -77,12 +72,11 @@ public class LoginIntegrationTest {
     @Test
     public void testLoginWithAuthorizedUserInfo() throws Exception {
 
-        log.info(repository.findByUsername("httpRequestSign").toString());
-
+        jpaDataDeviceRepository.deleteByUserid(1L);
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@");
-        requestBody.setToken("tmpTokenasdfasdf");
+        requestBody.setUsername("storeOwner");
+        requestBody.setPassword("1234567890a*");
+        requestBody.setToken("newtoken");
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/login")
@@ -91,36 +85,10 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(1L);
+                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(2L);
                     assertNotNull(userDevice);
                     assertEquals(requestBody.getToken(),userDevice.get().getToken());
                 });
-
-    }
-
-    @DisplayName("인증이 완료된 유저로 토큰값을 넣어서 로그인 시도 경우에 이어 로그아웃 한경우 db에서 성공적으로 device token값을 지운다.")
-    @Test
-    public void testLoginWithAuthorizedUserInfoAndSuccessLogout() throws Exception {
-
-        log.info(repository.findByUsername("httpRequestSign").toString());
-
-        RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@");
-        requestBody.setToken("tmpTokenasdfasdf");
-        //when & then
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/api/login")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestBody))
-                )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(result -> {
-                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(1L);
-                    assertNotNull(userDevice);
-                    assertEquals(requestBody.getToken(),userDevice.get().getToken());
-                });
-
 
     }
 
@@ -131,9 +99,9 @@ public class LoginIntegrationTest {
         log.info(repository.findByUsername("httpRequestSign").toString());
 
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@");
-//        requestBody.setToken("tmpToken");
+        requestBody.setUsername("storeOwner");
+        requestBody.setPassword("1234567890a*");
+//        requestBody.setToken("newtoken");
 
         //when & then
         mockMvc.perform(
@@ -148,16 +116,15 @@ public class LoginIntegrationTest {
                 });
 
     }
-
 
     @DisplayName("존재하지 않는 이메일로 로그인 시도할 경우 400 상태코드를 리턴한다.")
     @Test
     public void testLoginWithNotExistingEmail() throws Exception {
 
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSignasdfaa");
-        requestBody.setPassword("hashedpassword123@");
-        requestBody.setToken("tmpToken");
+        requestBody.setUsername("storeOwner232");
+        requestBody.setPassword("1234567890a*");
+        requestBody.setToken("newtoken");
 
         //when & then
         mockMvc.perform(
@@ -172,16 +139,14 @@ public class LoginIntegrationTest {
                 });
 
     }
-
     @DisplayName("비밀번호가 부정확한 요청으로 로그인 시도할 경우 400 상태코드를 리턴한다.")
     @Test
     public void testLoginWithInvalidPassword() throws Exception {
 
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@123");
-        requestBody.setToken("tmpToken");
-
+        requestBody.setUsername("storeOwner");
+        requestBody.setPassword("1234567890123213a*");
+        requestBody.setToken("newtoken");
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/login")

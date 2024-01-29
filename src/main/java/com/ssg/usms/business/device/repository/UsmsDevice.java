@@ -9,8 +9,6 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@DynamicInsert
-@Table(name="usms_device" , indexes = {@Index(name = "usms_user_userid_idx", columnList = "user_id", unique = true)})
 @Getter
 @Setter
 @Builder
