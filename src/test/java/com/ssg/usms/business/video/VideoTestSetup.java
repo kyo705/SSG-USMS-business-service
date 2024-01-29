@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 public class VideoTestSetup {
 
-    public static final String USERNAME = "kyo705";
     static Stream<String> getInvalidFormOfStreamKey() {
 
         return Stream.of(

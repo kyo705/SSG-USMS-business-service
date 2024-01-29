@@ -3,7 +3,10 @@ package com.ssg.usms.business.video.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.video.exception.*;
+import com.ssg.usms.business.store.exception.UnavailableStoreException;
+import com.ssg.usms.business.video.exception.ExpiredStreamKeyException;
+import com.ssg.usms.business.video.exception.NotExistingStreamKeyException;
+import com.ssg.usms.business.video.exception.NotOwnedStreamKeyException;
 import com.ssg.usms.business.video.service.VideoService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,10 +32,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
-import static com.ssg.usms.business.video.VideoTestSetup.USERNAME;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-@WithMockUser(username = USERNAME)
+@WithUserDetails("storeOwner")
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT,classes = EmbeddedRedis.class)
 public class VideoControllerReplayStreamTest {
@@ -50,6 +53,7 @@ public class VideoControllerReplayStreamTest {
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
+                .apply(springSecurity())
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .build();
     }
@@ -61,16 +65,17 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithValidParam(String filename) throws Exception {
 
         //given
+        Long userId = 1L;
         String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         byte[] streamData = new byte[50];
 
-        given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename)).willReturn(streamData);
+        given(videoService.getReplayVideo(userId, streamKey, filename)).willReturn(streamData);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
@@ -83,17 +88,18 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithExpiredStreamKey() throws Exception {
 
         //given
+        Long userId = 1L;
         String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
-        given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
+        given(videoService.getReplayVideo(userId, streamKey, filename))
                 .willThrow(new ExpiredStreamKeyException());
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -108,18 +114,19 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotExistingStreamKey() throws Exception {
 
         //given
+        Long userId = 1L;
         String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
 
-        given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
+        given(videoService.getReplayVideo(userId, streamKey, filename))
                 .willThrow(new NotExistingStreamKeyException());
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -134,17 +141,18 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotOwnedStreamKey() throws Exception {
 
         //given
+        Long userId = 1L;
         String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
-        given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
+        given(videoService.getReplayVideo(userId, streamKey, filename))
                 .willThrow(new NotOwnedStreamKeyException());
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -159,17 +167,15 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotAllowedStreamingProtocol() throws Exception {
 
         //given
+        Long userId = 1L;
         String streamKey = UUID.randomUUID().toString();
         String protocol = "ftp";
         String filename = UUID.randomUUID() + "-" + (System.currentTimeMillis()/1000) + ".m3u8";
 
-        given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
-                .willThrow(new NotAllowedStreamingProtocolException("유효하지 않은 스트림 프로토콜입니다."));
-
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
@@ -185,23 +191,46 @@ public class VideoControllerReplayStreamTest {
     public void testGetReplayVideoWithNotMatchingProtocolAndFileFormat() throws Exception {
 
         //given
+        Long userId = 1L;
         String streamKey = UUID.randomUUID().toString();
         String protocol = "hls";
         String filename = UUID.randomUUID()+ "-" + (System.currentTimeMillis()/1000) + ".mp4";
 
-        given(videoService.getReplayVideo(USERNAME, streamKey, protocol, filename))
-                .willThrow(new NotMatchingStreamingProtocolAndFileFormatException("프로토콜과 파일 확장자가 매칭되지 않습니다."));
-
-
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(NOT_MATCHING_STREAM_PROTOCOL_AND_FILE_FORMAT);
+                })
+        ;
+
+    }
+
+    @DisplayName("리플레이 스트리밍 비디오 요청 : 요청한 스트림 키가 이용 불가능한 매장인 경우 예외를 발생시킨다.")
+    @Test
+    public void testGetReplayVideoWithUnavailableStore() throws Exception {
+
+        //given
+        Long userId = 1L;
+        String streamKey = UUID.randomUUID().toString();
+        String protocol = "hls";
+        String filename = UUID.randomUUID()+ "-" + (System.currentTimeMillis()/1000) + ".m3u8";
+
+        given(videoService.getReplayVideo(userId, streamKey, filename)).willThrow(new UnavailableStoreException());
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
+                )
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(result -> {
+                    ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
+                    Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
                 })
         ;
 
@@ -219,7 +248,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
         ;
@@ -238,7 +267,7 @@ public class VideoControllerReplayStreamTest {
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
-                                .get("/video/{streamKey}/replay/{protocol}/{filename}", protocol, streamKey, filename)
+                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))
         ;
