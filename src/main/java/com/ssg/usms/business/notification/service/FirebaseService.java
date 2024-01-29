@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.ssg.usms.business.notification.dto.FcmMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FirebaseService implements NotificationService {
 
@@ -48,7 +50,7 @@ public class FirebaseService implements NotificationService {
 
         Response response = client.newCall(request).execute();
 
-        System.out.println(Objects.requireNonNull(response.body()).string());
+        log.info(Objects.requireNonNull(response.body()).string());
     }
 
 

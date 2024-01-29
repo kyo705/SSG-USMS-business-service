@@ -18,8 +18,6 @@ import java.io.IOException;
 @Slf4j
 public class UsmsLoginFailureHandler implements AuthenticationFailureHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
@@ -29,12 +27,10 @@ public class UsmsLoginFailureHandler implements AuthenticationFailureHandler {
         writeResponse(response, HttpStatus.BAD_REQUEST.value(),failureMessage);
     }
 
-    private void writeResponse(HttpServletResponse response, int code, String message) throws IOException {
-
-        ResponseLogoutDto responseBody = new ResponseLogoutDto(code, message, null);
+    private void writeResponse(HttpServletResponse response, int code,String message) throws IOException {
 
         response.setStatus(code);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        response.getWriter().write(message);
     }
 }
