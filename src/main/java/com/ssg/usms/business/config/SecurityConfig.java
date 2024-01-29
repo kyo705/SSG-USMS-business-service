@@ -1,6 +1,7 @@
 package com.ssg.usms.business.config;
 
 
+import com.ssg.usms.business.device.service.DeviceService;
 import com.ssg.usms.business.security.login.UsmsLoginConfiguer;
 import com.ssg.usms.business.security.login.authority.UsmsAccessDeniedHandler;
 import com.ssg.usms.business.security.login.authority.UsmsForbiddenEntryPoint;
@@ -31,7 +32,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, AuthenticationSuccessHandler loginSuccessHandler, AuthenticationFailureHandler loginFailureHandler, LogoutSuccessHandler logoutSuccessHandler) throws Exception{
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, AuthenticationSuccessHandler loginSuccessHandler,
+                                                          AuthenticationFailureHandler loginFailureHandler,
+                                                          LogoutSuccessHandler logoutSuccessHandler,
+                                                          DeviceService deviceService) throws Exception{
 
         http
                 .authorizeHttpRequests((auth) -> auth
@@ -69,7 +73,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(new UsmsAccessDeniedHandler())
                 .authenticationEntryPoint(new UsmsForbiddenEntryPoint());
 
-        http.apply(new UsmsLoginConfiguer<>())
+        http.apply(new UsmsLoginConfiguer<>(deviceService))
                 .loginProcessingUrl("/api/login")
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler);

@@ -1,7 +1,10 @@
 package com.ssg.usms.business.user.dto;
 
 
-import com.ssg.usms.business.user.annotation.*;
+import com.ssg.usms.business.user.annotation.Email;
+import com.ssg.usms.business.user.annotation.NickName;
+import com.ssg.usms.business.user.annotation.Password;
+import com.ssg.usms.business.user.annotation.PhoneNumber;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

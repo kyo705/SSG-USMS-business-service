@@ -6,9 +6,7 @@ import com.ssg.usms.business.device.repository.DeviceRepository;
 import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
 import com.ssg.usms.business.device.repository.UsmsDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
-import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import com.ssg.usms.business.user.repository.UserRepository;
-import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,8 +27,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 

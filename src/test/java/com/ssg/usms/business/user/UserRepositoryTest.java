@@ -7,7 +7,6 @@ import com.ssg.usms.business.user.dto.UserRole;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 

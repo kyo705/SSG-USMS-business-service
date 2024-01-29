@@ -1,11 +1,8 @@
 package com.ssg.usms.business.security.login.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.device.service.DeviceService;
 import com.ssg.usms.business.security.login.UsmsUserDetails;
-import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.user.dto.HttpResponseUserDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -20,11 +17,9 @@ import java.io.IOException;
 
 
 @Component
-@RequiredArgsConstructor
 public class UsmsLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final DeviceService deviceService;
 
     @Override
     @Transactional
@@ -39,10 +34,6 @@ public class UsmsLoginSuccessHandler implements AuthenticationSuccessHandler {
                 .nickname(userDetails.getPersonName())
                 .email(userDetails.getEmail())
                 .build();
-
-        RequestLoginDto dto = (RequestLoginDto) authentication.getDetails();
-
-        deviceService.saveToken(dto.getToken(), userDetails.getId());
 
         writeResponse(response, HttpStatus.OK.value(),responseDto);
     }
