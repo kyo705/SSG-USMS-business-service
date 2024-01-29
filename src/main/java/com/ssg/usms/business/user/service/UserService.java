@@ -20,6 +20,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import static com.ssg.usms.business.Identification.constant.IdentificationConstant.IDENTIFICATION_CODE;
 import static com.ssg.usms.business.Identification.constant.IdentificationConstant.IDENTIFICATION_VALUE;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
@@ -46,39 +50,40 @@ public class UserService {
         UsmsUser user = UsmsUser.builder()
                 .username(httpRequestSignUpDto.getUsername())
                 .password(hashPwd)
-                .personName(httpRequestSignUpDto.getNickname())
+                .nickname(httpRequestSignUpDto.getNickname())
                 .phoneNumber(httpRequestSignUpDto.getPhoneNumber())
                 .email(httpRequestSignUpDto.getEmail())
                 .build();
 
         userRepository.signUp(user);
     }
-    public HttpResponseUserDto findUserByValue(String token) {
+    public List<HttpResponseUserDto> findUserByValue(String token) {
 
         int code = Integer.parseInt((String) jwtUtil.getClaim(token).get(IDENTIFICATION_CODE));
         String value = (String) jwtUtil.getClaim(token).get(IDENTIFICATION_VALUE);
-        UsmsUser user = null;
+        List<UsmsUser> userList = null;
 
         if (code == CertificationCode.EMAIL.getCode()) {
-            user = userRepository.findByEmail(value);
+            userList = userRepository.findAllByEmail(value);
         }
         if (code == CertificationCode.SMS.getCode()) {
-            user = userRepository.findByPhoneNumber(value);
+            userList = userRepository.findAllByPhoneNumber(value);
         }
-        if (user == null) {
+        if (Objects.requireNonNull(userList).isEmpty()) {
             throw new NotExistingUserException(NOT_EXISTING_USER_IN_SESSION_LITERAL);
         }
 
-        HttpResponseUserDto dto = HttpResponseUserDto.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .nickname(user.getPersonName())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .securityState(user.getSecurityState().getLevel())
-                .build();
 
-        return dto;
+        return userList.stream()
+                .map(user -> HttpResponseUserDto.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .nickname(user.getNickname())
+                        .email(user.getEmail())
+                        .phoneNumber(user.getPhoneNumber())
+                        .securityState(user.getSecurityState().getLevel())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -87,7 +92,7 @@ public class UserService {
         UsmsUser user = userRepository.findById(value).orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_USER_IN_SESSION_LITERAL));
 
         if (httpRequestModifyUserDto.getNickname() != null) {
-            user.setPersonName(httpRequestModifyUserDto.getNickname());
+            user.setNickname(httpRequestModifyUserDto.getNickname());
         }
 
         if (httpRequestModifyUserDto.getEmail() != null) {

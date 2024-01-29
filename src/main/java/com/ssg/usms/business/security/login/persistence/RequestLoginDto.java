@@ -10,4 +10,6 @@ public class RequestLoginDto {
     private String username;
 
     private String password;
+
+    private String token;
 }

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -34,7 +35,7 @@ public class IdentificationService {
     private final IdentificationRepository identificationRepository;
     private final ObjectMapper objectMapper;
 
-    public String createIdentification(HttpRequestIdentificationDto dto) throws JsonProcessingException {
+    public String createIdentification(HttpRequestIdentificationDto dto) throws IOException {
 
         String verificationKey = UUID.randomUUID().toString();
 

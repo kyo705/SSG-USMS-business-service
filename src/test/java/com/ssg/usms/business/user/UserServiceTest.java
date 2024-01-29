@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,7 +98,7 @@ public class UserServiceTest {
         UsmsUser user = UsmsUser.builder()
                 .username("httpRequestSign")
                 .password("hashedpassword123@")
-                .personName("hihello")
+                .nickname("hihello")
                 .phoneNumber("010-1234-24124")
                 .email("asdf123@naer.com")
                 .id(1L)
@@ -123,34 +124,59 @@ public class UserServiceTest {
     @Test
     public void SuccessFindUserByValueCode0(){
 
+        List<HttpResponseUserDto> dtoList = new ArrayList<>();
+        List<UsmsUser> userList = new ArrayList<>();
+
         UsmsUser user = UsmsUser.builder()
                 .username("httpRequestSign")
                 .password("hashedpassword123@")
-                .personName("hihello")
+                .nickname("hihello")
                 .phoneNumber("010-1234-24124")
                 .email("asdf123@naer.com")
                 .id(1L)
                 .build();
+        UsmsUser user2 = UsmsUser.builder()
+                .username("httpRequestSign")
+                .password("hashedpassword123@")
+                .nickname("hihello")
+                .phoneNumber("010-1232-2124")
+                .email("asdf123@naer.com")
+                .id(2L)
+                .build();
+
 
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .nickname(user.getPersonName())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .securityState(user.getSecurityState().getLevel())
+                .build();
+        HttpResponseUserDto dto1 = HttpResponseUserDto.builder()
+                .id(user2.getId())
+                .username(user2.getUsername())
+                .nickname(user2.getNickname())
+                .email(user2.getEmail())
+                .phoneNumber(user2.getPhoneNumber())
+                .securityState(user2.getSecurityState().getLevel())
                 .build();
 
         Claims fakeClaims = Jwts.claims()
                 .add("code", "0")
                 .add("value", "asdf123@naer.com")
                 .build();
+        userList.add(user);
+        userList.add(user2);
+
+        dtoList.add(dto);
+        dtoList.add(dto1);
 
         given(jwtUtil.getClaim(any())).willReturn(fakeClaims);
 
-        given(repository.findByEmail(any())).willReturn(user);
+        given(repository.findAllByEmail(any())).willReturn(userList);
 
-        Assertions.assertThat(userService.findUserByValue("").toString()).isEqualTo(dto.toString());
+        Assertions.assertThat(userService.findUserByValue("").toString()).isEqualTo(dtoList.toString());
     }
 
     @DisplayName("인자로 들어온 token값으로 user를 찾을수 없는 경우")
@@ -160,7 +186,7 @@ public class UserServiceTest {
         UsmsUser user = UsmsUser.builder()
                 .username("httpRequestSign")
                 .password("hashedpassword123@")
-                .personName("hihello")
+                .nickname("hihello")
                 .phoneNumber("010-1234-24124")
                 .email("asdf123@naer.com")
                 .id(1L)
@@ -169,7 +195,7 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .nickname(user.getPersonName())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .securityState(user.getSecurityState().getLevel())
@@ -182,7 +208,7 @@ public class UserServiceTest {
 
         given(jwtUtil.getClaim(any())).willReturn(fakeClaims);
 
-        given(repository.findByEmail(any())).willReturn(null);
+        given(repository.findAllByEmail(any())).willReturn(new ArrayList<>());
 
         assertThrows(NotExistingUserException.class ,() -> userService.findUserByValue("").toString());
     }
@@ -193,24 +219,51 @@ public class UserServiceTest {
     @Test
     public void SuccessFindUserByValue(){
 
+
+        List<HttpResponseUserDto> dtoList = new ArrayList<>();
+        List<UsmsUser> userList = new ArrayList<>();
+
         UsmsUser user = UsmsUser.builder()
                 .username("httpRequestSign")
                 .password("hashedpassword123@")
-                .personName("hihello")
+                .nickname("hihello")
                 .phoneNumber("010-1234-24124")
                 .email("asdf123@naer.com")
                 .id(1L)
                 .build();
+        UsmsUser user2 = UsmsUser.builder()
+                .username("httpRequestSign")
+                .password("hashedpassword123@")
+                .nickname("hihello")
+                .phoneNumber("010-1234-5124")
+                .email("asdf123@naer.com")
+                .id(2L)
+                .build();
+
 
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .nickname(user.getPersonName())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .securityState(user.getSecurityState().getLevel())
                 .build();
+        HttpResponseUserDto dto1 = HttpResponseUserDto.builder()
+                .id(user2.getId())
+                .username(user2.getUsername())
+                .nickname(user2.getNickname())
+                .email(user2.getEmail())
+                .phoneNumber(user2.getPhoneNumber())
+                .securityState(user2.getSecurityState().getLevel())
+                .build();
 
+
+        userList.add(user);
+        userList.add(user2);
+
+        dtoList.add(dto);
+        dtoList.add(dto1);
         Claims fakeClaims = Jwts.claims()
                 .add("code", "1")
                 .add("value", "010-1234-5124")
@@ -218,9 +271,9 @@ public class UserServiceTest {
 
         given(jwtUtil.getClaim(any())).willReturn(fakeClaims);
 
-        given(repository.findByPhoneNumber(any())).willReturn(user);
+        given(repository.findAllByPhoneNumber(any())).willReturn(userList);
 
-        Assertions.assertThat(userService.findUserByValue("").toString()).isEqualTo(dto.toString());
+        Assertions.assertThat(userService.findUserByValue("").toString()).isEqualTo(dtoList.toString());
     }
 
     @DisplayName("인자로 들어온 token값으로 user를 찾을수 없는 경우")
@@ -230,7 +283,7 @@ public class UserServiceTest {
         UsmsUser user = UsmsUser.builder()
                 .username("httpRequestSign")
                 .password("hashedpassword123@")
-                .personName("hihello")
+                .nickname("hihello")
                 .phoneNumber("010-1234-24124")
                 .email("asdf123@naer.com")
                 .id(1L)
@@ -239,7 +292,7 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .nickname(user.getPersonName())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .securityState(user.getSecurityState().getLevel())
@@ -252,7 +305,7 @@ public class UserServiceTest {
 
         given(jwtUtil.getClaim(any())).willReturn(fakeClaims);
 
-        given(repository.findByPhoneNumber(any())).willReturn(null);
+        given(repository.findAllByPhoneNumber(any())).willReturn(new ArrayList<>());
 
         assertThrows(NotExistingUserException.class ,() -> userService.findUserByValue("").toString());
     }
@@ -271,7 +324,7 @@ public class UserServiceTest {
 
         UsmsUser User = new UsmsUser();
         User.setId(1L);
-        User.setPersonName("tmpName");
+        User.setNickname("tmpName");
         User.setEmail("tmp123@naver.com");
         User.setPhoneNumber("010-1234-4242");
         User.setPassword("tmpPassword");
@@ -280,7 +333,7 @@ public class UserServiceTest {
 
         UsmsUser newUser = new UsmsUser();
         newUser.setId(1L);
-        newUser.setPersonName(dto.getNickname());
+        newUser.setNickname(dto.getNickname());
         newUser.setEmail(dto.getEmail());
         newUser.setPhoneNumber(dto.getPhoneNumber());
         newUser.setPassword(dto.getPassword());
@@ -306,7 +359,7 @@ public class UserServiceTest {
 
         UsmsUser User = new UsmsUser();
         User.setId(1L);
-        User.setPersonName("tmpName");
+        User.setNickname("tmpName");
         User.setEmail("tmp123@naver.com");
         User.setPhoneNumber("010-1234-4242");
         User.setPassword("tmpPassword");
@@ -315,7 +368,7 @@ public class UserServiceTest {
 
         UsmsUser newUser = new UsmsUser();
         newUser.setId(1L);
-        newUser.setPersonName(dto.getNickname());
+        newUser.setNickname(dto.getNickname());
         newUser.setEmail(dto.getEmail());
         newUser.setPhoneNumber(dto.getPhoneNumber());
         newUser.setPassword(User.getPassword());
@@ -357,7 +410,7 @@ public class UserServiceTest {
                 .username("tkfka123")
                 .password("asdfasdf2312*")
                 .email("email@naver.com")
-                .personName("hongu")
+                .nickname("hongu")
                 .phoneNumber("010-1234-4544")
                 .isLock(false)
                 .securityState(SecurityState.BASIC)
@@ -367,7 +420,7 @@ public class UserServiceTest {
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .nickname(user.getPersonName())
+                .nickname(user.getNickname())
                 .phoneNumber(user.getPhoneNumber())
                 .securityState(user.getSecurityState().getLevel())
                 .email(user.getEmail())
@@ -406,7 +459,7 @@ public class UserServiceTest {
                 .username("tkfka123")
                 .password("asdfasdf2312*")
                 .email("email@naver.com")
-                .personName("hongu")
+                .nickname("hongu")
                 .phoneNumber("010-1234-4544")
                 .isLock(false)
                 .securityState(SecurityState.BASIC)
