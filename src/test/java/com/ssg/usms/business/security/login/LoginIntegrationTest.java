@@ -2,9 +2,8 @@ package com.ssg.usms.business.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
-import com.ssg.usms.business.device.repository.DeviceRepository;
 import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
-import com.ssg.usms.business.device.repository.UserDevice;
+import com.ssg.usms.business.device.repository.UsmsDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import com.ssg.usms.business.user.repository.UserRepository;
@@ -17,19 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-
-import javax.security.sasl.AuthenticationException;
 
 import java.util.Optional;
 
@@ -96,7 +91,7 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    Optional<UserDevice> userDevice = jpaDataDeviceRepository.findById(1L);
+                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(1L);
                     assertNotNull(userDevice);
                     assertEquals(requestBody.getToken(),userDevice.get().getToken());
                 });
@@ -121,7 +116,7 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    Optional<UserDevice> userDevice = jpaDataDeviceRepository.findById(1L);
+                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(1L);
                     assertNotNull(userDevice);
                     assertEquals(requestBody.getToken(),userDevice.get().getToken());
                 });

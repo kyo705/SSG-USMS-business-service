@@ -33,7 +33,7 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-core'
 	implementation 'org.springframework.session:spring-session-data-redis'
 	implementation 'com.google.firebase:firebase-admin:6.8.1'
-	implementation group: 'com.squareup.okhttp3' , name: 'okhttp' , version: '4.2.2'
+//	implementation group: 'com.squareup.okhttp3' , name: 'okhttp' , version: '4.2.2'
 
 
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'

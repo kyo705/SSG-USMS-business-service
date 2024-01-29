@@ -3,7 +3,7 @@ package com.ssg.usms.business.device;
 import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.device.repository.DeviceRepository;
 import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
-import com.ssg.usms.business.device.repository.UserDevice;
+import com.ssg.usms.business.device.repository.UsmsDevice;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +28,13 @@ public class deviceRepositoryTest {
     @DisplayName("성공적으로 삭제한 경우 1 리턴")
     @Test
     public void TestDeleteDevice(){
-        UserDevice device = UserDevice.builder()
+        UsmsDevice device = UsmsDevice.builder()
                 .userid(1L)
                 .token("1234")
                 .build();
 
         deviceRepository.saveToken(device);
-        List<UserDevice> list = jpaDataDeviceRepository.findAll();
+        List<UsmsDevice> list = jpaDataDeviceRepository.findAll();
 
         assertThat( deviceRepository.deleteToken(1L) ).isEqualTo(1);
     }
@@ -51,13 +51,13 @@ public class deviceRepositoryTest {
     @Test
     public void TestInsertWithNoExistUseridDevice(){
 
-        UserDevice device = UserDevice.builder()
+        UsmsDevice device = UsmsDevice.builder()
                 .userid(1L)
                 .token("1234")
                 .build();
 
         deviceRepository.saveToken(device);
-        List<UserDevice> list = jpaDataDeviceRepository.findAll();
+        List<UsmsDevice> list = jpaDataDeviceRepository.findAll();
 
         assertThat( list.size() ).isEqualTo(1);
     }

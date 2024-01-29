@@ -10,7 +10,7 @@ public class JpaDeviceRepository implements DeviceRepository{
 
     private final SpringJpaDataDeviceRepository springJpaDataDeviceRepository;
     @Override
-    public void saveToken(UserDevice device) {
+    public void saveToken(UsmsDevice device) {
         springJpaDataDeviceRepository.save(device);
     }
 

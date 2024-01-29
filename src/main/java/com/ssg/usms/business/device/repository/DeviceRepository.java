@@ -3,7 +3,7 @@ package com.ssg.usms.business.device.repository;
 
 public interface DeviceRepository {
 
-    void saveToken(UserDevice device);
+    void saveToken(UsmsDevice device);
 
     int deleteToken(Long userid);
 }
