@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.ssg.usms.business.security.login.constant.LoginConstant.SUCCESS_LOGIN;
 
 @Component
 @RequiredArgsConstructor
@@ -45,10 +44,10 @@ public class UsmsLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         deviceService.saveToken(dto.getToken(), userDetails.getId());
 
-        writeResponse(response, HttpStatus.OK.value(),SUCCESS_LOGIN,responseDto);
+        writeResponse(response, HttpStatus.OK.value(),responseDto);
     }
 
-    private void writeResponse(HttpServletResponse response, int code, String message,HttpResponseUserDto responseUserDto) throws IOException {
+    private void writeResponse(HttpServletResponse response, int code,HttpResponseUserDto responseUserDto) throws IOException {
 
         response.setStatus(code);
         response.setCharacterEncoding("UTF-8");

@@ -18,6 +18,4 @@ public class ResponseLogoutDto {
 
     private String message;
 
-    private HttpResponseUserDto user;
-
 }

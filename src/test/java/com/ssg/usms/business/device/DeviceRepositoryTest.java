@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @Transactional
 @SpringBootTest(classes = EmbeddedRedis.class)
-public class deviceRepositoryTest {
+public class DeviceRepositoryTest {
 
     @Autowired
     private DeviceRepository deviceRepository;
