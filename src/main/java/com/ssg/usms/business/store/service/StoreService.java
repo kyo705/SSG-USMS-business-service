@@ -130,12 +130,10 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public void validateStore(Long storeId) {
-        log.info(" 매장 아이디 검증 : {}", storeId);
         Store store = storeRepository.findById(storeId);
         if(store == null) {
             throw new NotExistingStoreException();
         }
-        log.info("##################################3 {}", store.getStoreAddress());
     }
 
     @Transactional(readOnly = true)
@@ -144,7 +142,6 @@ public class StoreService {
         validateStore(storeId);
 
         Store store = storeRepository.findById(storeId);
-        log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& {}", store.getStoreAddress());
         if(store.getUserId() != userId) {
             throw new NotOwnedStoreException();
         }

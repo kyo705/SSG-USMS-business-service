@@ -38,6 +38,7 @@ public class SecurityConfig {
 
                         .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/accidents")).hasRole(ROLE_STORE_OWNER.getRole())
                         .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/accidents/stats")).hasRole(ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/accidents/region")).hasRole(ROLE_STORE_OWNER.getRole())
 
                         .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs")).hasRole(ROLE_STORE_OWNER.getRole())
                         .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/{cctvId}")).hasRole(ROLE_STORE_OWNER.getRole())
