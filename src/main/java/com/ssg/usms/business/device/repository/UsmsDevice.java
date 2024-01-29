@@ -2,7 +2,6 @@ package com.ssg.usms.business.device.repository;
 
 
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 

@@ -2,7 +2,6 @@ package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.device.service.DeviceService;
-import com.ssg.usms.business.notification.service.FirebaseService;
 import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import lombok.RequiredArgsConstructor;

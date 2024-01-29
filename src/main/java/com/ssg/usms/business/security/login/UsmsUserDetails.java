@@ -1,6 +1,5 @@
 package com.ssg.usms.business.security.login;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssg.usms.business.user.dto.SecurityState;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.AllArgsConstructor;

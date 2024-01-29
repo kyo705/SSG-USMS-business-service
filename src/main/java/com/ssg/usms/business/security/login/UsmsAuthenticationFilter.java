@@ -1,7 +1,9 @@
 package com.ssg.usms.business.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.device.service.DeviceService;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -18,8 +20,11 @@ import java.io.IOException;
 
 
 @Slf4j
+@RequiredArgsConstructor
 public class UsmsAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final DeviceService deviceService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,HttpServletResponse response ){
@@ -37,9 +42,11 @@ public class UsmsAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
 
         setDetails(request, usernamePasswordAuthenticationToken);
-        usernamePasswordAuthenticationToken.setDetails(dto);
 
-        return getAuthenticationManager().authenticate(usernamePasswordAuthenticationToken);
+        Authentication authentication = getAuthenticationManager().authenticate(usernamePasswordAuthenticationToken);
+        deviceService.saveToken(dto.getToken(), ((UsmsUserDetails)authentication.getPrincipal()).getId());
+
+        return authentication;
     }
 
     private RequestLoginDto parseRequestLoginDto(HttpServletRequest request){

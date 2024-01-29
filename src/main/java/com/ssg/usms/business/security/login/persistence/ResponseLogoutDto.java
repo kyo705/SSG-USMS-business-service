@@ -1,7 +1,6 @@
 package com.ssg.usms.business.security.login.persistence;
 
 
-import com.ssg.usms.business.user.dto.HttpResponseUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
