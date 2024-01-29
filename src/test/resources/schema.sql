@@ -3,7 +3,7 @@ DROP TABLE store IF EXISTS;
 DROP TABLE cctv IF EXISTS;
 DROP TABLE accident IF EXISTS;
 DROP TABLE region_warning IF EXISTS;
-DROP TABLE user_device IF EXISTS;
+DROP TABLE usms_device IF EXISTS;
 
 DROP INDEX usms_store_business_license_img_id_idx IF EXISTS;
 DROP INDEX usms_cctv_stream_key_idx IF EXISTS;
@@ -60,6 +60,7 @@ CREATE TABLE usms_device (
     user_id BIGINT NOT NULL,
     token VARCHAR(255) NOT NULL
 );
+
 
 CREATE UNIQUE INDEX usms_store_business_license_img_id_idx ON store (business_license_img_id);
 CREATE UNIQUE INDEX usms_cctv_stream_key_idx ON cctv (cctv_stream_key);
