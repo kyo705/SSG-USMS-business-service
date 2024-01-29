@@ -54,14 +54,12 @@ public class StreamKeyServiceCheckingAuthOfPushingStreamTest {
 
         given(cctvService.findByStreamKey(requestParam.getName())).willReturn(cctv);
         given(streamKeyRepository.isExistingStreamKey(requestParam.getName())).willReturn(false);
-        given(streamKeyRepository.saveStreamKey(requestParam.getName())).willReturn(requestParam.getName());
 
         //when & then
         streamKeyService.checkAuthOfPushingStream(requestParam);
 
         verify(cctvService, times(1)).findByStreamKey(requestParam.getName());
         verify(streamKeyRepository, times(1)).isExistingStreamKey(requestParam.getName());
-        verify(streamKeyRepository, times(1)).saveStreamKey(requestParam.getName());
     }
 
     @DisplayName("자신의 기존 연결된 스트림 키에 대해 검증 요청시 정상적으로 검증이 끝난다.")

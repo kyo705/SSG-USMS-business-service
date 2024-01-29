@@ -37,15 +37,33 @@ public class RedisStreamKeyRepositoryWithIsExistingStreamKeyTest {
         //given
         String streamKey = "streamKey1";
 
-        assertThat(stringRedisTemplate.opsForSet().isMember(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey))
-                .isFalse();
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNull();
 
         //when
         redisStreamKeyRepository.saveStreamKey(streamKey);
 
         //then
-        assertThat(stringRedisTemplate.opsForSet().isMember(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey))
-                .isTrue();
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNotNull();
+    }
+
+    @DisplayName("[saveStreamKey] : 만료 시간과 함께 특정 value를 저장한다.")
+    @Test
+    public void testSaveStreamKeyWithExpireTime() throws InterruptedException {
+
+        //given
+        String streamKey = "streamKey1";
+
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNull();
+
+        //when
+        redisStreamKeyRepository.saveStreamKey(streamKey, 2);
+
+        //then
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNotNull();
+
+        Thread.sleep(2500);
+
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNull();
     }
 
     @DisplayName("[isExistingStreamKey] : 이미 연결된 스트림 키에 대해 존재 여부 요청시 true를 리턴한다.")
@@ -55,7 +73,7 @@ public class RedisStreamKeyRepositoryWithIsExistingStreamKeyTest {
         //given
         String streamKey = "streamKey1";
 
-        stringRedisTemplate.opsForSet().add(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey);
+        stringRedisTemplate.opsForValue().set(streamKey, SET_NAME_OF_CONNECTED_STREAM_KEY);
 
         //when
         boolean isExisting = redisStreamKeyRepository.isExistingStreamKey(streamKey);
@@ -85,19 +103,16 @@ public class RedisStreamKeyRepositoryWithIsExistingStreamKeyTest {
         //given
         String streamKey = "streamKey1";
 
-        assertThat(stringRedisTemplate.opsForSet().isMember(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey))
-                .isFalse();
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNull();
 
-        stringRedisTemplate.opsForSet().add(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey);
+        stringRedisTemplate.opsForValue().set(streamKey, SET_NAME_OF_CONNECTED_STREAM_KEY);
 
-        assertThat(stringRedisTemplate.opsForSet().isMember(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey))
-                .isTrue();
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNotNull();
 
         //when
         redisStreamKeyRepository.removeStreamKey(streamKey);
 
         //then
-        assertThat(stringRedisTemplate.opsForSet().isMember(SET_NAME_OF_CONNECTED_STREAM_KEY, streamKey))
-                .isFalse();
+        assertThat(stringRedisTemplate.opsForValue().get(streamKey)).isNull();
     }
 }
