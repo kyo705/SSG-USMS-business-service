@@ -1,7 +1,10 @@
 package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.device.service.DeviceService;
+import com.ssg.usms.business.security.login.UsmsUserDetails;
+import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -18,10 +21,12 @@ import static com.ssg.usms.business.security.login.constant.LoginConstant.SUCCES
 
 
 @Component
+@RequiredArgsConstructor
 public class logoutSuccessHandler implements LogoutSuccessHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final DeviceService deviceService;
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -31,12 +36,15 @@ public class logoutSuccessHandler implements LogoutSuccessHandler {
             return;
         }
 
+        UsmsUserDetails userDetails = (UsmsUserDetails) authentication.getPrincipal();
+
+        deviceService.deleteToken(userDetails.getId());
         writeResponse(response,HttpStatus.OK.value(), SUCCESS_LOGOUT);
     }
 
     private void writeResponse(HttpServletResponse response, int code, String message) {
 
-        ResponseLoginDto responseBody = new ResponseLoginDto();
+        ResponseLogoutDto responseBody = new ResponseLogoutDto();
         responseBody.setCode(code);
         responseBody.setMessage(message);
 

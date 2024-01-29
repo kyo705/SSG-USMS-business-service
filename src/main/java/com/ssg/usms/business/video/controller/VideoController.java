@@ -31,9 +31,9 @@ public class VideoController {
 
         validateFileFormat(protocol, filename);
 
-        UsmsUserDetails userDetails = (UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        String redirectUrl = videoService.getLiveVideo(userDetails.getId(), streamKey, protocol, filename);
+        String redirectUrl = videoService.getLiveVideo(userId, streamKey, protocol, filename);
 
         return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
                 .header(HttpHeaders.LOCATION, redirectUrl)
@@ -46,9 +46,9 @@ public class VideoController {
                                                  @PathVariable @ReplayVideoFilename String filename) {
         validateFileFormat(protocol, filename);
 
-        UsmsUserDetails userDetails = (UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        byte[] videoStream = videoService.getReplayVideo(userDetails.getId(), streamKey, filename);
+        byte[] videoStream = videoService.getReplayVideo(userId, streamKey, filename);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)

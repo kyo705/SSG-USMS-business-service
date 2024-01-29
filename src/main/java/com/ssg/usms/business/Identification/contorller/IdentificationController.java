@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 
 import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 import static com.ssg.usms.business.Identification.dto.CertificationCode.EMAIL;
@@ -31,7 +32,7 @@ public class IdentificationController {
     private final IdentificationService identificationService;
 
     @PostMapping("/api/identification")
-    public ResponseEntity<Void> createIdentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws JsonProcessingException {
+    public ResponseEntity<Void> createIdentification(@Valid @RequestBody HttpRequestIdentificationDto httpRequestIdentificationDto) throws IOException {
 
         if(httpRequestIdentificationDto.getCode() == EMAIL.getCode()){
 

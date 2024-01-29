@@ -3,7 +3,10 @@ package com.ssg.usms.business.user.controller;
 
 import com.ssg.usms.business.Identification.dto.CertificationCode;
 import com.ssg.usms.business.security.login.UsmsUserDetails;
-import com.ssg.usms.business.user.dto.*;
+import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
+import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.dto.HttpResponseUserDto;
+import com.ssg.usms.business.user.dto.SecurityState;
 import com.ssg.usms.business.user.exception.NotAllowedFormCheckException;
 import com.ssg.usms.business.user.exception.NotAllowedSecondPasswordException;
 import com.ssg.usms.business.user.exception.NotMatchedDtoJwtValueException;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 import static com.ssg.usms.business.Identification.constant.IdentificationConstant.*;
 import static com.ssg.usms.business.user.constant.UserConstants.*;
@@ -69,13 +73,13 @@ public class UserController {
 
 
     @GetMapping("/api/user")
-    public ResponseEntity<HttpResponseUserDto> findUserWithJwt(HttpServletRequest request) {
+    public ResponseEntity<List<HttpResponseUserDto>> findUserWithJwt(HttpServletRequest request) {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         jwtUtil.VerifyToken(authorization, IDENTIFICATION_JWT_SUBJECT);
 
-        HttpResponseUserDto userDto = userService.findUserByValue(authorization);
+        List<HttpResponseUserDto> userDto = userService.findUserByValue(authorization);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, authorization);

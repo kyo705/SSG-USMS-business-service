@@ -4,7 +4,10 @@ package com.ssg.usms.business.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
-import com.ssg.usms.business.user.dto.*;
+import com.ssg.usms.business.user.dto.HttpRequestModifyUserDto;
+import com.ssg.usms.business.user.dto.HttpRequestSignUpDto;
+import com.ssg.usms.business.user.dto.HttpResponseUserDto;
+import com.ssg.usms.business.user.dto.SecurityState;
 import com.ssg.usms.business.user.exception.AlreadyExistEmailException;
 import com.ssg.usms.business.user.exception.AlreadyExistPhoneNumException;
 import com.ssg.usms.business.user.exception.AlreadyExistUsernameException;
@@ -33,7 +36,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -371,6 +376,7 @@ public class UserControllerTest {
     @Test
     public void TestSuccessFindUserByJwt() throws Exception {
 
+        List<HttpResponseUserDto> dtoList = new ArrayList<>();
 
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .username("hello")
@@ -379,15 +385,16 @@ public class UserControllerTest {
                 .nickname("asdf")
                 .securityState(0)
                 .build();
+        dtoList.add(dto);
 
-        given(userService.findUserByValue(any())).willReturn(dto);
+        given(userService.findUserByValue(any())).willReturn(dtoList);
 
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/user")
                                 .header(HttpHeaders.AUTHORIZATION,token))
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(dto)))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(dtoList),true))
                 .andExpect(result -> {
                     String actualToken = result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
                     assertEquals(token,actualToken);
@@ -404,7 +411,7 @@ public class UserControllerTest {
     @Test
     public void TestFailFindUserByJwt() throws Exception {
 
-
+        List<HttpResponseUserDto> dtoList = new ArrayList<>();
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .username("hello")
                 .email("tkfka123@gmail.com")
@@ -412,8 +419,9 @@ public class UserControllerTest {
                 .nickname("asdf")
                 .securityState(0)
                 .build();
+        dtoList.add(dto);
 
-        given(userService.findUserByValue(any())).willReturn(dto);
+        given(userService.findUserByValue(any())).willReturn(dtoList);
 
         mockMvc.perform(
                         MockMvcRequestBuilders

@@ -1,7 +1,12 @@
 INSERT INTO usms_user (id, username, password, person_name, phone_number, email, security_state, is_lock, role)
 VALUES (1, 'storeOwner', '$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVnqY77iS', 'kyo705', '010-1234-5678', 'email@gmail.com', 0, false, 1),
-       (2, 'admin', '$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVnqY77iS', 'kyo705', '010-1111-1111', 'email2@gmail.com', 0, false, 0);
+       (2, 'admin', '$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVnqY77iS', 'kyo705', '010-1111-1111', 'email2@gmail.com', 0, false, 0),
+       (3, 'storeOwner2', '$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVnqY77iS', 'kyo705', '010-1234-1111', 'email@gmail.com', 0, false, 1);
+
 --- password : "1234567890a*"
+INSERT INTO usms_device (id, user_id , token)
+VALUES (1,1,'newtoken');
+
 
 INSERT INTO store (id, user_id, store_name, store_address, business_license_code, business_license_img_id, store_state)
  VALUES (1, 1, '매장명1', '매장 주소', '123-45-67890', '사업자등록증 사본 파일 키1', 0),

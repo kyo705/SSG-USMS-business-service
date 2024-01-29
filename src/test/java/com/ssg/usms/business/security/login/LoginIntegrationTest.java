@@ -2,10 +2,11 @@ package com.ssg.usms.business.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.device.repository.DeviceRepository;
+import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
+import com.ssg.usms.business.device.repository.UsmsDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
 import com.ssg.usms.business.user.repository.UserRepository;
-import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,18 +25,26 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 
-@Transactional
+
 @Slf4j
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(classes = EmbeddedRedis.class)
 public class LoginIntegrationTest {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private DeviceRepository deviceRepository;
+    @Autowired
+    private SpringJpaDataDeviceRepository jpaDataDeviceRepository;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -47,15 +56,6 @@ public class LoginIntegrationTest {
     @BeforeEach
     public void setup() {
 
-        UsmsUser user = UsmsUser.builder()
-                .username("httpRequestSign")
-                .password(encoder.encode("hashedpassword123@"))
-                .personName("TestUser")
-                .phoneNumber("010-1423-4151")
-                .email("test@email.com")
-                .build();
-
-        repository.signUp(user);
 
 
         mockMvc = MockMvcBuilders
@@ -70,12 +70,11 @@ public class LoginIntegrationTest {
     @Test
     public void testLoginWithAuthorizedUserInfo() throws Exception {
 
-        log.info(repository.findByUsername("httpRequestSign").toString());
-
+        jpaDataDeviceRepository.deleteByUserid(1L);
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@");
-
+        requestBody.setUsername("storeOwner");
+        requestBody.setPassword("1234567890a*");
+        requestBody.setToken("newtoken");
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/login")
@@ -84,20 +83,40 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.OK.value());
+                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(2L);
+                    assertNotNull(userDevice);
+                    assertEquals(requestBody.getToken(),userDevice.get().getToken());
                 });
 
     }
 
+    @DisplayName("인증이 완료된 유저로 로그인 시도할 경우 토큰값이 빠졌으면 400 상태코드를 리턴. AuthenticationServiceException을 던진다.")
+    @Test
+    public void testLoginWithAuthorizedUserInfoNotincludeToken() throws Exception {
+
+        RequestLoginDto requestBody = new RequestLoginDto();
+        requestBody.setUsername("storeOwner");
+        requestBody.setPassword("1234567890a*");
+//        requestBody.setToken("newtoken");
+
+        //when & then
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/api/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestBody))
+                )
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
+
+    }
 
     @DisplayName("존재하지 않는 이메일로 로그인 시도할 경우 400 상태코드를 리턴한다.")
     @Test
     public void testLoginWithNotExistingEmail() throws Exception {
 
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSignasdfaa");
-        requestBody.setPassword("hashedpassword123@");
+        requestBody.setUsername("storeOwner232");
+        requestBody.setPassword("1234567890a*");
+        requestBody.setToken("newtoken");
 
         //when & then
         mockMvc.perform(
@@ -105,33 +124,24 @@ public class LoginIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestBody))
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                });
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
 
     }
-
     @DisplayName("비밀번호가 부정확한 요청으로 로그인 시도할 경우 400 상태코드를 리턴한다.")
     @Test
     public void testLoginWithInvalidPassword() throws Exception {
 
         RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@123");
-
+        requestBody.setUsername("storeOwner");
+        requestBody.setPassword("1234567890123213a*");
+        requestBody.setToken("newtoken");
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestBody))
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                });
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
 
     }
 

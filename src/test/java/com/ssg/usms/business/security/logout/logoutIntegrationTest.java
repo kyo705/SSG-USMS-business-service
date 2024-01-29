@@ -2,10 +2,9 @@ package com.ssg.usms.business.security.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
-import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
+import com.ssg.usms.business.security.login.persistence.ResponseLogoutDto;
 import com.ssg.usms.business.user.repository.UserRepository;
-import com.ssg.usms.business.user.repository.UsmsUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,20 +41,13 @@ public class logoutIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private SpringJpaDataDeviceRepository jpaDataDeviceRepository;
+
+    @Autowired
     private UserRepository repository;
 
     @BeforeEach
     public void setup() {
-
-        UsmsUser user = UsmsUser.builder()
-                .username("httpRequestSign")
-                .password(encoder.encode("hashedpassword123@"))
-                .personName("TestUser")
-                .phoneNumber("010-1423-4151")
-                .email("test@email.com")
-                .build();
-
-        repository.signUp(user);
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
@@ -65,25 +57,21 @@ public class logoutIntegrationTest {
     }
 
 
-    @WithUserDetails(value = "httpRequestSign",setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUserDetails(value = "storeOwner",setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @DisplayName("기존에 로그인된 세션이 있는 경우에 로그아웃을 시도할 경우 200 코드를 리턴한다.")
     @Test
     public void testLoginWithAuthorizedUserInfo() throws Exception {
-
-        RequestLoginDto requestBody = new RequestLoginDto();
-        requestBody.setUsername("httpRequestSign");
-        requestBody.setPassword("hashedpassword123@");
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/api/logout")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestBody))
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
                     assertThat(responseBody.getCode()).isEqualTo(HttpStatus.OK.value());
+                    assertThat(jpaDataDeviceRepository.findAll().size()).isEqualTo(0);
                 });
     }
 
@@ -99,7 +87,7 @@ public class logoutIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(result -> {
-                    ResponseLoginDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLoginDto.class);
+                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
                     assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
                 });
 
