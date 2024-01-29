@@ -58,7 +58,7 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
-        if(!storeService.isAvailable(userId)) {
+        if(!storeService.isAvailable(storeId)) {
             throw new UnavailableStoreException();
         }
 
@@ -84,7 +84,7 @@ public class CctvController {
 
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
-        if(!storeService.isAvailable(userId)) {
+        if(!storeService.isAvailable(storeId)) {
             throw new UnavailableStoreException();
         }
 
@@ -102,7 +102,7 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
-        if(!storeService.isAvailable(userId)) {
+        if(!storeService.isAvailable(storeId)) {
             throw new UnavailableStoreException();
         }
 
@@ -121,7 +121,7 @@ public class CctvController {
         userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         storeService.validateOwnedStore(storeId, userId);
         cctvService.validateOwnedCctv(storeId, cctvId);
-        if(!storeService.isAvailable(userId)) {
+        if(!storeService.isAvailable(storeId)) {
             throw new UnavailableStoreException();
         }
 
