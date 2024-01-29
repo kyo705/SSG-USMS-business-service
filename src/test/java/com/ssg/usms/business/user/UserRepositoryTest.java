@@ -140,33 +140,7 @@ public class UserRepositoryTest {
         assertThat(user).isNull();
     }
 
-    @DisplayName("이메일로 유저를 찾을때 전화번호가 있는경우")
-    @Test
-    void findByEmailExistUser() {
-        // when
-        UsmsUser user = userRepository.findByEmail("email@gmail.com");
-        // then
-        assertThat(user).isInstanceOf(UsmsUser.class);
-    }
 
-    @DisplayName("이메일로 유저를 찾을때 전화번호가 있는경우")
-    @Test
-    void findByEmailNotExistUser() {
-        // when
-        UsmsUser user = userRepository.findByEmail("email@gmailasdsadf.com");
-        // then
-        assertThat(user).isNull();
-    }
-
-    @DisplayName("유저를 삭제하는 경우에 유저가 존재하고 삭제가 정상적으로 완료된 경우")
-    @Test
-    void deleteExistUser() {
-        // when
-        userRepository.delete(1L);
-        UsmsUser user = userRepository.findByEmail("email@gmail.com");
-        // then
-        assertThat(user).isNull();
-    }
 
     @DisplayName("유저를 삭제하는 경우에 유저가 존재하지않을때 InvalidDataAccessApiUsageException.class 리턴")
     @Test

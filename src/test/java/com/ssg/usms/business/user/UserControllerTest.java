@@ -391,7 +391,7 @@ public class UserControllerTest {
                                 .get("/api/user")
                                 .header(HttpHeaders.AUTHORIZATION,token))
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(dto)))
+                .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(dtoList),true))
                 .andExpect(result -> {
                     String actualToken = result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
                     assertEquals(token,actualToken);
