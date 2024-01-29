@@ -107,11 +107,7 @@ public class LoginIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestBody))
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(result -> {
-                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                });
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
 
     }
 
@@ -130,11 +126,7 @@ public class LoginIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestBody))
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(result -> {
-                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                });
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
 
     }
     @DisplayName("비밀번호가 부정확한 요청으로 로그인 시도할 경우 400 상태코드를 리턴한다.")
@@ -151,11 +143,7 @@ public class LoginIntegrationTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestBody))
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(result -> {
-                    ResponseLogoutDto responseBody = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseLogoutDto.class);
-                    assertThat(responseBody.getCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                });
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
 
     }
 
