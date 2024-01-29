@@ -29,7 +29,7 @@ public class UsmsUser {
     private String password;
 
     @Column(name="person_name")
-    private String personName;
+    private String nickname;
 
     @Column(name="phone_number",nullable = false,unique = true)
     private String phoneNumber;

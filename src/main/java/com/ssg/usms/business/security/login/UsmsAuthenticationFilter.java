@@ -22,22 +22,24 @@ public class UsmsAuthenticationFilter extends UsernamePasswordAuthenticationFilt
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req,HttpServletResponse res ){
+    public Authentication attemptAuthentication(HttpServletRequest request,HttpServletResponse response ){
 
-        if(!req.getMethod().equals(HttpMethod.POST.name())){
-            throw new AuthenticationServiceException("Authentication not supported :" + req.getMethod());
+        if(!request.getMethod().equals(HttpMethod.POST.name())){
+            throw new AuthenticationServiceException("Authentication not supported :" + request.getMethod());
         }
 
-        RequestLoginDto dto = parseRequestLoginDto(req);
-        String username = dto.getUsername();
-        String password = dto.getPassword();
+        RequestLoginDto dto = parseRequestLoginDto(request);
 
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        setDetails(req, usernamePasswordAuthenticationToken);
+        if( dto.getToken() == null){
+            throw new AuthenticationServiceException("No Token");
+        }
 
-        Authentication authentication = getAuthenticationManager().authenticate(usernamePasswordAuthenticationToken);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
 
-        return authentication;
+        setDetails(request, usernamePasswordAuthenticationToken);
+        usernamePasswordAuthenticationToken.setDetails(dto);
+
+        return getAuthenticationManager().authenticate(usernamePasswordAuthenticationToken);
     }
 
     private RequestLoginDto parseRequestLoginDto(HttpServletRequest request){

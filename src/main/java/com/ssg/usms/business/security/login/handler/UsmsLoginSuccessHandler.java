@@ -1,28 +1,33 @@
 package com.ssg.usms.business.security.login.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.device.service.DeviceService;
 import com.ssg.usms.business.security.login.UsmsUserDetails;
-import com.ssg.usms.business.security.login.persistence.ResponseLoginDto;
+import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
 import com.ssg.usms.business.user.dto.HttpResponseUserDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.ssg.usms.business.security.login.constant.LoginConstant.SUCCESS_LOGIN;
 
 @Component
+@RequiredArgsConstructor
 public class UsmsLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final DeviceService deviceService;
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         UsmsUserDetails userDetails = (UsmsUserDetails) authentication.getPrincipal();
@@ -35,15 +40,18 @@ public class UsmsLoginSuccessHandler implements AuthenticationSuccessHandler {
                 .email(userDetails.getEmail())
                 .build();
 
-        writeResponse(response, HttpStatus.OK.value(),SUCCESS_LOGIN,responseDto);
+        RequestLoginDto dto = (RequestLoginDto) authentication.getDetails();
+
+        deviceService.saveToken(dto.getToken(), userDetails.getId());
+
+        writeResponse(response, HttpStatus.OK.value(),responseDto);
     }
 
-    private void writeResponse(HttpServletResponse response, int code, String message,HttpResponseUserDto responseUserDto) throws IOException {
-
-        ResponseLoginDto responseBody = new ResponseLoginDto(code, message, responseUserDto);
+    private void writeResponse(HttpServletResponse response, int code,HttpResponseUserDto responseUserDto) throws IOException {
 
         response.setStatus(code);
+        response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        response.getWriter().write(objectMapper.writeValueAsString(responseUserDto));
     }
 }
