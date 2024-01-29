@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,6 +52,15 @@ public class CctvServiceTest {
         //given
         Long storeId = 1L;
         String name = "cctv 별칭";
+
+        Cctv cctv = new Cctv();
+        cctv.setId(1L);
+        cctv.setStoreId(storeId);
+        cctv.setExpired(false);
+        cctv.setName(name);
+        cctv.setStreamKey(UUID.randomUUID().toString());
+
+        given(mockCctvRepository.save(any())).willReturn(cctv);
 
         //when
         cctvService.createCctv(storeId, name);

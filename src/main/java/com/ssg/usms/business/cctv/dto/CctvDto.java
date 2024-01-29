@@ -24,6 +24,6 @@ public class CctvDto {
         this.cctvName = cctv.getName();
         this.cctvStreamKey = cctv.getStreamKey();
         this.isExpired = cctv.isExpired();
-        this.isConnected = null;
+        this.isConnected = false;
     }
 }
