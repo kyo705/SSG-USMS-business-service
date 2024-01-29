@@ -33,7 +33,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.ssg.usms.business.constant.CustomStatusCode.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -371,6 +373,7 @@ public class UserControllerTest {
     @Test
     public void TestSuccessFindUserByJwt() throws Exception {
 
+        List<HttpResponseUserDto> dtoList = new ArrayList<>();
 
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .username("hello")
@@ -379,8 +382,9 @@ public class UserControllerTest {
                 .nickname("asdf")
                 .securityState(0)
                 .build();
+        dtoList.add(dto);
 
-        given(userService.findUserByValue(any())).willReturn(dto);
+        given(userService.findUserByValue(any())).willReturn(dtoList);
 
         mockMvc.perform(
                         MockMvcRequestBuilders
@@ -404,7 +408,7 @@ public class UserControllerTest {
     @Test
     public void TestFailFindUserByJwt() throws Exception {
 
-
+        List<HttpResponseUserDto> dtoList = new ArrayList<>();
         HttpResponseUserDto dto = HttpResponseUserDto.builder()
                 .username("hello")
                 .email("tkfka123@gmail.com")
@@ -412,8 +416,9 @@ public class UserControllerTest {
                 .nickname("asdf")
                 .securityState(0)
                 .build();
+        dtoList.add(dto);
 
-        given(userService.findUserByValue(any())).willReturn(dto);
+        given(userService.findUserByValue(any())).willReturn(dtoList);
 
         mockMvc.perform(
                         MockMvcRequestBuilders

@@ -3,6 +3,7 @@ package com.ssg.usms.business.user.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -46,6 +47,16 @@ public class JpaUserRepository implements UserRepository{
     public boolean existsByEmail(String email) {
 
         return springDataJpaUserRepository.existsByEmail(email);
+    }
+
+    @Override
+    public List<UsmsUser> findAllByPhoneNumber(String phoneNumber) {
+        return springDataJpaUserRepository.findAllByPhoneNumber(phoneNumber);
+    }
+
+    @Override
+    public List<UsmsUser> findAllByEmail(String email) {
+        return springDataJpaUserRepository.findAllByEmail(email);
     }
 
     @Override

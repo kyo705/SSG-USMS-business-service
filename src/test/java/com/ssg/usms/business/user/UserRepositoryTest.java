@@ -2,6 +2,8 @@ package com.ssg.usms.business.user;
 
 
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.user.dto.SecurityState;
+import com.ssg.usms.business.user.dto.UserRole;
 import com.ssg.usms.business.user.repository.UserRepository;
 import com.ssg.usms.business.user.repository.UsmsUser;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -37,7 +42,7 @@ public class UserRepositoryTest {
         user.setUsername("testUser");
         user.setEmail("ans10123@asdf.com");
         user.setPassword("hasedhashed123@12");
-        user.setPersonName("hajoo");
+        user.setNickname("hajoo");
         user.setPhoneNumber("010-1234-2323");
 
         userRepository.signUp(user);
@@ -67,7 +72,7 @@ public class UserRepositoryTest {
         user.setUsername("testUser");
         user.setEmail("ans10123@asdf.com");
         user.setPassword("hasedhashed123@12");
-        user.setPersonName("hajoo");
+        user.setNickname("hajoo");
         user.setPhoneNumber("010-1234-2323");
 
         userRepository.signUp(user);
@@ -97,7 +102,7 @@ public class UserRepositoryTest {
         user.setUsername("testUser");
         user.setEmail("ans10123@asdf.com");
         user.setPassword("hasedhashed123@12");
-        user.setPersonName("hajoo");
+        user.setNickname("hajoo");
         user.setPhoneNumber("010-1234-2323");
 
         userRepository.signUp(user);
@@ -123,7 +128,7 @@ public class UserRepositoryTest {
         // when
         UsmsUser user = userRepository.findByPhoneNumber("010-1234-5678");
         // then
-        Assertions.assertThat(user).isInstanceOf(UsmsUser.class);
+        assertThat(user).isInstanceOf(UsmsUser.class);
     }
 
     @DisplayName("폰넘버로 유저를 찾을때 전화번호가 없는경우 null 리턴")
@@ -132,7 +137,7 @@ public class UserRepositoryTest {
         // when
         UsmsUser user = userRepository.findByPhoneNumber("010-1233-5448");
         // then
-        Assertions.assertThat(user).isNull();
+        assertThat(user).isNull();
     }
 
     @DisplayName("이메일로 유저를 찾을때 전화번호가 있는경우")
@@ -141,7 +146,7 @@ public class UserRepositoryTest {
         // when
         UsmsUser user = userRepository.findByEmail("email@gmail.com");
         // then
-        Assertions.assertThat(user).isInstanceOf(UsmsUser.class);
+        assertThat(user).isInstanceOf(UsmsUser.class);
     }
 
     @DisplayName("이메일로 유저를 찾을때 전화번호가 있는경우")
@@ -150,7 +155,7 @@ public class UserRepositoryTest {
         // when
         UsmsUser user = userRepository.findByEmail("email@gmailasdsadf.com");
         // then
-        Assertions.assertThat(user).isNull();
+        assertThat(user).isNull();
     }
 
     @DisplayName("유저를 삭제하는 경우에 유저가 존재하고 삭제가 정상적으로 완료된 경우")
@@ -160,7 +165,7 @@ public class UserRepositoryTest {
         userRepository.delete(1L);
         UsmsUser user = userRepository.findByEmail("email@gmail.com");
         // then
-        Assertions.assertThat(user).isNull();
+        assertThat(user).isNull();
     }
 
     @DisplayName("유저를 삭제하는 경우에 유저가 존재하지않을때 InvalidDataAccessApiUsageException.class 리턴")
@@ -184,6 +189,51 @@ public class UserRepositoryTest {
     void existEmailFailed(){
 
         assertFalse(userRepository.existsByEmail("email@gmail.asdfasdfcom"));
+    }
+
+    @DisplayName("같은 이메일로 가입한 모든 사용자를 조회")
+    @Test
+    void findAllByEmailSuccess(){
+
+        List< UsmsUser> dtoList = new ArrayList<>();
+
+        dtoList.add(UsmsUser.builder()
+                .id(1L)
+                .username("storeOwner")
+                .password("$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVnqY77iS")
+                .nickname("kyo705")
+                .phoneNumber("010-1234-5678")
+                .email("email@gmail.com")
+                .securityState(SecurityState.BASIC)
+                .isLock(false)
+                .role(UserRole.ROLE_STORE_OWNER)
+                .build());
+
+        dtoList.add(UsmsUser.builder()
+                .id(3L)
+                .username("storeOwner2")
+                .password("$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVnqY77iS")
+                .nickname("kyo705")
+                .phoneNumber("010-1234-1111")
+                .email("email@gmail.com")
+                .securityState(SecurityState.BASIC)
+                .isLock(false)
+                .role(UserRole.ROLE_STORE_OWNER)
+                .build());
+
+        List<UsmsUser> list = userRepository.findAllByEmail("email@gmail.com");
+        log.info(list.toString());
+        assertThat(list.toString()).isEqualTo(dtoList.toString());
+    }
+
+    @DisplayName("같은 이메일로 가입한 모든 사용자를 조회실패했을때 가입된 이메일이 없는경우")
+    @Test
+    void findAllByEmailFailed(){
+
+
+        List<UsmsUser> list = userRepository.findAllByEmail("email@gsdfmail.com");
+
+        assertThat(list.size()).isEqualTo(0);
     }
 
 

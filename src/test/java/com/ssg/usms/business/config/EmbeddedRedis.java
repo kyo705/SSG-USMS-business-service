@@ -1,5 +1,6 @@
 package com.ssg.usms.business.config;
 
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -18,74 +19,25 @@ import java.io.InputStreamReader;
 public class EmbeddedRedis {
 
     private RedisServer redisServer;
-    @Value("${spring.redis.port}")
-    private int redisPort;
 
     public EmbeddedRedis(RedisProperties redisProperties) {
-        this.redisServer = new RedisServer(redisProperties.getPort());
+        this.redisServer = RedisServer.builder()
+                .port(redisProperties.getPort())
+                .setting("maxmemory 128M").build();
     }
 
     @PostConstruct
-    public void startRedis() throws IOException {
-        int port = isRedisRunning() ? findAvailablePort() : redisPort;
-        redisServer = new RedisServer(port);
+    public void postConstruct() {
         redisServer.start();
     }
 
     @PreDestroy
-    public void stopRedis() {
+    public void preDestroy() {
         redisServer.stop();
     }
 
-    public int findAvailablePort() throws IOException {
-        for (int port = 10000; port <= 65535; port++) {
-            Process process = executeGrepProcessCommand(port);
-            if (!isRunning(process)) {
-                return port;
-            }
-        }
-
-        throw new RuntimeException();
+    @AfterEach
+    public void afterEach(){
+        this.redisServer.stop();
     }
-
-    /**
-     * Embedded Redis가 현재 실행중인지 확인
-     */
-    private boolean isRedisRunning() throws IOException {
-        return isRunning(executeGrepProcessCommand(redisPort));
-    }
-
-    /**
-     * 해당 port를 사용중인 프로세스를 확인하는 sh 실행
-     */
-    private Process executeGrepProcessCommand(int redisPort) throws IOException {
-        String command = String.format("netstat -nat | grep LISTEN|grep %d", redisPort);
-        String[] shell = {"/bin/sh", "-c", command};
-
-        return Runtime.getRuntime().exec(shell);
-    }
-
-    /**
-     * 해당 Process가 현재 실행중인지 확인
-     */
-    private boolean isRunning(Process process) {
-        String line;
-        StringBuilder pidInfo = new StringBuilder();
-
-        try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            while ((line = input.readLine()) != null) {
-                pidInfo.append(line);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-        return StringUtils.hasText(pidInfo.toString());
-    }
-
-//
-//    @AfterEach
-//    public void afterEach() throws InterruptedException {
-//        this.redisServer.stop();
-//        Thread.sleep(500);
-//    }
 }

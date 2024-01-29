@@ -36,7 +36,7 @@ public class UsmsUserDetails implements UserDetails {
         this.id = user.getId();
         this.username=user.getUsername();
         this.password=user.getPassword();
-        this.personName=user.getPersonName();
+        this.personName=user.getNickname();
         this.phoneNumber=user.getPhoneNumber();
         this.email=user.getEmail();
         this.securityState=user.getSecurityState();
