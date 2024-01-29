@@ -22,10 +22,11 @@ public class CctvService {
     private final StreamKeyRepository streamKeyRepository;
 
     @Transactional
-    public void createCctv(Long storeId, String name) {
+    public CctvDto createCctv(Long storeId, String name) {
 
         Cctv cctv = Cctv.init(storeId, name);
-        cctvRepository.save(cctv);
+
+        return new CctvDto(cctvRepository.save(cctv));
     }
 
     @Transactional(readOnly = true)

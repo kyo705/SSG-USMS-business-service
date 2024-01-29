@@ -82,7 +82,7 @@ public class CctvControllerCreatingTest {
                                 .content(objectMapper.writeValueAsString(requestBody))
 
                 )
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()));
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
 
     @DisplayName("[createCctv] : 접근 권한이 없는 유저로 cctv 생성 요청시 403 상태코드를 리턴한다.")
