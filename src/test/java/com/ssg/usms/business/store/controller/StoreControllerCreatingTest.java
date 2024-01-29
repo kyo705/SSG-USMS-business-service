@@ -57,13 +57,14 @@ public class StoreControllerCreatingTest {
 
     @WithUserDetails("storeOwner")
     @DisplayName("정상적인 요청 값들로 매장 생성을 요청한다면 매장 생성이 성공한다.")
-    @Test
-    public void testCreatingStoreWithValidParam() throws Exception {
+    @ValueSource(strings = {"서울 중구 남대문시장10길 2 메사빌딩 21층", "서울 중구 남대문시장10길 2 메사빌딩 12-1"})
+    @ParameterizedTest
+    public void testCreatingStoreWithValidParam(String storeAddress) throws Exception {
 
         // given
         HttpRequestCreatingStoreDto requestParams = new HttpRequestCreatingStoreDto();
         requestParams.setStoreName("매장 명");
-        requestParams.setStoreAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
+        requestParams.setStoreAddress(storeAddress);
         requestParams.setBusinessLicenseCode("123-45-67890");
 
         String fileName = "testImg";
