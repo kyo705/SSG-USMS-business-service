@@ -45,6 +45,8 @@ coolsms:
 usms:
   media-server:
     url: 1234
+  stream-key:
+    ttl: 120
 
 cloud:
   aws:

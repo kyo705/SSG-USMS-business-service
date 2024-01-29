@@ -1,9 +1,11 @@
 package com.ssg.usms.business.video.controller;
 
+import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.video.annotation.LiveVideoFilename;
 import com.ssg.usms.business.video.annotation.ReplayVideoFilename;
 import com.ssg.usms.business.video.annotation.StreamKey;
 import com.ssg.usms.business.video.service.VideoService;
+import com.ssg.usms.business.video.util.ProtocolAndFileFormatMatcher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,8 +29,11 @@ public class VideoController {
                                              @PathVariable @StreamKey String streamKey,
                                              @PathVariable @LiveVideoFilename String filename) {
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        String redirectUrl = videoService.getLiveVideo(username, streamKey, protocol, filename);
+        validateFileFormat(protocol, filename);
+
+        UsmsUserDetails userDetails = (UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String redirectUrl = videoService.getLiveVideo(userDetails.getId(), streamKey, protocol, filename);
 
         return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
                 .header(HttpHeaders.LOCATION, redirectUrl)
@@ -39,13 +44,21 @@ public class VideoController {
     public ResponseEntity<byte[]> getReplayVideo(@PathVariable String protocol,
                                                  @PathVariable @StreamKey String streamKey,
                                                  @PathVariable @ReplayVideoFilename String filename) {
+        validateFileFormat(protocol, filename);
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        byte[] videoStream = videoService.getReplayVideo(username, streamKey, protocol, filename);
+        UsmsUserDetails userDetails = (UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        byte[] videoStream = videoService.getReplayVideo(userDetails.getId(), streamKey, filename);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .body(videoStream);
+    }
+
+    private void validateFileFormat(String protocol, String filename) {
+
+        String fileFormat = filename.split("[.]")[1];
+        ProtocolAndFileFormatMatcher.matches(protocol, fileFormat);
     }
 }
