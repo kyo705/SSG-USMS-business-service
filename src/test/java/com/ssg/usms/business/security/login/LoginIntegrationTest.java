@@ -96,8 +96,6 @@ public class LoginIntegrationTest {
     @Test
     public void testLoginWithAuthorizedUserInfoNotincludeToken() throws Exception {
 
-        log.info(repository.findByUsername("httpRequestSign").toString());
-
         RequestLoginDto requestBody = new RequestLoginDto();
         requestBody.setUsername("storeOwner");
         requestBody.setPassword("1234567890a*");
