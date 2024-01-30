@@ -5,6 +5,7 @@ import com.ssg.usms.business.device.service.DeviceService;
 import com.ssg.usms.business.security.login.UsmsLoginConfiguer;
 import com.ssg.usms.business.security.login.authority.UsmsAccessDeniedHandler;
 import com.ssg.usms.business.security.login.authority.UsmsForbiddenEntryPoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,9 @@ import static com.ssg.usms.business.user.dto.UserRole.ROLE_STORE_OWNER;
 
 @Configuration
 public class SecurityConfig {
+
+    @Value("${usms.front-server.url}")
+    private String frontEndServerUrl;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -93,7 +97,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://usms.serveftp.com:443"));
+        configuration.setAllowedOrigins(List.of(frontEndServerUrl));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
