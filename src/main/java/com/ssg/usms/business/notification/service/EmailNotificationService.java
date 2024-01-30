@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import static com.ssg.usms.business.notification.constants.NotificationConstants.EMAIL_SEND_FAILURE_MESSAGE;
@@ -20,6 +21,7 @@ public class EmailNotificationService implements NotificationService {
     @Value("${spring.mail.sender}")
     private String sender;
 
+    @Async("threadPoolTaskExecutor")
     @Override
     public void send(String destination, String subject, String message) {
 

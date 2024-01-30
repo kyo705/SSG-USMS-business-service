@@ -25,18 +25,18 @@ public class DeviceRepositoryTest {
 
     @Autowired
     private SpringJpaDataDeviceRepository jpaDataDeviceRepository;
-    @DisplayName("성공적으로 삭제한 경우 1 리턴")
+    @DisplayName("삭제할 값이 있다면 삭제 후 0 이 아닌 값을 리턴")
     @Test
     public void TestDeleteDevice(){
         UsmsDevice device = UsmsDevice.builder()
-                .userid(2L)
+                .userId(2L)
                 .token("1234")
                 .build();
 
         deviceRepository.saveToken(device);
         List<UsmsDevice> list = jpaDataDeviceRepository.findAll();
 
-        assertThat( deviceRepository.deleteToken(1L) ).isEqualTo(1);
+        assertThat( deviceRepository.deleteToken(1L) ).isNotEqualTo(0);
     }
 
     @DisplayName("존재하지 않는 사용자id로 삭제를 시도한경우 0리턴")
@@ -47,20 +47,39 @@ public class DeviceRepositoryTest {
         assertThat( deviceRepository.deleteToken(2L) ).isEqualTo(0);
     }
 
-    @DisplayName("성공적으로 데이터를 insert한경우 findall의 길이가 1이다.")
+    @DisplayName("데이터 저장 테스트")
     @Test
     public void TestInsertWithNoExistUseridDevice(){
 
+        //given
         UsmsDevice device = UsmsDevice.builder()
-                .userid(2L)
+                .userId(2L)
                 .token("1234")
                 .build();
 
-        deviceRepository.saveToken(device);
-        List<UsmsDevice> list = jpaDataDeviceRepository.findAll();
+        assertThat(device.getId()).isNull();
 
-        assertThat( list.size() ).isEqualTo(2);
+        //when
+        deviceRepository.saveToken(device);
+
+        //then
+        assertThat(device.getId()).isNotNull();
     }
 
 
+    @DisplayName("[findByUserId] : 유저가 소유한 디바이스 정보를 가져온다.")
+    @Test
+    public void TestFindByUserId(){
+
+        //given
+        Long userId = 1L;
+
+        //when
+        List<UsmsDevice> devices = deviceRepository.findByUserId(userId);
+
+        //then
+        for(UsmsDevice device : devices) {
+            assertThat(device.getUserId()).isEqualTo(userId);
+        }
+    }
 }

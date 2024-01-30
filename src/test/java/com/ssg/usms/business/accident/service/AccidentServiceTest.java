@@ -8,6 +8,10 @@ import com.ssg.usms.business.accident.repository.Accident;
 import com.ssg.usms.business.accident.repository.AccidentRepository;
 import com.ssg.usms.business.cctv.repository.Cctv;
 import com.ssg.usms.business.cctv.repository.CctvRepository;
+import com.ssg.usms.business.device.repository.DeviceRepository;
+import com.ssg.usms.business.notification.service.FirebaseNotificationService;
+import com.ssg.usms.business.store.repository.Store;
+import com.ssg.usms.business.store.repository.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,14 +34,24 @@ public class AccidentServiceTest {
     private AccidentService accidentService;
 
     @Mock
+    private FirebaseNotificationService notificationService;
+    @Mock
+    private DeviceRepository mockDeviceRepository;
+    @Mock
+    private StoreRepository mockStoreRepository;
+    @Mock
     private CctvRepository mockCctvRepository;
-
     @Mock
     private AccidentRepository mockAccidentRepository;
 
     @BeforeEach
     public void setup() {
-        accidentService = new AccidentService(mockCctvRepository, mockAccidentRepository);
+        accidentService = new AccidentService(notificationService,
+                                                mockDeviceRepository,
+                                                mockStoreRepository,
+                                                mockCctvRepository,
+                                                mockAccidentRepository
+                                                );
     }
 
     @DisplayName("[createAccident] : 이상 행동 기록 저장 테스트")
@@ -51,15 +65,26 @@ public class AccidentServiceTest {
 
         Cctv cctv = new Cctv();
         cctv.setId(1L);
+        cctv.setStoreId(10L);
         cctv.setStreamKey(streamKey);
         cctv.setName("cctv 1");
 
+        Store store = new Store();
+        store.setId(cctv.getStoreId());
+        store.setUserId(100L);
+        store.setStoreName("매장 명");
+        store.setStoreAddress("매장 주소");
+
         given(mockCctvRepository.findByStreamKey(streamKey)).willReturn(cctv);
+        given(mockStoreRepository.findById(cctv.getStoreId())).willReturn(store);
+        given(mockDeviceRepository.findByUserId(store.getUserId())).willReturn(new ArrayList<>());
 
         //when
         accidentService.createAccident(streamKey, behavior, timestamp);
 
         //then
+        verify(mockStoreRepository,  times(1)).findById(cctv.getStoreId());
+        verify(mockDeviceRepository,  times(1)).findByUserId(store.getUserId());
         verify(mockCctvRepository, times(1)).findByStreamKey(streamKey);
         verify(mockAccidentRepository,  times(1)).save(any());
 

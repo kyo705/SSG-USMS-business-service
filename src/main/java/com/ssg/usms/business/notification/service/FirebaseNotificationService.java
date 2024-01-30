@@ -10,6 +10,7 @@ import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.Objects;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FirebaseService implements NotificationService {
+public class FirebaseNotificationService implements NotificationService {
 
 
     @Value("${firebase.url}")
@@ -33,6 +34,7 @@ public class FirebaseService implements NotificationService {
 
     private final ObjectMapper objectMapper;
 
+    @Async("threadPoolTaskExecutor")
     @Override
     public void send(String targetToken, String title, String message) throws IOException {
 

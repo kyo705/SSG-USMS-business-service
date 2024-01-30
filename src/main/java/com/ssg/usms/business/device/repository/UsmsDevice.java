@@ -18,7 +18,7 @@ public class UsmsDevice {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userid;
+    private Long userId;
 
     @Column(name = "token", nullable = false)
     private String token;
