@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.TimeZone;
 
 @Setter
@@ -62,6 +64,21 @@ public class VideoService {
         return videoRepository.getVideo(replayVideoRealPath);
     }
 
+    @Transactional
+    public List<String> getReplayVideoFilenames(Long cctvId, String date) {
+
+        String streamKey = cctvRepository.findById(cctvId).getStreamKey();
+
+        LocalDate localDate = LocalDate.parse(date);
+        String path = Paths.get(streamKey,
+                                Integer.toString(localDate.getYear()),
+                                Integer.toString(localDate.getMonth().getValue()),
+                                Integer.toString(localDate.getDayOfMonth()))
+                        .toString();
+
+        return videoRepository.getVideoFilenames(path);
+    }
+
     private void validateOwnStreamKey(Long userId, String streamKey) {
 
         Cctv cctv = cctvRepository.findByStreamKey(streamKey);
@@ -77,4 +94,6 @@ public class VideoService {
             throw new UnavailableStoreException();
         }
     }
+
+
 }
