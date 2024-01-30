@@ -42,6 +42,10 @@ public class AwsS3VideoRepository implements VideoRepository {
                 .stream()
                 .map(S3ObjectSummary::getKey)
                 .filter(key-> key.endsWith(".m3u8"))
+                .map(key -> {
+                    String[] chunks = key.split("/");
+                    return chunks[Math.max(chunks.length-2, 0)];
+                })
                 .collect(Collectors.toList());
     }
 }
