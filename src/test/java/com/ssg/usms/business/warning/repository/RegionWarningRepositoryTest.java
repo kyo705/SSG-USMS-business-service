@@ -1,6 +1,7 @@
 package com.ssg.usms.business.warning.repository;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class RegionWarningRepositoryTest {
 
     @Autowired

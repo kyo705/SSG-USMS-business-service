@@ -17,7 +17,7 @@ public class DeviceService {
     public void saveToken(String token,Long userid){
 
         deviceRepository.saveToken(UsmsDevice.builder()
-                .userid(userid)
+                .userId(userid)
                 .token(token)
                 .build());
     }

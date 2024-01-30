@@ -6,6 +6,7 @@ import com.ssg.usms.business.device.repository.DeviceRepository;
 import com.ssg.usms.business.device.repository.SpringJpaDataDeviceRepository;
 import com.ssg.usms.business.device.repository.UsmsDevice;
 import com.ssg.usms.business.security.login.persistence.RequestLoginDto;
+import com.ssg.usms.business.user.dto.HttpResponseUserDto;
 import com.ssg.usms.business.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 
@@ -70,7 +72,6 @@ public class LoginIntegrationTest {
     @Test
     public void testLoginWithAuthorizedUserInfo() throws Exception {
 
-        jpaDataDeviceRepository.deleteByUserid(1L);
         RequestLoginDto requestBody = new RequestLoginDto();
         requestBody.setUsername("storeOwner");
         requestBody.setPassword("1234567890a*");
@@ -83,9 +84,14 @@ public class LoginIntegrationTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                 .andExpect(result -> {
-                    Optional<UsmsDevice> userDevice = jpaDataDeviceRepository.findById(2L);
-                    assertNotNull(userDevice);
-                    assertEquals(requestBody.getToken(),userDevice.get().getToken());
+                    HttpResponseUserDto response = objectMapper.readValue(result.getResponse().getContentAsString(UTF_8), HttpResponseUserDto.class);
+
+                    List<String> tokens = jpaDataDeviceRepository.findByUserId(response.getId())
+                            .stream()
+                            .map(UsmsDevice::getToken)
+                            .collect(Collectors.toList());
+
+                    assertThat(tokens).contains(requestBody.getToken());
                 });
 
     }
