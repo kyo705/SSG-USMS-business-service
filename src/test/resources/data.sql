@@ -5,7 +5,9 @@ VALUES (1, 'storeOwner', '$2a$10$L/0.3f0Qm1eQDRQ4IebOD.Y0dpGQl5Xd4Q9TfkbzhJbcYVn
 
 --- password : "1234567890a*"
 INSERT INTO usms_device (id, user_id , token)
-VALUES (1,1,'newtoken');
+VALUES (1,1,'newtoken'),
+       (2,1,'token2'),
+       (3,1,'token3');
 
 
 INSERT INTO store (id, user_id, store_name, store_address, business_license_code, business_license_img_id, store_state)

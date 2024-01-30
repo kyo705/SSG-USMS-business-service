@@ -6,27 +6,57 @@ import com.ssg.usms.business.accident.dto.AccidentStatDto;
 import com.ssg.usms.business.accident.dto.HttpRequestRetrievingAccidentDto;
 import com.ssg.usms.business.accident.repository.Accident;
 import com.ssg.usms.business.accident.repository.AccidentRepository;
+import com.ssg.usms.business.cctv.repository.Cctv;
 import com.ssg.usms.business.cctv.repository.CctvRepository;
+import com.ssg.usms.business.device.repository.DeviceRepository;
+import com.ssg.usms.business.device.repository.UsmsDevice;
+import com.ssg.usms.business.notification.service.NotificationService;
+import com.ssg.usms.business.store.repository.Store;
+import com.ssg.usms.business.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssg.usms.business.accident.constant.AccidentConstants.ACCIDENT_OCCURRENCE_MESSAGE;
+import static com.ssg.usms.business.accident.constant.AccidentConstants.ACCIDENT_OCCURRENCE_SUBJECT;
+
 @Service
 @RequiredArgsConstructor
 public class AccidentService {
 
+    private final NotificationService firebaseNotificationService;
+    private final DeviceRepository deviceRepository;
+    private final StoreRepository storeRepository;
     private final CctvRepository cctvRepository;
     private final AccidentRepository accidentRepository;
 
     @Transactional
     public void createAccident(String streamKey, AccidentBehavior behavior, Long timestamp) {
 
-        Long cctvId = cctvRepository.findByStreamKey(streamKey).getId();
+        Cctv cctv = cctvRepository.findByStreamKey(streamKey);
+        Long cctvId = cctv.getId();
+
+        Store store = storeRepository.findById(cctv.getStoreId());
+        Long userId = store.getUserId();
+
+        List<UsmsDevice> devices = deviceRepository.findByUserId(userId);
+        devices.forEach(device -> {
+            try {
+                firebaseNotificationService.send(
+                        device.getToken(),
+                        ACCIDENT_OCCURRENCE_SUBJECT,
+                        String.format(ACCIDENT_OCCURRENCE_MESSAGE, store.getStoreName(), behavior.name())
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         Accident accident = Accident.init(cctvId, behavior, timestamp);
         accidentRepository.save(accident);

@@ -27,7 +27,7 @@ public class RegionWarningService {
 
         String region = address[0] + " " + address[1];
         if(startDate == null) {
-            startDate = LocalDate.MIN.toString();
+            startDate = "2000-01-01";
         }
         if(endDate == null) {
             endDate = LocalDate.now().toString();

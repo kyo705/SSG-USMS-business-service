@@ -39,6 +39,8 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
+                        .antMatchers(HttpMethod.GET,("/video/{protocol}/live/{streamKey}/{filename}")).hasRole(ROLE_STORE_OWNER.getRole())
+                        .antMatchers(HttpMethod.GET,("/video/{protocol}/replay/{streamKey}/{filename}")).hasRole(ROLE_STORE_OWNER.getRole())
 
                         .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/accidents")).hasRole(ROLE_STORE_OWNER.getRole())
                         .antMatchers(HttpMethod.GET,("/api/users/{userId}/stores/{storeId}/cctvs/accidents/stats")).hasRole(ROLE_STORE_OWNER.getRole())
