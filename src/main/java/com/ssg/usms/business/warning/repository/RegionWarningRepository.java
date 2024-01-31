@@ -8,4 +8,6 @@ public interface RegionWarningRepository {
 
     List<RegionWarning> findByRegion(String region, String startDate, String endDate, int offset, int size);
 
+    List<RegionWarning> findAll(String startDate, String endDate, int offset, int size);
+
 }

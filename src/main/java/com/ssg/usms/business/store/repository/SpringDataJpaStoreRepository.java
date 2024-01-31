@@ -9,4 +9,6 @@ import java.util.List;
 public interface SpringDataJpaStoreRepository extends JpaRepository<Store, Long>, JpaSpecificationExecutor<Store> {
 
     List<Store> findByUserId(Long userId, Pageable Pageable);
+
+    List<Store> findByStoreAddressLike(String region);
 }

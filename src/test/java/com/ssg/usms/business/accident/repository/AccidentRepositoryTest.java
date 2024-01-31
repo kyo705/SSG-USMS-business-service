@@ -1,6 +1,7 @@
 package com.ssg.usms.business.accident.repository;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
+import com.ssg.usms.business.accident.dto.AccidentRegionDto;
 import com.ssg.usms.business.accident.dto.AccidentStatDto;
 import com.ssg.usms.business.config.EmbeddedRedis;
 import org.junit.jupiter.api.DisplayName;
@@ -133,5 +134,22 @@ public class AccidentRepositoryTest {
         List<Accident> result = accidentRepository.findAllByStoreId(storeId, startTimestamp, endTimestamp, offset, size);
         assertThat(result.size()).isLessThanOrEqualTo(size);
 
+    }
+
+    @DisplayName("[findAccidentRegion] : 특정 시간동안 발생한 이상행동과 해당 지역을 조회")
+    @Test
+    public void testFindAccidentRegion() {
+
+        //given
+        int offset = 0;
+        int size = 20;
+        long startTimestamp = 0;
+        long endTimestamp = System.currentTimeMillis();
+
+        //when
+        List<AccidentRegionDto> accidentRegionDtoList = accidentRepository.findAccidentRegion(startTimestamp, endTimestamp, offset, size);
+
+        //then
+        System.out.println(accidentRegionDtoList);
     }
 }

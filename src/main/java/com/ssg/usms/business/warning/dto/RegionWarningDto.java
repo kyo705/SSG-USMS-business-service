@@ -16,7 +16,7 @@ public class RegionWarningDto {
     private Long id;
     private String region;
     private AccidentBehavior behavior;
-    private int count;
+    private long count;
     private LocalDate date;
 
     public RegionWarningDto(RegionWarning regionWarning) {

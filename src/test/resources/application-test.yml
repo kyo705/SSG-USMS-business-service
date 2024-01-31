@@ -47,6 +47,12 @@ usms:
     url: 1234
   stream-key:
     ttl: 120
+  schedule:
+    createRegionWarning:
+      cron: 0 0 5 * * ?
+    sendRegionWarningNotification:
+      cron: 0 0 9 * * ?
+    timeZone: Asia/Seoul
 
 cloud:
   aws:
