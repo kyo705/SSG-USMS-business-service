@@ -15,11 +15,14 @@ public class Accident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "cctv_id")
     private Long cctvId;
 
+    @Column(name = "behavior")
     @Convert(converter = AccidentBehaviorConverter.class)
     private AccidentBehavior behavior;
 
+    @Column(name = "start_timestamp")
     private Long startTimestamp;
 
     public static Accident init(Long cctvId, AccidentBehavior behavior, Long timestamp) {
