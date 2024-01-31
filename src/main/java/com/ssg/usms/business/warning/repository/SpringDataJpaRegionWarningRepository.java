@@ -1,5 +1,6 @@
 package com.ssg.usms.business.warning.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ public interface SpringDataJpaRegionWarningRepository extends JpaRepository<Regi
 
     List<RegionWarning> findByRegionAndDateBetween(String region, Date startDate, Date endDate, Pageable pageable);
 
+    List<RegionWarning> findByDateBetween(Date startDate, Date endDate, PageRequest of);
 }

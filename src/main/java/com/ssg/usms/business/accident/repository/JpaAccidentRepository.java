@@ -1,6 +1,7 @@
 package com.ssg.usms.business.accident.repository;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
+import com.ssg.usms.business.accident.dto.AccidentRegionDto;
 import com.ssg.usms.business.accident.dto.AccidentStatDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +36,7 @@ public class JpaAccidentRepository implements AccidentRepository {
 
     @Override
     public List<Accident> findAllByStoreId(long storeId, long startTimestamp, long endTimestamp, int offset, int size) {
+
         return springDataJpaAccidentRepository
                 .findAllByStoreId(storeId, startTimestamp, endTimestamp, offset, size);
     }
@@ -47,4 +49,12 @@ public class JpaAccidentRepository implements AccidentRepository {
         return springDataJpaAccidentRepository
                 .findAllByStoreId(storeId, behaviorCodes, startTimestamp, endTimestamp, offset, size);
     }
+
+    @Override
+    public List<AccidentRegionDto> findAccidentRegion(long startTimestamp, long endTimestamp, int offset, int size) {
+
+        return springDataJpaAccidentRepository.getAccidentRegion(startTimestamp, endTimestamp, offset, size);
+    }
+
+
 }

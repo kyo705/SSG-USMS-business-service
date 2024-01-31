@@ -1,6 +1,7 @@
 package com.ssg.usms.business.accident.repository;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
+import com.ssg.usms.business.accident.dto.AccidentRegionDto;
 import com.ssg.usms.business.accident.dto.AccidentStatDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,6 +50,15 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
                                                      @Param("startTimestamp") long startTimestamp,
                                                      @Param("endTimestamp") long endTimestamp);
 
+    @Query(value = "SELECT a.id, s.store_address, a.behavior" +
+            " FROM store s JOIN cctv c ON s.id = c.store_id JOIN accident a ON c.id = a.cctv_id" +
+            " WHERE a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
+            " LIMIT :size OFFSET :offset ", nativeQuery = true)
+    List<Object[]> findAccidentRegion(@Param("startTimestamp") long startTimestamp,
+                                @Param("endTimestamp") long endTimestamp,
+                                @Param("offset") int offset,
+                                @Param("size") int size);
+
     default List<AccidentStatDto> getAccidentStats(long storeId, long startTimestamp, long endTimestamp) {
 
         List<Object[]> result = findAccidentStatsByStoreId(storeId, startTimestamp, endTimestamp);
@@ -66,6 +76,19 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
                                 .format(DateTimeFormatter.ofPattern("yy-MM-dd"))
                         )
                 )
+                .collect(Collectors.toList());
+    }
+
+    default List<AccidentRegionDto> getAccidentRegion(long startTimestamp, long endTimestamp, int offset, int size) {
+
+        List<Object[]> result = findAccidentRegion(startTimestamp, endTimestamp, offset, size);
+
+        return result.stream()
+                .map(row -> AccidentRegionDto.builder()
+                            .accidentId(((Number) row[0]).longValue())
+                            .storeAddress((String) row[1])
+                            .behavior(AccidentBehavior.valueOfCode((short) row[2]))
+                            .build())
                 .collect(Collectors.toList());
     }
 }

@@ -28,7 +28,7 @@ public class RegionWarning {
     private AccidentBehavior behavior;
 
     @Column(name = "occurrence_count")
-    private int count;
+    private long count;
 
     @Column(name = "occurrence_date")
     private Date date;
