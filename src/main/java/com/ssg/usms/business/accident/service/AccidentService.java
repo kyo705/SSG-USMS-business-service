@@ -65,8 +65,8 @@ public class AccidentService {
     @Transactional(readOnly = true)
     public List<AccidentDto> findByStoreId(Long storeId, HttpRequestRetrievingAccidentDto requestParam) {
 
-        long startTimestamp = requestParam.getStartDate() == null ? 0L : parseTimestamp(requestParam.getStartDate());
-        long endTimestamp = requestParam.getEndDate() == null ? 0L : parseTimestamp(requestParam.getEndDate());
+        long startTimestamp = requestParam.getStartDate() == null ? 0L : parseStartTimestamp(requestParam.getStartDate());
+        long endTimestamp = requestParam.getEndDate() == null ? System.currentTimeMillis() : parseEndTimestamp(requestParam.getEndDate());
 
         // 이상 행동 조건이 없을 때
         if(requestParam.getBehavior() == null || requestParam.getBehavior().isEmpty()) {
@@ -98,14 +98,19 @@ public class AccidentService {
     @Transactional(readOnly = true)
     public List<AccidentStatDto> findAccidentStatsByStoreId(Long storeId, String startDate, String endDate) {
 
-        long startTimestamp = startDate == null ? 0L : parseTimestamp(startDate);
-        long endTimestamp = endDate == null ? System.currentTimeMillis() : parseTimestamp(endDate);
+        long startTimestamp = startDate == null ? 0L : parseStartTimestamp(startDate);
+        long endTimestamp = endDate == null ? System.currentTimeMillis() : parseEndTimestamp(endDate);
 
         return accidentRepository.findAccidentStats(storeId, startTimestamp, endTimestamp);
     }
 
-    private long parseTimestamp(String startDate) {
+    private long parseStartTimestamp(String startDate) {
 
         return LocalDate.parse(startDate).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+    }
+
+    private long parseEndTimestamp(String endDate) {
+
+        return LocalDate.parse(endDate).plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
     }
 }
