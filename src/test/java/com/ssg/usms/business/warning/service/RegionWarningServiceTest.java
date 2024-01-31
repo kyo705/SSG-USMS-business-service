@@ -1,6 +1,9 @@
 package com.ssg.usms.business.warning.service;
 
 
+import com.ssg.usms.business.accident.repository.AccidentRepository;
+import com.ssg.usms.business.device.repository.DeviceRepository;
+import com.ssg.usms.business.notification.service.NotificationService;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.repository.Store;
@@ -30,13 +33,20 @@ public class RegionWarningServiceTest {
 
     private RegionWarningService regionWarningService;
     @Mock
+    private NotificationService notificationService;
+    @Mock
+    private DeviceRepository deviceRepository;
+    @Mock
     private StoreRepository storeRepository;
+    @Mock
+    private AccidentRepository accidentRepository;
     @Mock
     private RegionWarningRepository regionWarningRepository;
 
     @BeforeEach
     public void setup() {
-        regionWarningService = new RegionWarningService(storeRepository, regionWarningRepository);
+        regionWarningService = new RegionWarningService(notificationService, deviceRepository, storeRepository,
+                accidentRepository, regionWarningRepository);
     }
 
     @DisplayName("[findByRegion] : 특정 매장 주위의 지역에 해당하는 재난 문자를 조회한다.")
@@ -128,4 +138,6 @@ public class RegionWarningServiceTest {
         verify(regionWarningRepository, times(0)).findByRegion( any(),  any(),  any(),  anyInt(), anyInt());
 
     }
+
+
 }

@@ -35,7 +35,7 @@ INSERT INTO store (id, user_id, store_name, store_address, business_license_code
 
 INSERT INTO cctv (id, store_id, cctv_name, cctv_stream_key, is_expired)
 VALUES (1, 1, '우측 상단 CCTV', '74d18bfc-14c5-46d2-a1a8-1eb627918859', false),
-       (2, 1, '우측 하단 CCTV', '74d18bfc-14c5-46d2-a1a8-1eb627918851', false),
+       (2, 2, '우측 하단 CCTV', '74d18bfc-14c5-46d2-a1a8-1eb627918851', false),
        (3, 1, '좌측 상단 CCTV', '74d18bfc-14c5-46d2-a3a8-1eb637918859', false),
        (4, 1, '좌측 하단 CCTV', '74d18bfc-14c5-46d2-a2a8-1eb727918859', false),
        (5, 1, '정면 CCTV', '74a13bfc-14c5-46d2-a1a8-1eb627918859', false);

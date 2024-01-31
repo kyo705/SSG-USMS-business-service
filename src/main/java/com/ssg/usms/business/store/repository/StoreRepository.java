@@ -14,9 +14,10 @@ public interface StoreRepository {
 
     List<Store> findByUserId(Long userId, int offset, int size);
 
+    List<Store> findByRegion(String region);
+
     void update(Store store);
 
     void delete(Store store);
-
 
 }

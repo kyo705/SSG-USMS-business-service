@@ -50,6 +50,12 @@ public class JpaStoreRepository implements StoreRepository {
     }
 
     @Override
+    public List<Store> findByRegion(String region) {
+
+        return springDataJpaStoreRepository.findByStoreAddressLike(region);
+    }
+
+    @Override
     public void update(Store store) {
 
     }

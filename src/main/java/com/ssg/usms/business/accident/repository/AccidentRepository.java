@@ -1,6 +1,7 @@
 package com.ssg.usms.business.accident.repository;
 
 import com.ssg.usms.business.accident.constant.AccidentBehavior;
+import com.ssg.usms.business.accident.dto.AccidentRegionDto;
 import com.ssg.usms.business.accident.dto.AccidentStatDto;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface AccidentRepository {
     List<Accident> findAllByStoreId(long storeId, long startTimestamp, long endTimestamp, int offset, int size);
 
     List<Accident> findAllByStoreId(long storeId, List<AccidentBehavior> behavior, long startTimestamp, long endTimestamp, int offset, int size);
+
+    List<AccidentRegionDto> findAccidentRegion(long startTimestamp, long endTimestamp, int offset, int size);
 }
