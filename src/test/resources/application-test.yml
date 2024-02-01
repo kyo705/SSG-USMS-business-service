@@ -2,6 +2,8 @@ auto-commit: false
 
 
 spring:
+  cache:
+    type: redis
   sql:
     init:
       mode: always
@@ -43,6 +45,8 @@ coolsms:
 
 
 usms:
+  front-server:
+    url: front-end-url
   media-server:
     url: 1234
   stream-key:
@@ -53,6 +57,9 @@ usms:
     sendRegionWarningNotification:
       cron: 0 0 9 * * ?
     timeZone: Asia/Seoul
+  cache:
+    transcode-filename:
+      ttl: 2
 
 cloud:
   aws:

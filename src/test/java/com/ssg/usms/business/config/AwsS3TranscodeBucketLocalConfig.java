@@ -12,24 +12,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 @TestConfiguration
-public class AwsS3LocalConfig {
+public class AwsS3TranscodeBucketLocalConfig {
 
     @Value("${cloud.aws.region.static}")
     String region;
 
-    @Value("${aws.s3.image-bucket}")
+    @Value("${aws.s3.transcode-video-bucket}")
     String bucket;
 
     @Bean
     public S3Mock s3Mock() {
-        return new S3Mock.Builder().withPort(8001).withInMemoryBackend().build();
+        return new S3Mock.Builder().withPort(8002).withInMemoryBackend().build();
     }
 
     @Bean
     @Primary
     public AmazonS3 amazonS3(S3Mock s3Mock){
         s3Mock.start();
-        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration("http://localhost:8001", region);
+        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration("http://localhost:8002", region);
         AmazonS3 client = AmazonS3ClientBuilder
                 .standard()
                 .withPathStyleAccessEnabled(true)
