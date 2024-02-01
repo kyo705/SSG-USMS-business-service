@@ -3,14 +3,13 @@ package com.ssg.usms.business.video.repository;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.transfer.KeyFilter;
-import com.amazonaws.services.s3.transfer.TransferManager;
 import lombok.RequiredArgsConstructor;
+import okio.Path;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +33,7 @@ public class AwsS3VideoRepository implements VideoRepository {
         }
     }
 
+    @Cacheable(value = "replayVideoFileList", key =  "#path", cacheManager = "usmsCacheManager")
     @Override
     public List<String> getVideoFilenames(String path) {
 
@@ -43,8 +43,8 @@ public class AwsS3VideoRepository implements VideoRepository {
                 .map(S3ObjectSummary::getKey)
                 .filter(key-> key.endsWith(".m3u8"))
                 .map(key -> {
-                    String[] chunks = key.split("/");
-                    return chunks[Math.max(chunks.length-1, 0)];
+                    int idx = key.lastIndexOf(Path.DIRECTORY_SEPARATOR);
+                    return key.substring(idx+1);
                 })
                 .collect(Collectors.toList());
     }
