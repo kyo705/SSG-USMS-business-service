@@ -60,6 +60,8 @@ usms:
   cache:
     transcode-filename:
       ttl: 2
+    img-file:
+      ttl: 2
 
 cloud:
   aws:

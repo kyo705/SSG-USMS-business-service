@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ssg.usms.business.config.CacheConfiguration.FILE_NAME_LIST_CACHE_KEY;
+
 @Repository
 @RequiredArgsConstructor
 public class AwsS3VideoRepository implements VideoRepository {
@@ -33,7 +35,7 @@ public class AwsS3VideoRepository implements VideoRepository {
         }
     }
 
-    @Cacheable(value = "replayVideoFileList", key =  "#path", cacheManager = "usmsCacheManager")
+    @Cacheable(value = FILE_NAME_LIST_CACHE_KEY, key =  "#path", cacheManager = "usmsCacheManager")
     @Override
     public List<String> getVideoFilenames(String path) {
 
