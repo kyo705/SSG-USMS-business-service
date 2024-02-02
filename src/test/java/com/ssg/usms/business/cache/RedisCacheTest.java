@@ -18,13 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static com.ssg.usms.business.config.CacheConfiguration.FILE_NAME_LIST_CACHE_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {EmbeddedRedis.class, AwsS3TranscodeBucketLocalConfig.class})
 public class RedisCacheTest {
 
-    private static final String CACHE_KEY = "replayVideoFileList";
     @Autowired
     private VideoRepository videoRepository;
     @Autowired
@@ -48,7 +48,7 @@ public class RedisCacheTest {
 
         s3Mock.stop();
         amazonS3.deleteBucket(bucket);
-        cacheManager.getCache(CACHE_KEY).clear();
+        cacheManager.getCache(FILE_NAME_LIST_CACHE_KEY).clear();
     }
 
     @DisplayName("한 번 조회된 데이터들은 캐시에 저장된다.")
@@ -64,7 +64,6 @@ public class RedisCacheTest {
         List<String> filenames = videoRepository.getVideoFilenames(path);
 
         //then
-        System.out.println(filenames);
         assertThat(filenames.size()).isEqualTo(1);
 
         amazonS3.putObject(bucket, Paths.get(path, "streamKey-6666666.m3u8").toString(), "contents");
