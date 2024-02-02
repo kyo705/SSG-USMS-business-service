@@ -29,7 +29,7 @@ public class UserExceptionHandler {
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ALREADY_EXIST_USERNAME, NOT_ALLOWED_USERNAME_FORM_LITERAL);
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ALREADY_EXIST_USERNAME, ALREADY_EXISTS_USERNAME_LITERAL);
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -42,7 +42,7 @@ public class UserExceptionHandler {
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
 
-        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ALREADY_EXIST_PHONE_NUM, NOT_ALLOWED_PHONENUMBER_FORM_LITERAL);
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(ALREADY_EXIST_PHONE_NUM, ALREADY_EXISTS_PHONE_LITERAL);
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

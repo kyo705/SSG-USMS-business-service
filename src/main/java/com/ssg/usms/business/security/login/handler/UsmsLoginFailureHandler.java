@@ -28,6 +28,7 @@ public class UsmsLoginFailureHandler implements AuthenticationFailureHandler {
     private void writeResponse(HttpServletResponse response, int code,String message) throws IOException {
 
         response.setStatus(code);
+        response.setCharacterEncoding("UTF-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(message);
     }
