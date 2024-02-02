@@ -185,7 +185,7 @@ public class VideoControllerLiveStreamTest {
                         MockMvcRequestBuilders
                                 .get("/video/{protocol}/live/{streamKey}/{filename}", protocol, streamKey, filename)
                 )
-                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andExpect(MockMvcResultMatchers.status().is(403))
                 .andExpect(result -> {
                     ErrorResponseDto resultBody = objectMapper.readValue(result.getResponse().getContentAsString(StandardCharsets.UTF_8), ErrorResponseDto.class);
                     Assertions.assertThat(resultBody.getCode()).isEqualTo(UNAVAILABLE_STORE_CODE);
