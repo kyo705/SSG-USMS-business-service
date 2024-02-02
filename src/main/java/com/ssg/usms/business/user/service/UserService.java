@@ -156,7 +156,7 @@ public class UserService {
     }
 
 
-    public void checkExistUser(String username,String email, String phoneNumber) {
+    public void checkExistUser(String email,String username, String phoneNumber) {
 
         if (email != null){
 
