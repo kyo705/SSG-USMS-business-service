@@ -417,7 +417,7 @@ public class StoreControllerUpdatingTest {
 
     @WithUserDetails("storeOwner")
     @DisplayName("[updateStore] : 허용되지 않은 파일 확장자명으로 사업자등록증을 등록 요청한 경우 예외가 발생한다.")
-    @ValueSource(strings = {"jpg", "png", "mp4", "jpeg"})
+    @ValueSource(strings = {"gif", "m3u8", "mp4", "psd"})
     @ParameterizedTest
     public void testUpdatingStoreWithNotAllowedImgFileFormat(String contentType) throws Exception {
 

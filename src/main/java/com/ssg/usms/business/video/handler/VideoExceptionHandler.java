@@ -1,6 +1,9 @@
 package com.ssg.usms.business.video.handler;
 
+import com.ssg.usms.business.cctv.exception.NotExistingCctvException;
+import com.ssg.usms.business.cctv.exception.NotOwnedCctvException;
 import com.ssg.usms.business.error.ErrorResponseDto;
+import com.ssg.usms.business.store.exception.NotOwnedStoreException;
 import com.ssg.usms.business.store.exception.UnavailableStoreException;
 import com.ssg.usms.business.video.controller.StreamKeyController;
 import com.ssg.usms.business.video.controller.VideoController;
@@ -35,17 +38,6 @@ public class VideoExceptionHandler {
 
     @ExceptionHandler(NotAllowedStreamingProtocolException.class)
     public ResponseEntity<ErrorResponseDto> handleIllegalStreamingProtocolException(NotAllowedStreamingProtocolException exception) {
-
-        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
-        log.error("Exception [Err_Msg] : {}", exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(exception.getErrorResponseDto());
-    }
-
-    @ExceptionHandler(UnavailableStoreException.class)
-    public ResponseEntity<ErrorResponseDto> handleUnavailableStoreException(UnavailableStoreException exception) {
 
         log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
         log.error("Exception [Err_Msg] : {}", exception.getMessage());
@@ -94,5 +86,60 @@ public class VideoExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler({NotOwnedStoreException.class})
+    public ResponseEntity<ErrorResponseDto> handleNotOwnedStoreException(NotOwnedStoreException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace().length == 0 ? exception.getClass() : exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getErrorResponseDto());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler({UnavailableStoreException.class})
+    public ResponseEntity<ErrorResponseDto> handleUnavailableStoreException(UnavailableStoreException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace().length == 0 ? exception.getClass() : exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getErrorResponseDto());
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler({NotExistingCctvException.class})
+    public ResponseEntity<ErrorResponseDto> handleNotExistingStoreException(NotExistingCctvException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace().length == 0 ? exception.getClass() : exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getErrorResponseDto());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler({NotOwnedCctvException.class})
+    public ResponseEntity<ErrorResponseDto> handleNotOwnedStoreException(NotOwnedCctvException exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace().length == 0 ? exception.getClass() : exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getErrorResponseDto());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(exception.getErrorResponseDto());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleAnyOtherException(Exception exception) {
+
+        log.error("Exception [Err_Location] : {}", exception.getStackTrace()[0]);
+        log.error("Exception [Err_Msg] : {}", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버에서 에러가 발생했습니다."));
     }
 }

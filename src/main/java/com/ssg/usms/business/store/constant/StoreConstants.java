@@ -10,7 +10,7 @@ public class StoreConstants {
     public static final String STORE_ADDRESS_REGEX = "^[가-힣a-zA-Z0-9\\s\\(\\)\\-]{1,50}$";
     public static final String BUSINESS_LICENSE_IMG_KEY_REGEX = UUID_REGEX;
 
-    public static final Set<String> ALLOWED_IMG_FILE_FORMATS = Set.of("pdf");
+    public static final Set<String> ALLOWED_IMG_FILE_FORMATS = Set.of("pdf", "jpg", "jpeg", "png");
 
 
 }
