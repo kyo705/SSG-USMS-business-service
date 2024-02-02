@@ -32,30 +32,24 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.session:spring-session-core'
 	implementation 'org.springframework.session:spring-session-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'net.nurigo:sdk:4.3.0'
 	implementation 'com.google.firebase:firebase-admin:6.8.1'
-
 
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 	testImplementation 'io.findify:s3mock_2.13:0.2.6'
-
-
-
-	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-
-	implementation 'net.nurigo:sdk:4.3.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 
 	testRuntimeOnly 'com.h2database:h2'
-
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
