@@ -254,23 +254,4 @@ public class VideoControllerReplayStreamTest {
         ;
 
     }
-
-    @DisplayName("리플레이 스트리밍 비디오 요청 : 요청 파일 명이 허용된 규격('파일 이름'.'확장자 명')에 벗어난 경우 예외를 발생시킨다.")
-    @ValueSource(strings = {"test!@!.m3u8", "TEST.TT.m3u8", "test1"})
-    @ParameterizedTest
-    public void testGetReplayVideoWithNotAllowedFormOfFilename(String filename) throws Exception {
-
-        //given
-        String streamKey = UUID.randomUUID().toString();
-        String protocol = "hls";
-
-        //when & then
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .get("/video/{protocol}/replay/{streamKey}/{filename}", protocol, streamKey, filename)
-                )
-                .andExpect(MockMvcResultMatchers.status().is(400))
-        ;
-
-    }
 }

@@ -56,7 +56,7 @@ public class VideoController {
     @GetMapping("/video/{protocol}/replay/{streamKey}/{filename}")
     public ResponseEntity<byte[]> getReplayVideo(@PathVariable String protocol,
                                                  @PathVariable @StreamKey String streamKey,
-                                                 @PathVariable @ReplayVideoFilename String filename) {
+                                                 @PathVariable String filename) {
         validateFileFormat(protocol, filename);
 
         Long userId = ((UsmsUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
