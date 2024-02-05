@@ -10,4 +10,5 @@ public interface SpringJpaDataDeviceRepository extends JpaRepository<UsmsDevice,
 
     int deleteByUserId(Long userid);
 
+    boolean existsByToken(String token);
 }

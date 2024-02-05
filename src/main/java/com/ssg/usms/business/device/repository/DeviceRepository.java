@@ -9,5 +9,7 @@ public interface DeviceRepository {
 
     void saveToken(UsmsDevice device);
 
+    boolean existsByToken(String token);
+
     int deleteToken(Long userid);
 }
