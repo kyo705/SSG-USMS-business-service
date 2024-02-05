@@ -475,7 +475,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
@@ -505,7 +505,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
@@ -535,7 +535,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
@@ -552,7 +552,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithUserDetails("admin")
+    @WithUserDetails("storeOwner")
     @DisplayName("[findBusinessLicenseImgFile] : 잘못된 사업자 등록증 사본 이미지 키로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithInvalidLicenseKey() throws Exception {
@@ -576,7 +576,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithUserDetails("admin")
+    @WithUserDetails("storeOwner")
     @DisplayName("[findBusinessLicenseImgFile] : 존재하지 않는 매장 id로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithNotExistingStore() throws Exception {
@@ -584,7 +584,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(any(), any());
 
@@ -602,7 +602,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithUserDetails("admin")
+    @WithUserDetails("storeOwner")
     @DisplayName("[findBusinessLicenseImgFile] : 본인 소유가 아닌 매장 id로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithNotOwnedStore() throws Exception {
@@ -610,7 +610,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         willThrow(new NotOwnedStoreException()).given(storeService).validateOwnedStore(any(), any());
 
@@ -628,7 +628,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithUserDetails("admin")
+    @WithUserDetails("storeOwner")
     @DisplayName("[findBusinessLicenseImgFile] : 본인 소유가 아닌 사업자 등록증 사본 이미지 키로 요청시 예외가 발생한다.")
     @Test
     public void testFindBusinessLicenseImgFileWithNotOwnedBusinessLicenseImgKey() throws Exception {
@@ -636,7 +636,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         willThrow(new NotOwnedBusinessLicenseImgIdException())
                 .given(storeService)
@@ -656,7 +656,7 @@ public class StoreControllerRetrievingTest {
 
     }
 
-    @WithUserDetails("admin")
+    @WithUserDetails("storeOwner")
     @DisplayName("[findBusinessLicenseImgFile] : 저장 과정에서 예외가 발생하는 경우")
     @Test
     public void testFindBusinessLicenseImgFileWithS3Error() throws Exception {
@@ -664,7 +664,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString();
+        String licenseKey = UUID.randomUUID().toString().replace("-", "");
 
         given(storeService.findBusinessLicenseImgFile(any())).willThrow(new AmazonClientException("예외발생"));
 
