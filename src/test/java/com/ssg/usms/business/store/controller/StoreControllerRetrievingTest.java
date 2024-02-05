@@ -50,6 +50,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
 import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 
 @ActiveProfiles("test")
@@ -496,7 +497,7 @@ public class StoreControllerRetrievingTest {
                                 .get("/api/users/{userId}/stores/{storeId}/license/{licenseKey}", userId, storeId, licenseKey)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(IMAGE_JPEG_VALUE)))
+                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(APPLICATION_OCTET_STREAM_VALUE)))
                 .andExpect(result -> {
                     byte[] resultBody = result.getResponse().getContentAsByteArray();
                     Assertions.assertThat(resultBody).isEqualTo(resource.getInputStream().readAllBytes());
@@ -532,7 +533,7 @@ public class StoreControllerRetrievingTest {
                                 .get("/api/users/{userId}/stores/{storeId}/license/{licenseKey}", userId, storeId, licenseKey)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(IMAGE_JPEG_VALUE)))
+                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(APPLICATION_OCTET_STREAM_VALUE)))
                 .andExpect(result -> {
                     byte[] resultBody = result.getResponse().getContentAsByteArray();
                     Assertions.assertThat(resultBody).isEqualTo(resource.getInputStream().readAllBytes());
