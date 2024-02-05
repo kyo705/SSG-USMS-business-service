@@ -1,9 +1,11 @@
 package com.ssg.usms.business.store.repository;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.ssg.usms.business.config.AwsS3ImgBucketLocalConfig;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.store.dto.ImageDto;
 import io.findify.s3mock.S3Mock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,8 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -28,6 +34,8 @@ public class ImageRepositoryTest {
     @Autowired
     private AmazonS3 amazonS3;
     @Autowired
+    private CacheManager cacheManager;
+    @Autowired
     S3Mock s3Mock;
     @Value("${aws.s3.image-bucket}")
     private String bucket;
@@ -42,9 +50,10 @@ public class ImageRepositoryTest {
         String filename = UUID.randomUUID().toString().replace("-", "");
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         //when
-        imageRepository.save(filename, resource.getInputStream(), resource.getFile().length());
+        imageRepository.save(filename, file);
 
         //then
         S3Object s3Object = amazonS3.getObject(bucket, filename);
@@ -53,7 +62,7 @@ public class ImageRepositoryTest {
 
     @DisplayName("이미지 조회 테스트")
     @Test
-    public void testFind() throws IOException {
+    public void testFind() throws IOException, NoSuchMethodException {
 
         //given
         amazonS3.createBucket(bucket);
@@ -61,14 +70,19 @@ public class ImageRepositoryTest {
         String filename = UUID.randomUUID().toString().replace("-", "");
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        metadata.setContentLength(resource.contentLength());
 
-        amazonS3.putObject(bucket, filename, resource.getInputStream(), null);
+        amazonS3.putObject(bucket, filename, resource.getInputStream(), metadata);
+        ImageDto imageDto = new ImageDto();
+        imageDto.setContentLength(50);
 
         //when
-        byte[] image = imageRepository.find(filename);
+        ImageDto image = imageRepository.find(filename);
 
         //then
-        assertThat(image).isEqualTo(resource.getInputStream().readAllBytes());
+        assertThat(image.getContent()).isEqualTo(resource.getInputStream().readAllBytes());
     }
 
     @DisplayName("이미지 존재 유무 확인 테스트")

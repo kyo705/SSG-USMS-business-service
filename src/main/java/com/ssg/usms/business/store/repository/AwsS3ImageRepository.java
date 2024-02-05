@@ -2,14 +2,16 @@ package com.ssg.usms.business.store.repository;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.ssg.usms.business.store.dto.ImageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import static com.ssg.usms.business.config.CacheConfiguration.IMG_FILE_CACHE_KEY;
 
@@ -23,20 +25,30 @@ public class AwsS3ImageRepository implements ImageRepository {
 
     @CachePut(value = IMG_FILE_CACHE_KEY, key = "#key", cacheManager = "usmsCacheManager")
     @Override
-    public void save(String key, InputStream inputStream, long fileSize) {
+    public void save(String key, MultipartFile businessLicenseImgFile) {
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(fileSize);
+        metadata.setContentLength(businessLicenseImgFile.getSize());
+        metadata.setContentType(businessLicenseImgFile.getContentType());
 
-        amazonS3.putObject(imageBucket, key, inputStream, metadata);
+        try {
+            amazonS3.putObject(imageBucket, key, businessLicenseImgFile.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Cacheable(value = IMG_FILE_CACHE_KEY, key =  "#key", cacheManager = "usmsCacheManager")
     @Override
-    public byte[] find(String key) {
+    public ImageDto find(String key) {
 
         try {
-            return amazonS3.getObject(imageBucket, key).getObjectContent().readAllBytes();
+            S3Object result = amazonS3.getObject(imageBucket, key);
+            String contentType = result.getObjectMetadata().getContentType();
+            long contentLength = result.getObjectMetadata().getContentLength();
+            byte[] content = result.getObjectContent().readAllBytes();
+
+            return new ImageDto(contentType, contentLength, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

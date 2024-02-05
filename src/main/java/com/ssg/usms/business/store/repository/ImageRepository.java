@@ -1,12 +1,13 @@
 package com.ssg.usms.business.store.repository;
 
-import java.io.InputStream;
+import com.ssg.usms.business.store.dto.ImageDto;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageRepository {
 
-    void save(String key, InputStream inputStream, long fileSize);
+    void save(String key, MultipartFile businessLicenseImgFile);
 
-    byte[] find(String key);
+    ImageDto find(String key);
 
     boolean isExisting(String key);
 }

@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.service;
 
 import com.amazonaws.AmazonClientException;
+import com.ssg.usms.business.store.dto.ImageDto;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingBusinessLicenseImgFileKeyException;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
@@ -154,16 +155,20 @@ public class StoreServiceRetrievingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        ImageDto imageDto = ImageDto.builder()
+                .contentLength(resource.contentLength())
+                .content(resource.getInputStream().readAllBytes())
+                .build();
 
         given(mockImageRepository.isExisting(businessLicenseImgFileKey)).willReturn(true);
-        given(mockImageRepository.find(businessLicenseImgFileKey)).willReturn(resource.getInputStream().readAllBytes());
+        given(mockImageRepository.find(businessLicenseImgFileKey)).willReturn(imageDto);
 
 
         //when
-        byte[] image = storeService.findBusinessLicenseImgFile(businessLicenseImgFileKey);
+        ImageDto image = storeService.findBusinessLicenseImgFile(businessLicenseImgFileKey);
 
         //then
-        assertThat(image).isEqualTo(resource.getInputStream().readAllBytes());
+        assertThat(image.getContent()).isEqualTo(resource.getInputStream().readAllBytes());
     }
 
     @DisplayName("[findBusinessLicenseImgFile] : 사업자 등록증 사본 이미지 키 값이 존재하지 않을 경우 예외가 발생한다.")

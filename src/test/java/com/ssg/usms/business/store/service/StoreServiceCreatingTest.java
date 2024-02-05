@@ -13,12 +13,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -49,18 +50,21 @@ public class StoreServiceCreatingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
+
+        System.out.println("dgsg : " + file.getName());
 
         //when
-        storeService.createStore(storeDto, resource.getInputStream(), resource.getFile().length());
+        storeService.createStore(storeDto, file);
 
         //then
         verify(mockStoreRepository, times(1)).save(any());
-        verify(mockiImageRepository, times(1)).save(any(), any(), anyLong());
+        verify(mockiImageRepository, times(1)).save(any(), any());
     }
 
     @DisplayName("매장 정보를 저장하는 과정에서 예외가 발생할 경우 사업자등록증 사본을 저장하는 로직은 실행되지 않는다.")
     @Test
-    public void testCreatingStoreWithADataIntegrityViolationException() {
+    public void testCreatingStoreWithADataIntegrityViolationException() throws IOException {
 
         //given
         StoreDto storeDto = new StoreDto();
@@ -73,18 +77,19 @@ public class StoreServiceCreatingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         //when
-        assertThrows(DataIntegrityViolationException.class, () -> storeService.createStore(storeDto, resource.getInputStream(), resource.getFile().length()));
+        assertThrows(DataIntegrityViolationException.class, () -> storeService.createStore(storeDto, file));
 
         //then
         verify(mockStoreRepository, times(1)).save(any());
-        verify(mockiImageRepository, times(0)).save(any(), any(), anyLong());
+        verify(mockiImageRepository, times(0)).save(any(), any());
     }
 
     @DisplayName("사업자등록증 사본을 저장하는 과정에서 예외가 발생할 경우 해당 예외를 리턴한다.")
     @Test
-    public void testCreatingStoreWithAmazonServiceException() {
+    public void testCreatingStoreWithAmazonServiceException() throws IOException {
 
         //given
         StoreDto storeDto = new StoreDto();
@@ -93,16 +98,17 @@ public class StoreServiceCreatingTest {
         storeDto.setName("매장명");
         storeDto.setAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
         storeDto.setBusinessLicenseCode("123-45-67890");
-        BDDMockito.willThrow(AmazonServiceException.class).given(mockiImageRepository).save(any(), any(), anyLong());
+        BDDMockito.willThrow(AmazonServiceException.class).given(mockiImageRepository).save(any(), any());
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         //when
-        assertThrows(AmazonServiceException.class, () -> storeService.createStore(storeDto, resource.getInputStream(), resource.getFile().length()));
+        assertThrows(AmazonServiceException.class, () -> storeService.createStore(storeDto, file));
 
         //then
         verify(mockStoreRepository, times(1)).save(any());
-        verify(mockiImageRepository, times(1)).save(any(), any(), anyLong());
+        verify(mockiImageRepository, times(1)).save(any(), any());
     }
 }
