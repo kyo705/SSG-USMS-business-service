@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,9 +51,7 @@ public class StoreServiceCreatingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
-
-        System.out.println("dgsg : " + file.getName());
+        MultipartFile file = new MockMultipartFile(filePath, filePath, MediaType.IMAGE_JPEG_VALUE, resource.getInputStream());
 
         //when
         storeService.createStore(storeDto, file);
@@ -77,7 +76,7 @@ public class StoreServiceCreatingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
+        MultipartFile file = new MockMultipartFile(filePath, filePath, MediaType.IMAGE_JPEG_VALUE, resource.getInputStream());
 
         //when
         assertThrows(DataIntegrityViolationException.class, () -> storeService.createStore(storeDto, file));
@@ -102,7 +101,7 @@ public class StoreServiceCreatingTest {
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
+        MultipartFile file = new MockMultipartFile(filePath, filePath, MediaType.IMAGE_JPEG_VALUE, resource.getInputStream());
 
         //when
         assertThrows(AmazonServiceException.class, () -> storeService.createStore(storeDto, file));

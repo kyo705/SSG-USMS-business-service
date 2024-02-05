@@ -33,7 +33,7 @@ public class StoreService {
     public StoreDto createStore(StoreDto storeDto, MultipartFile businessLicenseImgFile) {
 
         // 매장 메타데이터 저장
-        String fileFormat = businessLicenseImgFile.getName().split("[.]")[1];
+        String fileFormat = businessLicenseImgFile.getOriginalFilename().split("[.]")[1];
         String businessLicenseImgId = UUID.randomUUID().toString().replace("-", "") + "." + fileFormat;
 
         Store store = new Store();
