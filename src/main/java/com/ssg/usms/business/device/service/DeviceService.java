@@ -16,10 +16,12 @@ public class DeviceService {
     @Transactional
     public void saveToken(String token,Long userid){
 
-        deviceRepository.saveToken(UsmsDevice.builder()
-                .userId(userid)
-                .token(token)
-                .build());
+        if(!deviceRepository.existsByToken(token)) {
+            deviceRepository.saveToken(UsmsDevice.builder()
+                    .userId(userid)
+                    .token(token)
+                    .build());
+        }
     }
     @Transactional
     public void deleteToken(Long userid){

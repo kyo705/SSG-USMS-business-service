@@ -33,13 +33,21 @@ public class CacheConfiguration {
         Map<String, RedisCacheConfiguration> entityCacheConfigs = new HashMap<>();
 
         entityCacheConfigs.put(FILE_NAME_LIST_CACHE_KEY,
-                RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(filenameListTtl)));
+                RedisCacheConfiguration.defaultCacheConfig()
+                        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                        .entryTtl(Duration.ofSeconds(filenameListTtl))
+        );
         entityCacheConfigs.put(IMG_FILE_CACHE_KEY,
-                RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(imgFileTtl)));
+                RedisCacheConfiguration.defaultCacheConfig()
+                        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                        .entryTtl(Duration.ofSeconds(imgFileTtl)));
 
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                .entryTtl(Duration.ofMinutes(1));
 
         return RedisCacheManager
                 .RedisCacheManagerBuilder

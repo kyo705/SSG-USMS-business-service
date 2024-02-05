@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.constant.StoreState;
+import com.ssg.usms.business.store.dto.ImageDto;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedBusinessLicenseImgIdException;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -48,7 +50,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
+import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
@@ -475,11 +477,17 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(resource.getInputStream().readAllBytes());
+        ImageDto imageDto = ImageDto.builder()
+                .contentLength(resource.contentLength())
+                .contentType(MediaType.IMAGE_JPEG_VALUE)
+                .content(resource.getInputStream().readAllBytes())
+                .build();
+
+        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(imageDto);
 
 
         //when & then
@@ -488,7 +496,7 @@ public class StoreControllerRetrievingTest {
                                 .get("/api/users/{userId}/stores/{storeId}/license/{licenseKey}", userId, storeId, licenseKey)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(APPLICATION_OCTET_STREAM_VALUE)))
+                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(IMAGE_JPEG_VALUE)))
                 .andExpect(result -> {
                     byte[] resultBody = result.getResponse().getContentAsByteArray();
                     Assertions.assertThat(resultBody).isEqualTo(resource.getInputStream().readAllBytes());
@@ -505,11 +513,17 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(resource.getInputStream().readAllBytes());
+        ImageDto imageDto = ImageDto.builder()
+                .contentLength(resource.contentLength())
+                .contentType(MediaType.IMAGE_JPEG_VALUE)
+                .content(resource.getInputStream().readAllBytes())
+                .build();
+
+        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(imageDto);
 
 
         //when & then
@@ -518,7 +532,7 @@ public class StoreControllerRetrievingTest {
                                 .get("/api/users/{userId}/stores/{storeId}/license/{licenseKey}", userId, storeId, licenseKey)
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
-                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(APPLICATION_OCTET_STREAM_VALUE)))
+                .andExpect(MockMvcResultMatchers.header().string(CONTENT_TYPE, containsString(IMAGE_JPEG_VALUE)))
                 .andExpect(result -> {
                     byte[] resultBody = result.getResponse().getContentAsByteArray();
                     Assertions.assertThat(resultBody).isEqualTo(resource.getInputStream().readAllBytes());
@@ -535,11 +549,16 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
-        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(resource.getInputStream().readAllBytes());
+        ImageDto imageDto = ImageDto.builder()
+                .contentLength(resource.contentLength())
+                .contentType(MediaType.IMAGE_JPEG_VALUE)
+                .content(resource.getInputStream().readAllBytes())
+                .build();
+        given(storeService.findBusinessLicenseImgFile(licenseKey)).willReturn(imageDto);
 
 
         //when & then
@@ -584,7 +603,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(any(), any());
 
@@ -610,7 +629,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         willThrow(new NotOwnedStoreException()).given(storeService).validateOwnedStore(any(), any());
 
@@ -636,7 +655,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         willThrow(new NotOwnedBusinessLicenseImgIdException())
                 .given(storeService)
@@ -664,7 +683,7 @@ public class StoreControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        String licenseKey = UUID.randomUUID().toString().replace("-", "");
+        String licenseKey = UUID.randomUUID().toString().replace("-", "") + ".jpeg";
 
         given(storeService.findBusinessLicenseImgFile(any())).willThrow(new AmazonClientException("예외발생"));
 

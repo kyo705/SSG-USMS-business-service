@@ -23,6 +23,11 @@ public class JpaDeviceRepository implements DeviceRepository{
     }
 
     @Override
+    public boolean existsByToken(String token) {
+        return springJpaDataDeviceRepository.existsByToken(token);
+    }
+
+    @Override
     public int deleteToken(Long userId) {
         return springJpaDataDeviceRepository.deleteByUserId(userId);
     }

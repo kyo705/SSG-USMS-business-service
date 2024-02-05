@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.service;
 
 import com.ssg.usms.business.store.constant.StoreState;
+import com.ssg.usms.business.store.dto.ImageDto;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingBusinessLicenseImgFileKeyException;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
@@ -13,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,16 +28,13 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final ImageRepository imageRepository;
 
-    public List<StoreDto> getStoresByUsername(String username) {
-
-        return null;
-    }
 
     @Transactional
-    public StoreDto createStore(StoreDto storeDto, InputStream businessLicenseImgFile, long fileSize) {
+    public StoreDto createStore(StoreDto storeDto, MultipartFile businessLicenseImgFile) {
 
         // 매장 메타데이터 저장
-        String businessLicenseImgId = UUID.randomUUID().toString().replace("-", "");
+        String fileFormat = businessLicenseImgFile.getName().split("[.]")[1];
+        String businessLicenseImgId = UUID.randomUUID().toString().replace("-", "") + "." + fileFormat;
 
         Store store = new Store();
         store.setUserId(storeDto.getUserId());
@@ -49,7 +47,7 @@ public class StoreService {
         storeRepository.save(store);
 
         // 이미지 파일 저장
-        imageRepository.save(businessLicenseImgId, businessLicenseImgFile, fileSize);
+        imageRepository.save(businessLicenseImgId, businessLicenseImgFile);
 
         return new StoreDto(store);
     }
@@ -61,7 +59,7 @@ public class StoreService {
     }
 
     @Transactional
-    public byte[] findBusinessLicenseImgFile(String businessLicenseImgFileKey) {
+    public ImageDto findBusinessLicenseImgFile(String businessLicenseImgFileKey) {
 
         if(!imageRepository.isExisting(businessLicenseImgFileKey)) {
             throw new NotExistingBusinessLicenseImgFileKeyException();
@@ -94,15 +92,18 @@ public class StoreService {
     }
 
     @Transactional
-    public void update(Long storeId, String storeName, String storeAddress, String businessLicenseCode,
-                       InputStream businessLicenseImgFile, long fileSize) {
+    public void update(Long storeId,
+                       String storeName,
+                       String storeAddress,
+                       String businessLicenseCode,
+                       MultipartFile businessLicenseImgFile) {
 
 
         Store store = storeRepository.findById(storeId);
         store.update(storeName, storeAddress, businessLicenseCode);
         storeRepository.update(store);
 
-        imageRepository.save(store.getBusinessLicenseImgId(), businessLicenseImgFile, fileSize);
+        imageRepository.save(store.getBusinessLicenseImgId(), businessLicenseImgFile);
     }
 
     @Transactional
