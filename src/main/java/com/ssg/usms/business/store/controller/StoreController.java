@@ -126,7 +126,7 @@ public class StoreController {
         ImageDto img = storeService.findBusinessLicenseImgFile(licenseKey);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(img.getContentType()))
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .contentLength(img.getContentLength())
                 .body(img.getContent());
     }
