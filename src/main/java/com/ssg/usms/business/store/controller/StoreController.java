@@ -2,16 +2,14 @@ package com.ssg.usms.business.store.controller;
 
 import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.store.annotation.BusinessLicenseImgKey;
-import com.ssg.usms.business.store.dto.HttpRequestChangingStoreStateDto;
-import com.ssg.usms.business.store.dto.HttpRequestCreatingStoreDto;
-import com.ssg.usms.business.store.dto.HttpRequestRetrievingStoreDto;
-import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.dto.*;
 import com.ssg.usms.business.store.exception.EmptyImgFileException;
 import com.ssg.usms.business.store.exception.NotAllowedImgFileFormatException;
 import com.ssg.usms.business.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,7 +58,7 @@ public class StoreController {
                 .businessLicenseCode(requestParam.getBusinessLicenseCode())
                 .build();
 
-       StoreDto storeDto = storeService.createStore(store, businessLicenseImgFile.getInputStream(), businessLicenseImgFile.getSize());
+       StoreDto storeDto = storeService.createStore(store, businessLicenseImgFile);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(storeDto);
     }
@@ -106,7 +104,7 @@ public class StoreController {
     }
 
     @GetMapping("/api/users/{userId}/stores/{storeId}/license/{licenseKey}")
-    public byte[] findBusinessLicenseImgFile(@PathVariable Long userId,
+    public ResponseEntity<byte[]> findBusinessLicenseImgFile(@PathVariable Long userId,
                                              @PathVariable Long storeId,
                                              @PathVariable @BusinessLicenseImgKey String licenseKey) {
 
@@ -125,7 +123,12 @@ public class StoreController {
         }
         storeService.validateOwnedBusinessLicenseImgKey(storeId, licenseKey);
 
-        return storeService.findBusinessLicenseImgFile(licenseKey);
+        ImageDto img = storeService.findBusinessLicenseImgFile(licenseKey);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(img.getContentType()))
+                .contentLength(img.getContentLength())
+                .body(img.getContent());
     }
 
     @PostMapping("/api/users/{userId}/stores/{storeId}")
@@ -148,8 +151,7 @@ public class StoreController {
                 requestBody.getStoreName(),
                 requestBody.getStoreAddress(),
                 requestBody.getBusinessLicenseCode(),
-                businessLicenseImgFile.getInputStream(),
-                businessLicenseImgFile.getSize());
+                businessLicenseImgFile);
 
         return ResponseEntity.status(NO_CONTENT).build();
     }

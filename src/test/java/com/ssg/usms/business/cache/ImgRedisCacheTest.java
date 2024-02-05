@@ -3,6 +3,7 @@ package com.ssg.usms.business.cache;
 import com.amazonaws.services.s3.AmazonS3;
 import com.ssg.usms.business.config.AwsS3TranscodeBucketLocalConfig;
 import com.ssg.usms.business.config.EmbeddedRedis;
+import com.ssg.usms.business.store.dto.ImageDto;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import io.findify.s3mock.S3Mock;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -59,11 +62,12 @@ public class ImgRedisCacheTest {
         String key = "key";
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         assertThat(cacheManager.getCache(IMG_FILE_CACHE_KEY).get(key)).isNull();
 
         //when
-        imageRepository.save(key, resource.getInputStream(), resource.getFile().length());
+        imageRepository.save(key, file);
 
         //then
         assertThat(cacheManager.getCache(IMG_FILE_CACHE_KEY).get(key)).isNotNull();
@@ -81,11 +85,11 @@ public class ImgRedisCacheTest {
         amazonS3.putObject(bucket,key, resource.getFile());
 
         //when
-        byte[] image = imageRepository.find(key);
+        ImageDto image = imageRepository.find(key);
 
         //then
-        byte[] cacheImage = (byte[]) cacheManager.getCache(IMG_FILE_CACHE_KEY).get(key).get();
-        assertThat(image).isEqualTo(cacheImage);
+        ImageDto cacheImage = (ImageDto) cacheManager.getCache(IMG_FILE_CACHE_KEY).get(key).get();
+        assertThat(image.getContent()).isEqualTo(cacheImage.getContent());
     }
 
     @DisplayName("캐시에 저장된 이미지가 ttl이 지나면 초기화 된다.")
@@ -98,22 +102,22 @@ public class ImgRedisCacheTest {
         ClassPathResource resource = new ClassPathResource(filePath);
         amazonS3.putObject(bucket,key, resource.getFile());
 
-        byte[] image = imageRepository.find(key);
+        ImageDto image = imageRepository.find(key);
 
         String file2Path = "astronomy.jpg";
         ClassPathResource resource2 = new ClassPathResource(file2Path);
         amazonS3.putObject(bucket, key, resource2.getFile());
 
-        byte[] cacheImage = imageRepository.find(key);
+        ImageDto cacheImage = imageRepository.find(key);
 
-        assertThat(image).isEqualTo(cacheImage);
+        assertThat(image.getContent()).isEqualTo(cacheImage.getContent());
 
         //when
         Thread.sleep(2000L);
 
         //then
-        byte[] newImage = imageRepository.find(key);
+        ImageDto newImage = imageRepository.find(key);
 
-        assertThat(image).isNotEqualTo(newImage);
+        assertThat(image.getContent()).isNotEqualTo(newImage.getContent());
     }
 }

@@ -15,6 +15,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +24,6 @@ import java.io.InputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
@@ -49,6 +50,7 @@ public class StoreServiceUpdatingTest {
         //given
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         Long storeId = 1L;
         Long userId = 1L;
@@ -56,7 +58,6 @@ public class StoreServiceUpdatingTest {
         String storeAddress = "매장위치";
         String businessLicenseCode = "사업자등록번호";
         String businessLicenseImgId = "사업자등록증 사본 이미지 키";
-        InputStream businessLicenseImgFile = resource.getInputStream();
 
         Store store = Store.init(userId,
                 storeName,
@@ -69,13 +70,13 @@ public class StoreServiceUpdatingTest {
         given(mockStoreRepository.findById(storeId)).willReturn(store);
 
         //when
-        storeService.update(storeId, storeName, storeAddress, storeAddress, businessLicenseImgFile, resource.getFile().length());
+        storeService.update(storeId, storeName, storeAddress, storeAddress, file);
 
         //then
         assertThat(store.getStoreState()).isEqualTo(StoreState.READY);      // 승인 대기 상태로 전환
         verify(mockStoreRepository, times(1)).findById(storeId);
         verify(mockStoreRepository, times(1)).update(store);
-        verify(mockiImageRepository, times(1)).save(businessLicenseImgId, businessLicenseImgFile, resource.getFile().length());
+        verify(mockiImageRepository, times(1)).save(businessLicenseImgId, file);
     }
 
     @DisplayName("[update] : 존재하지 않는 매장 id로 요청 파라미터가 전달될 경우 예외가 발생한다.")
@@ -85,6 +86,7 @@ public class StoreServiceUpdatingTest {
         //given
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         Long storeId = 1L;
         Long userId = 1L;
@@ -97,12 +99,12 @@ public class StoreServiceUpdatingTest {
 
         //when
         assertThrows(NotExistingStoreException.class,
-                () -> storeService.update(storeId, storeName, storeAddress, storeAddress, businessLicenseImgFile, resource.getFile().length()));
+                () -> storeService.update(storeId, storeName, storeAddress, storeAddress, file));
 
         //then
         verify(mockStoreRepository, times(1)).findById(storeId);
         verify(mockStoreRepository, times(0)).update(any());
-        verify(mockiImageRepository, times(0)).save(businessLicenseImgId, businessLicenseImgFile, resource.getFile().length());
+        verify(mockiImageRepository, times(0)).save(businessLicenseImgId, file);
     }
 
     @DisplayName("[update] : 이미지 저장 과정에서 예외가 발생하는 상황.")
@@ -112,6 +114,7 @@ public class StoreServiceUpdatingTest {
         //given
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
+        MultipartFile file = new MockMultipartFile(filePath, resource.getInputStream());
 
         Long storeId = 1L;
         Long userId = 1L;
@@ -129,16 +132,16 @@ public class StoreServiceUpdatingTest {
         store.setId(storeId);
 
         given(mockStoreRepository.findById(storeId)).willReturn(store);
-        willThrow(AmazonClientException.class).given(mockiImageRepository).save(any(), any(), anyLong());
+        willThrow(AmazonClientException.class).given(mockiImageRepository).save(any(), any());
 
         //when
         assertThrows(AmazonClientException.class,
-                () -> storeService.update(storeId, storeName, storeAddress, storeAddress, businessLicenseImgFile, resource.getFile().length()));
+                () -> storeService.update(storeId, storeName, storeAddress, storeAddress, file));
 
         //then
         verify(mockStoreRepository, times(1)).findById(storeId);
         verify(mockStoreRepository, times(1)).update(store);
-        verify(mockiImageRepository, times(1)).save(businessLicenseImgId, businessLicenseImgFile, resource.getFile().length());
+        verify(mockiImageRepository, times(1)).save(businessLicenseImgId, file);
     }
 
     @DisplayName("[changeStoreState] : 존재하는 매장 id로 요청시 성공적으로 매장 상태가 변경된다.")
