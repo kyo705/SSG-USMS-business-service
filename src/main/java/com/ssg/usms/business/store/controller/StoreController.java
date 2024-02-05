@@ -110,9 +110,19 @@ public class StoreController {
                                              @PathVariable Long storeId,
                                              @PathVariable @BusinessLicenseImgKey String licenseKey) {
 
-        userId = ((UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        UsmsUserDetails userDetails = (UsmsUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userId = userDetails.getId();
 
-        storeService.validateOwnedStore(storeId, userId);
+        List<? extends GrantedAuthority> authorities = (List<? extends GrantedAuthority>) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities();
+
+        if (authorities.size() != 1) {
+            throw new IllegalStateException("유저 권한 갯수가 현재 이상함");
+        }
+        if (authorities.get(0).getAuthority().equals(ROLE_STORE_OWNER.name())) {
+            storeService.validateOwnedStore(storeId, userId);
+        }
         storeService.validateOwnedBusinessLicenseImgKey(storeId, licenseKey);
 
         return storeService.findBusinessLicenseImgFile(licenseKey);
