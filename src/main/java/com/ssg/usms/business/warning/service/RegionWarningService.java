@@ -12,6 +12,7 @@ import com.ssg.usms.business.warning.dto.RegionWarningDto;
 import com.ssg.usms.business.warning.repository.RegionWarning;
 import com.ssg.usms.business.warning.repository.RegionWarningRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,7 @@ public class RegionWarningService {
     }
 
 
+    @Async("threadPoolTaskExecutor")
     @Transactional
     @Scheduled(cron = "${usms.schedule.createRegionWarning.cron}", zone = "${usms.schedule.timeZone}")
     public void createRegionWarning() {
@@ -101,6 +103,7 @@ public class RegionWarningService {
         });
     }
 
+    @Async("threadPoolTaskExecutor")
     @Scheduled(cron = "${usms.schedule.sendRegionWarningNotification.cron}", zone = "${usms.schedule.timeZone}")
     public void sendRegionWarningNotification() throws IOException {
 
