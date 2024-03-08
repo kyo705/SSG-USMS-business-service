@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.service;
 
 import com.amazonaws.AmazonClientException;
+import com.ssg.usms.business.cctv.repository.CctvRepository;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
@@ -36,11 +37,13 @@ public class StoreServiceUpdatingTest {
     @Mock
     private StoreRepository mockStoreRepository;
     @Mock
+    private CctvRepository mockCctvRepository;
+    @Mock
     private ImageRepository mockiImageRepository;
 
     @BeforeEach
     public void setup() {
-        storeService = new StoreService(mockStoreRepository, mockiImageRepository);
+        storeService = new StoreService(mockStoreRepository, mockCctvRepository, mockiImageRepository);
     }
 
     @DisplayName("[update] : 정상적인 업데이트 요청 파라미터가 전달될 경우 업데이트가 완료된다.")

@@ -1,5 +1,6 @@
 package com.ssg.usms.business.store.service;
 
+import com.ssg.usms.business.cctv.repository.CctvRepository;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.repository.ImageRepository;
@@ -13,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,11 +26,13 @@ public class StoreServiceDeletingTest {
     @Mock
     private StoreRepository mockStoreRepository;
     @Mock
+    private CctvRepository mockCctvRepository;
+    @Mock
     private ImageRepository mockiImageRepository;
 
     @BeforeEach
     public void setup() {
-        storeService = new StoreService(mockStoreRepository, mockiImageRepository);
+        storeService = new StoreService(mockStoreRepository, mockCctvRepository, mockiImageRepository);
     }
 
     @DisplayName("정상적인 매장 삭제 요청시 성공한다.")
@@ -73,6 +76,7 @@ public class StoreServiceDeletingTest {
         assertThrows(NotExistingStoreException.class, () -> storeService.delete(storeId));
 
         verify(mockStoreRepository, times(1)).findById(storeId);
+        verify(mockCctvRepository, times(0)).findByStoreId(anyLong(), anyInt(), anyInt());
         verify(mockStoreRepository, times(0)).delete(any());
 
     }

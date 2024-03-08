@@ -1,5 +1,7 @@
 package com.ssg.usms.business.store.service;
 
+import com.ssg.usms.business.cctv.repository.Cctv;
+import com.ssg.usms.business.cctv.repository.CctvRepository;
 import com.ssg.usms.business.store.constant.StoreState;
 import com.ssg.usms.business.store.dto.ImageDto;
 import com.ssg.usms.business.store.dto.StoreDto;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final CctvRepository cctvRepository;
     private final ImageRepository imageRepository;
 
 
@@ -124,8 +127,23 @@ public class StoreService {
     @Transactional
     public void delete(Long storeId) {
 
+        // 매장 메타데이터 삭제
         Store store = storeRepository.findById(storeId);
         storeRepository.delete(store);
+
+        // 매장 내 모든 cctv 만료시킴
+        int offset = 0;
+        int size = 100;
+        while(true) {
+            List<Cctv> cctvs = cctvRepository.findByStoreId(storeId, offset, size);
+            for(Cctv cctv : cctvs) {
+                cctv.expire();
+            }
+            if(cctvs.size() != size){
+                break;
+            }
+            offset++;
+        }
     }
 
 

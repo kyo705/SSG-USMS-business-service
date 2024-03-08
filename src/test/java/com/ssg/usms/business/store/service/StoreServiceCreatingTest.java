@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.service;
 
 import com.amazonaws.AmazonServiceException;
+import com.ssg.usms.business.cctv.repository.CctvRepository;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.StoreRepository;
@@ -31,11 +32,13 @@ public class StoreServiceCreatingTest {
     @Mock
     private StoreRepository mockStoreRepository;
     @Mock
+    private CctvRepository mockCctvRepository;
+    @Mock
     private ImageRepository mockiImageRepository;
 
     @BeforeEach
     public void setup() {
-        storeService = new StoreService(mockStoreRepository, mockiImageRepository);
+        storeService = new StoreService(mockStoreRepository, mockCctvRepository, mockiImageRepository);
     }
 
     @DisplayName("매장 등록 요청이 DB에 저장 후 이미지 파일을 저장한다.")

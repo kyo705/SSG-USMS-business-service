@@ -1,6 +1,7 @@
 package com.ssg.usms.business.store.service;
 
 import com.amazonaws.AmazonClientException;
+import com.ssg.usms.business.cctv.repository.CctvRepository;
 import com.ssg.usms.business.store.dto.ImageDto;
 import com.ssg.usms.business.store.dto.StoreDto;
 import com.ssg.usms.business.store.exception.NotExistingBusinessLicenseImgFileKeyException;
@@ -34,11 +35,13 @@ public class StoreServiceRetrievingTest {
     @Mock
     private StoreRepository mockStoreRepository;
     @Mock
+    private CctvRepository mockCctvRepository;
+    @Mock
     private ImageRepository mockImageRepository;
 
     @BeforeEach
     public void setup() {
-        storeService = new StoreService(mockStoreRepository, mockImageRepository);
+        storeService = new StoreService(mockStoreRepository, mockCctvRepository, mockImageRepository);
     }
 
     @DisplayName("[FindAll] : 주어진 조건에 맞게 매장 데이터들을 조회한다.")
