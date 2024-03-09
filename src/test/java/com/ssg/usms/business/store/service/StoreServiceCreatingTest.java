@@ -1,15 +1,14 @@
 package com.ssg.usms.business.store.service;
 
-import com.amazonaws.AmazonServiceException;
 import com.ssg.usms.business.cctv.repository.CctvRepository;
 import com.ssg.usms.business.store.dto.StoreDto;
+import com.ssg.usms.business.store.exception.UnexpectedImageSavingException;
 import com.ssg.usms.business.store.repository.ImageRepository;
 import com.ssg.usms.business.store.repository.StoreRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
@@ -22,6 +21,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -75,7 +75,7 @@ public class StoreServiceCreatingTest {
         storeDto.setName("매장명");
         storeDto.setAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
         storeDto.setBusinessLicenseCode("123-45-67890");
-        BDDMockito.willThrow(DataIntegrityViolationException.class).given(mockStoreRepository).save(any());
+        willThrow(DataIntegrityViolationException.class).given(mockStoreRepository).save(any());
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
@@ -100,14 +100,14 @@ public class StoreServiceCreatingTest {
         storeDto.setName("매장명");
         storeDto.setAddress("서울 중구 남대문시장10길 2 메사빌딩 21층");
         storeDto.setBusinessLicenseCode("123-45-67890");
-        BDDMockito.willThrow(AmazonServiceException.class).given(mockiImageRepository).save(any(), any());
+        willThrow(UnexpectedImageSavingException.class).given(mockiImageRepository).save(any(), any());
 
         String filePath = "beach.jpg";
         ClassPathResource resource = new ClassPathResource(filePath);
         MultipartFile file = new MockMultipartFile(filePath, filePath, MediaType.IMAGE_JPEG_VALUE, resource.getInputStream());
 
         //when
-        assertThrows(AmazonServiceException.class, () -> storeService.createStore(storeDto, file));
+        assertThrows(UnexpectedImageSavingException.class, () -> storeService.createStore(storeDto, file));
 
         //then
         verify(mockStoreRepository, times(1)).save(any());

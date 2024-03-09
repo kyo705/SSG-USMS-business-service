@@ -1,9 +1,12 @@
 package com.ssg.usms.business.store.repository;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.ssg.usms.business.store.dto.ImageDto;
+import com.ssg.usms.business.store.exception.UnexpectedImageSavingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -33,8 +36,12 @@ public class AwsS3ImageRepository implements ImageRepository {
 
         try {
             amazonS3.putObject(imageBucket, key, businessLicenseImgFile.getInputStream(), metadata);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        catch (SdkClientException e) {
+            throw new UnexpectedImageSavingException(e.getMessage());
         }
     }
 
