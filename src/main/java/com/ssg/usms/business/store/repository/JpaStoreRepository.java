@@ -28,7 +28,7 @@ public class JpaStoreRepository implements StoreRepository {
     }
 
     @Override
-    public List<Store> findAll(Long userId, String businessCode, StoreState state, int offset, int size) {
+    public List<Store> findAll(Long userId, String businessCode, StoreState state, long storeId, int size) {
 
         Specification<Store> specification = Specification.where(null);
         if(userId != null) {
@@ -40,13 +40,15 @@ public class JpaStoreRepository implements StoreRepository {
         if(state != null) {
             specification = specification.and(hasUserState(state));
         }
-        return springDataJpaStoreRepository.findAll(specification, PageRequest.of(offset, size)).getContent();
+        specification = specification.and(greaterThanStoreId(storeId));
+
+        return springDataJpaStoreRepository.findAll(specification, PageRequest.of(0, size)).getContent();
     }
 
     @Override
-    public List<Store> findByUserId(Long userId, int offset, int size) {
+    public List<Store> findByUserId(Long userId, long storeId, int size) {
 
-        return springDataJpaStoreRepository.findByUserId(userId, PageRequest.of(offset, size));
+        return springDataJpaStoreRepository.findByUserIdAndIdGreaterThan(userId, storeId, PageRequest.of(0, size));
     }
 
     @Override

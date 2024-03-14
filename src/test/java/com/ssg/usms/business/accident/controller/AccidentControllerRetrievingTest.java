@@ -75,7 +75,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 0;
+        Long accidentId = 0L;
         int size = 10;
         String startDate = "2024-01-14";
         String endDate = "2024-01-24";
@@ -103,7 +103,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -259,7 +259,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 0;
+        Long accidentId = 0L;
 
         String startDate = "2024-01-14";
         String endDate = "2024-01-24";
@@ -269,7 +269,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -295,7 +295,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 10;
+        long accidentId = 10L;
         String startDate = "2024-01-14";
         String endDate = "2024-01-24";
 
@@ -304,7 +304,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
 
@@ -330,7 +330,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 0;
+        Long accidentId = 0L;
         int size = 10;
 
         //when & then
@@ -338,7 +338,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", dateFormat)
                                 .param("endDate", dateFormat)
@@ -364,7 +364,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 0;
+        Long accidentId = 0L;
         int size = 10;
 
         String startDate = "2024-01-24";
@@ -375,7 +375,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -401,7 +401,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 0;
+        Long accidentId = 0L;
         int size = 10;
         String startDate = "2024-01-14";
         String endDate = "2024-01-24";
@@ -413,7 +413,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -439,7 +439,7 @@ public class AccidentControllerRetrievingTest {
         Long userId = 1L;
         Long storeId = 1L;
 
-        int offset = 0;
+        Long accidentId = 0L;
         int size = 10;
         String startDate = "2024-01-14";
         String endDate = "2024-01-24";
@@ -451,7 +451,7 @@ public class AccidentControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs/accidents", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("accidentId", Long.toString(accidentId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)

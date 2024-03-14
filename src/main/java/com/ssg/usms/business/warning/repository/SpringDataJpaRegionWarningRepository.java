@@ -10,7 +10,7 @@ import java.util.List;
 public interface SpringDataJpaRegionWarningRepository extends JpaRepository<RegionWarning, Long> {
 
 
-    List<RegionWarning> findByRegionAndDateBetween(String region, Date startDate, Date endDate, Pageable pageable);
+    List<RegionWarning> findByRegionAndDateBetweenAndIdGreaterThan(String region, Date startDate, Date endDate, Long regionWarningId, Pageable pageable);
 
-    List<RegionWarning> findByDateBetween(Date startDate, Date endDate, PageRequest of);
+    List<RegionWarning> findByDateBetweenAndIdGreaterThan(Date startDate, Date endDate, Long regionWarningId, PageRequest of);
 }

@@ -73,7 +73,7 @@ public class AccidentService {
             return accidentRepository.findAllByStoreId(storeId,
                                                     startTimestamp,
                                                     endTimestamp,
-                                                    requestParam.getOffset(),
+                                                    requestParam.getAccidentId(),
                                                     requestParam.getSize()
                     )
                     .stream()
@@ -86,7 +86,7 @@ public class AccidentService {
                                                 requestParam.getBehavior(),
                                                 startTimestamp,
                                                 endTimestamp,
-                                                requestParam.getOffset(),
+                                                requestParam.getAccidentId(),
                                                 requestParam.getSize()
                 )
                 .stream()

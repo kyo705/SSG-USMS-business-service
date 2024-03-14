@@ -101,7 +101,7 @@ public class AccidentServiceTest {
         requestParam.setBehavior(List.of(AccidentBehavior.COME_IN, AccidentBehavior.COME_OUT));
         requestParam.setStartDate("2024-01-13");
         requestParam.setEndDate("2024-01-23");
-        requestParam.setOffset(0);
+        requestParam.setAccidentId(0L);
         requestParam.setSize(20);
 
         Accident accident1 = new Accident();
@@ -134,15 +134,15 @@ public class AccidentServiceTest {
         accidents.add(accident3);
         accidents.add(accident4);
 
-        given(mockAccidentRepository.findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyInt(), anyInt()))
+        given(mockAccidentRepository.findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyLong(), anyInt()))
                 .willReturn(accidents);
 
         //when
         List<AccidentDto> result = accidentService.findByStoreId(storeId, requestParam);
 
         //then
-        verify(mockAccidentRepository, times(0)).findAllByStoreId(anyLong(), anyLong(), anyLong(), anyInt(), anyInt());
-        verify(mockAccidentRepository, times(1)).findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyInt(), anyInt());
+        verify(mockAccidentRepository, times(0)).findAllByStoreId(anyLong(), anyLong(), anyLong(), anyLong(), anyInt());
+        verify(mockAccidentRepository, times(1)).findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyLong(), anyInt());
         assertThat(result.size()).isEqualTo(accidents.size());
 
 
@@ -158,7 +158,7 @@ public class AccidentServiceTest {
         HttpRequestRetrievingAccidentDto requestParam = new HttpRequestRetrievingAccidentDto();
         requestParam.setStartDate("2024-01-13");
         requestParam.setEndDate("2024-01-23");
-        requestParam.setOffset(0);
+        requestParam.setAccidentId(0L);
         requestParam.setSize(20);
 
         Accident accident1 = new Accident();
@@ -191,15 +191,15 @@ public class AccidentServiceTest {
         accidents.add(accident3);
         accidents.add(accident4);
 
-        given(mockAccidentRepository.findAllByStoreId(anyLong(), anyLong(), anyLong(), anyInt(), anyInt()))
+        given(mockAccidentRepository.findAllByStoreId(anyLong(), anyLong(), anyLong(), anyLong(), anyInt()))
                 .willReturn(accidents);
 
         //when
         List<AccidentDto> result = accidentService.findByStoreId(storeId, requestParam);
 
         //then
-        verify(mockAccidentRepository, times(1)).findAllByStoreId(anyLong(), anyLong(), anyLong(), anyInt(), anyInt());
-        verify(mockAccidentRepository, times(0)).findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyInt(), anyInt());
+        verify(mockAccidentRepository, times(1)).findAllByStoreId(anyLong(), anyLong(), anyLong(), anyLong(), anyInt());
+        verify(mockAccidentRepository, times(0)).findAllByStoreId(anyLong(), any(), anyLong(), anyLong(), anyLong(), anyInt());
         assertThat(result.size()).isEqualTo(accidents.size());
 
 

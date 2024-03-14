@@ -10,9 +10,9 @@ public interface StoreRepository {
 
     Store findById(Long id);
 
-    List<Store> findAll(Long userId, String businessCode, StoreState state, int offset, int size);
+    List<Store> findAll(Long userId, String businessCode, StoreState state, long storeId, int size);
 
-    List<Store> findByUserId(Long userId, int offset, int size);
+    List<Store> findByUserId(Long userId, long storeId, int size);
 
     List<Store> findByRegion(String region);
 

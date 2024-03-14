@@ -6,8 +6,8 @@ public interface RegionWarningRepository {
 
     void save(RegionWarning regionWarning);
 
-    List<RegionWarning> findByRegion(String region, String startDate, String endDate, int offset, int size);
+    List<RegionWarning> findByRegion(String region, String startDate, String endDate, long regionWarningId, int size);
 
-    List<RegionWarning> findAll(String startDate, String endDate, int offset, int size);
+    List<RegionWarning> findAll(String startDate, String endDate, long regionWarningId, int size);
 
 }

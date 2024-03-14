@@ -51,7 +51,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
-import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EmbeddedRedis.class)
@@ -253,7 +252,7 @@ public class StoreControllerRetrievingTest {
 
         //given
         Long userId = 1L;
-        int offset = 0;
+        Long storeId = 0L;
         int size = 10;
 
         StoreDto store1 = new StoreDto();
@@ -285,7 +284,7 @@ public class StoreControllerRetrievingTest {
         stores.add(store2);
         stores.add(store3);
 
-        given(storeService.findAll(isNull(), isNull(), any(), anyInt(), anyInt()))
+        given(storeService.findAll(isNull(), isNull(), any(), anyLong(), anyInt()))
                 .willReturn(stores);
 
         //when & then
@@ -293,7 +292,7 @@ public class StoreControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores", userId)
                                 .param("storeState", "2")
-                                .param("offset", Integer.toString(offset))
+                                .param("storeId", Long.toString(storeId))
                                 .param("size", Integer.toString(size))
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -307,8 +306,8 @@ public class StoreControllerRetrievingTest {
                 })
         ;
 
-        verify(storeService, times(1)).findAll(isNull(), isNull(), any(), anyInt(), anyInt());
-        verify(storeService, times(0)).findAllByUserId(any(), anyInt(), anyInt());
+        verify(storeService, times(1)).findAll(isNull(), isNull(), any(), anyLong(), anyInt());
+        verify(storeService, times(0)).findAllByUserId(any(), anyLong(), anyInt());
 
     }
 
@@ -319,7 +318,7 @@ public class StoreControllerRetrievingTest {
 
         //given
         Long userId = 1L;
-        int offset = 0;
+        Long storeId = 0L;
         int size = 10;
 
         StoreDto store1 = new StoreDto();
@@ -339,7 +338,7 @@ public class StoreControllerRetrievingTest {
         stores.add(store2);
         stores.add(store3);
 
-        given(storeService.findAllByUserId(any(), anyInt(), anyInt()))
+        given(storeService.findAllByUserId(any(), anyLong(), anyInt()))
                 .willReturn(stores);
 
         //when & then
@@ -347,7 +346,7 @@ public class StoreControllerRetrievingTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores", userId)
                                 .param("userId", Long.toString(userId))
-                                .param("offset", Integer.toString(offset))
+                                .param("storeId", Long.toString(storeId))
                                 .param("size", Integer.toString(size))
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -361,8 +360,8 @@ public class StoreControllerRetrievingTest {
                 })
         ;
 
-        verify(storeService, times(0)).findAll(any(), isNull(), isNull(), anyInt(), anyInt());
-        verify(storeService, times(1)).findAllByUserId(any(), anyInt(), anyInt());
+        verify(storeService, times(0)).findAll(any(), isNull(), isNull(), anyLong(), anyInt());
+        verify(storeService, times(1)).findAllByUserId(any(), anyLong(), anyInt());
 
     }
 
@@ -426,14 +425,14 @@ public class StoreControllerRetrievingTest {
 
         //given
         Long userId = 1L;
-        int offset = 0;
+        int storeId = 0;
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores", userId)
                                 .param("userId", Long.toString(userId))
-                                .param("offset", Integer.toString(offset))
+                                .param("storeId", Integer.toString(storeId))
                                 .param("size", Integer.toString(size))
                 )
                 .andExpect(MockMvcResultMatchers.status().is(400))

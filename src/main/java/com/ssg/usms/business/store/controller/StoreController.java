@@ -83,11 +83,11 @@ public class StoreController {
             return storeService.findAll(requestParam.getUser(),
                     requestParam.getBusinessLicenseCode(),
                     requestParam.getStoreState(),
-                    requestParam.getOffset(),
+                    requestParam.getStoreId(),
                     requestParam.getSize());
         }
         if (authorities.get(0).getAuthority().equals(ROLE_STORE_OWNER.name())) {
-            return storeService.findAllByUserId(userId, requestParam.getOffset(), requestParam.getSize());
+            return storeService.findAllByUserId(userId, requestParam.getStoreId(), requestParam.getSize());
         }
         throw new IllegalAccessException("접근 권한이 없는 유저입니다.");
     }

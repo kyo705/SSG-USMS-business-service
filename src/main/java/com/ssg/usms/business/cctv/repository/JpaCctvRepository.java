@@ -28,9 +28,9 @@ public class JpaCctvRepository implements CctvRepository {
     }
 
     @Override
-    public List<Cctv> findByStoreId(Long storeId, int offset, int size) {
+    public List<Cctv> findByStoreId(Long storeId, long cctvId, int size) {
 
-        return springDataJpaCctvRepository.findByStoreId(storeId, PageRequest.of(offset, size));
+        return springDataJpaCctvRepository.findByStoreIdAndIdGreaterThan(storeId, cctvId, PageRequest.of(0, size));
     }
 
     @Override

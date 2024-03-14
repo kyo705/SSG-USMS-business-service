@@ -63,7 +63,7 @@ public class StoreRepositoryTest {
         List<Store> stores = storeRepository.findAll(requestParam.getUser(),
                                                     requestParam.getBusinessLicenseCode(),
                                                     requestParam.getStoreState(),
-                                                    requestParam.getOffset(),
+                                                    requestParam.getStoreId(),
                                                     requestParam.getSize());
 
         //then
@@ -78,6 +78,8 @@ public class StoreRepositoryTest {
             if(requestParam.getStoreState() != null) {
                 assertThat(store.getStoreState()).isEqualTo(requestParam.getStoreState());
             }
+
+            System.out.println(store.getId());
         }
     }
 
@@ -87,7 +89,7 @@ public class StoreRepositoryTest {
 
         //given
         Long userId = 1L;
-        int offset = 0;
+        int offset = 3;
         int size = 20;
 
         //when

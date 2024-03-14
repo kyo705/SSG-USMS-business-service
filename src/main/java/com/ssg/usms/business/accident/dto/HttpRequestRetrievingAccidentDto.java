@@ -28,7 +28,7 @@ public class HttpRequestRetrievingAccidentDto {
 
     @NotNull(message = NOT_ALLOWED_PAGE_OFFSET_FORMAT_MESSAGE)
     @PositiveOrZero(message = NOT_ALLOWED_PAGE_OFFSET_FORMAT_MESSAGE)
-    private Integer offset;
+    private Long accidentId;
 
     @NotNull(message = NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE)
     @Positive(message = NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE)

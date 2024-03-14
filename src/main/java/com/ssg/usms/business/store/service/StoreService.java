@@ -71,18 +71,18 @@ public class StoreService {
     }
 
     @Transactional
-    public List<StoreDto> findAllByUserId(Long userId, int offset, int size) {
+    public List<StoreDto> findAllByUserId(Long userId, long storeId, int size) {
 
-        return storeRepository.findByUserId(userId, offset, size)
+        return storeRepository.findByUserId(userId, storeId, size)
                 .stream()
                 .map(StoreDto::new)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public List<StoreDto> findAll(Long userId, String businessLicenseCode, StoreState storeState, int offset, int size) {
+    public List<StoreDto> findAll(Long userId, String businessLicenseCode, StoreState storeState, long storeId, int size) {
 
-        return storeRepository.findAll(userId, businessLicenseCode, storeState, offset, size)
+        return storeRepository.findAll(userId, businessLicenseCode, storeState, storeId, size)
                 .stream()
                 .map(StoreDto::new)
                 .collect(Collectors.toList());

@@ -9,7 +9,10 @@ import javax.persistence.*;
 @Setter
 @Getter
 @Entity
-@Table(indexes = @Index(name = "usms_store_business_license_img_id_idx",unique = true, columnList = "businessLicenseImgId"))
+@Table(indexes = {
+        @Index(name = "usms_store_business_license_img_id_idx", unique = true, columnList = "businessLicenseImgId"),
+        @Index(name = "usms_store_unique_idx", unique = true, columnList = "userId, storeName, storeAddress, businessLicenseCode")
+})
 public class Store {
 
     @Id

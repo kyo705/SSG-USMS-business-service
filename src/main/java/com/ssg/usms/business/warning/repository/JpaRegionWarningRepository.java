@@ -19,20 +19,22 @@ public class JpaRegionWarningRepository implements RegionWarningRepository {
     }
 
     @Override
-    public List<RegionWarning> findByRegion(String region, String startDate, String endDate, int offset, int size) {
+    public List<RegionWarning> findByRegion(String region, String startDate, String endDate, long regionWarningId, int size) {
 
-        return springDataJpaRepository.findByRegionAndDateBetween(region,
+        return springDataJpaRepository.findByRegionAndDateBetweenAndIdGreaterThan(region,
                 Date.valueOf(startDate),
                 Date.valueOf(endDate),
-                PageRequest.of(offset, size));
+                regionWarningId,
+                PageRequest.of(0, size));
     }
 
     @Override
-    public List<RegionWarning> findAll(String startDate, String endDate, int offset, int size) {
+    public List<RegionWarning> findAll(String startDate, String endDate, long regionWarningId, int size) {
 
-        return springDataJpaRepository.findByDateBetween(
+        return springDataJpaRepository.findByDateBetweenAndIdGreaterThan(
                 Date.valueOf(startDate),
                 Date.valueOf(endDate),
-                PageRequest.of(offset, size));
+                regionWarningId,
+                PageRequest.of(0, size));
     }
 }

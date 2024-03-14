@@ -64,7 +64,7 @@ public class VideoService {
         return videoRepository.getVideo(replayVideoRealPath);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<String> getReplayVideoFilenames(Long cctvId, String date) {
 
         String streamKey = cctvRepository.findById(cctvId).getStreamKey();

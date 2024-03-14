@@ -95,7 +95,7 @@ public class CctvRepositoryTest {
 
         //given
         Long storeId = 1L;
-        int offset = 0;
+        int offset = 2;
         int size = 10;
 
         //when
@@ -106,21 +106,6 @@ public class CctvRepositoryTest {
         for(Cctv cctv : result) {
             assertThat(cctv.getStoreId()).isEqualTo(storeId);
         }
-    }
-
-    @DisplayName("[findByStoreId] : 잘못된 offset 값으로 cctv 조회 테스트")
-    @Test
-    public void testFindByStoreIdWithInvalidOffset() {
-
-        //given
-        Long storeId = 1L;
-        int invalidOffset = -1;    // INVALID
-        int size = 10;
-
-        //when & then
-        assertThrows(InvalidDataAccessApiUsageException.class ,
-                () -> cctvRepository.findByStoreId(storeId, invalidOffset, size));
-
     }
 
     @DisplayName("[findByStoreId] : 잘못된 size 값으로 cctv 조회 테스트")

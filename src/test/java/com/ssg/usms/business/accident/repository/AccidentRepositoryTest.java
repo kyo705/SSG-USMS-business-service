@@ -104,7 +104,7 @@ public class AccidentRepositoryTest {
         Long storeId = 1L;
         long startTimestamp = 1000000000L;
         long endTimestamp = System.currentTimeMillis();
-        int offset = 0;
+        long offset = 0L;
         int size = 20;
         List<AccidentBehavior> behaviors = new ArrayList<>();
         behaviors.add(AccidentBehavior.FIGHT);
@@ -127,7 +127,7 @@ public class AccidentRepositoryTest {
         Long storeId = 1L;
         long startTimestamp = 1000000000L;
         long endTimestamp = System.currentTimeMillis();
-        int offset = 0;
+        long offset = 0L;
         int size = 20;
 
         //when
@@ -141,7 +141,7 @@ public class AccidentRepositoryTest {
     public void testFindAccidentRegion() {
 
         //given
-        int offset = 0;
+        long offset = 0L;
         int size = 20;
         long startTimestamp = 0;
         long endTimestamp = System.currentTimeMillis();

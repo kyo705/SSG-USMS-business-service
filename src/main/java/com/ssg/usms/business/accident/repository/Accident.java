@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@Table(indexes = @Index(name = "usms_accident_start_timestamp_idx", columnList = "start_timestamp"))
 @Entity
 public class Accident {
 

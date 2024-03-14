@@ -14,8 +14,8 @@ public class StoreTestSetup {
                 Arguments.of(
                         HttpRequestRetrievingStoreDto
                                 .builder()
-                                .user(1L)
-                                .offset(1)
+                                .user(2L)
+                                .storeId(6L)
                                 .size(5)
                                 .build()
                 ) ,
@@ -24,7 +24,7 @@ public class StoreTestSetup {
                                 .builder()
                                 .user(1L)
                                 .storeState(StoreState.APPROVAL)
-                                .offset(1)
+                                .storeId(1L)
                                 .size(5)
                                 .build()
                 ) ,
@@ -34,7 +34,7 @@ public class StoreTestSetup {
                                 .user(1L)
                                 .storeState(StoreState.APPROVAL)
                                 .businessLicenseCode("123-45-67890")
-                                .offset(0)
+                                .storeId(0L)
                                 .size(5)
                                 .build()
                 ) ,
@@ -43,7 +43,7 @@ public class StoreTestSetup {
                                 .builder()
                                 .storeState(StoreState.DISAPPROVAL)
                                 .businessLicenseCode("123-45-67890")
-                                .offset(0)
+                                .storeId(0L)
                                 .size(5)
                                 .build()
                 ) ,
@@ -52,7 +52,7 @@ public class StoreTestSetup {
                                 .builder()
                                 .user(2L)
                                 .businessLicenseCode("123-45-67890")
-                                .offset(0)
+                                .storeId(0L)
                                 .size(5)
                                 .build()
                 ) ,
@@ -60,7 +60,7 @@ public class StoreTestSetup {
                         HttpRequestRetrievingStoreDto
                                 .builder()
                                 .storeState(StoreState.READY)
-                                .offset(0)
+                                .storeId(0L)
                                 .size(5)
                                 .build()
                 ) ,
@@ -68,14 +68,14 @@ public class StoreTestSetup {
                         HttpRequestRetrievingStoreDto
                                 .builder()
                                 .businessLicenseCode("123-45-67890")
-                                .offset(0)
+                                .storeId(0L)
                                 .size(5)
                                 .build()
                 ) ,
                 Arguments.of(
                         HttpRequestRetrievingStoreDto
                                 .builder()
-                                .offset(0)
+                                .storeId(0L)
                                 .size(5)
                                 .build()
                 )

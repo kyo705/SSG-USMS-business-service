@@ -48,9 +48,9 @@ public class CctvService {
     }
 
     @Transactional(readOnly = true)
-    public List<CctvDto> findAllByStoreId(long storeId, int offset, int size) {
+    public List<CctvDto> findAllByStoreId(long storeId, long cctvId, int size) {
 
-        return cctvRepository.findByStoreId(storeId, offset, size)
+        return cctvRepository.findByStoreId(storeId, cctvId, size)
                 .stream()
                 .map(cctv -> {
                     CctvDto cctvDto = new CctvDto(cctv);

@@ -70,7 +70,7 @@ public class CctvController {
                                           @RequestParam(required = false)
                                               @NotNull(message = NOT_ALLOWED_PAGE_OFFSET_FORMAT_MESSAGE)
                                               @PositiveOrZero(message = NOT_ALLOWED_PAGE_OFFSET_FORMAT_MESSAGE)
-                                              Integer offset,
+                                              Long cctvId,
                                           @RequestParam(required = false)
                                               @NotNull(message = NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE)
                                               @Positive(message = NOT_ALLOWED_PAGE_SIZE_FORMAT_MESSAGE)
@@ -87,7 +87,7 @@ public class CctvController {
         }
 
         // 비지니스 로직
-        return cctvService.findAllByStoreId(storeId, offset, size);
+        return cctvService.findAllByStoreId(storeId, cctvId, size);
     }
 
     @PatchMapping("api/users/{userId}/stores/{storeId}/cctvs/{cctvId}")

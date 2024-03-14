@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface SpringDataJpaCctvRepository extends JpaRepository<Cctv, Long> {
 
 
-    List<Cctv> findByStoreId(Long storeId, Pageable Pageable);
+    List<Cctv> findByStoreIdAndIdGreaterThan(Long storeId, Long cctvId, Pageable Pageable);
 
     Optional<Cctv> findByStreamKey(String streamKey);
 

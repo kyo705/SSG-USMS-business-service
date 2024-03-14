@@ -12,6 +12,7 @@ import java.sql.Date;
 @ToString
 @Getter
 @Setter
+@Table(indexes = @Index(name = "usms_region_warning_occurrence_date_idx", columnList = "occurrence_date"))
 @Entity
 public class RegionWarning {
 

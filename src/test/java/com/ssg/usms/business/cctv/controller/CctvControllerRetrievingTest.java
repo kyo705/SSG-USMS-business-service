@@ -303,7 +303,7 @@ public class CctvControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long cctvId = 0L;
         int size = 10;
 
         List<CctvDto> cctvList = CctvTestSetup.getCctvList(storeId)
@@ -312,13 +312,13 @@ public class CctvControllerRetrievingTest {
                 .collect(Collectors.toList());
 
         given(storeService.isAvailable(storeId)).willReturn(true);
-        given(cctvService.findAllByStoreId(storeId, offset, size)).willReturn(cctvList);
+        given(cctvService.findAllByStoreId(storeId, cctvId, size)).willReturn(cctvList);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
-                                .param("offset", Integer.toString(offset))
+                                .param("cctvId", Long.toString(cctvId))
                                 .param("size", Integer.toString(size))
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -455,7 +455,7 @@ public class CctvControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long cctvId = 0L;
 
         willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(any(), any());
 
@@ -463,7 +463,7 @@ public class CctvControllerRetrievingTest {
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
-                                .param("offset", Integer.toString(offset))
+                                .param("cctvId", Long.toString(cctvId))
                                 .param("size", Integer.toString(size))
                                 .contentType(MediaType.APPLICATION_JSON)
 
@@ -485,7 +485,7 @@ public class CctvControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long cctvId = 0L;
 
         willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(any(), any());
 
@@ -493,7 +493,7 @@ public class CctvControllerRetrievingTest {
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
-                                .param("offset", Integer.toString(offset))
+                                .param("cctvId", Long.toString(cctvId))
                                 .contentType(MediaType.APPLICATION_JSON)
 
                 )
@@ -514,7 +514,7 @@ public class CctvControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long cctvId = 0L;
         int size = 10;
 
         willThrow(new NotExistingStoreException()).given(storeService).validateOwnedStore(any(), any());
@@ -523,7 +523,7 @@ public class CctvControllerRetrievingTest {
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
-                                .param("offset", Integer.toString(offset))
+                                .param("cctvId", Long.toString(cctvId))
                                 .param("size", Integer.toString(size))
                                 .contentType(MediaType.APPLICATION_JSON)
 
@@ -545,7 +545,7 @@ public class CctvControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long cctvId = 0L;
         int size = 10;
 
         willThrow(new NotOwnedStoreException()).given(storeService).validateOwnedStore(any(), any());
@@ -554,7 +554,7 @@ public class CctvControllerRetrievingTest {
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
-                                .param("offset", Integer.toString(offset))
+                                .param("cctvId", Long.toString(cctvId))
                                 .param("size", Integer.toString(size))
                                 .contentType(MediaType.APPLICATION_JSON)
 
@@ -576,7 +576,7 @@ public class CctvControllerRetrievingTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long cctvId = 0L;
         int size = 10;
 
         given(storeService.isAvailable(storeId)).willReturn(false);
@@ -585,7 +585,7 @@ public class CctvControllerRetrievingTest {
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/cctvs", userId, storeId)
-                                .param("offset", Integer.toString(offset))
+                                .param("cctvId", Long.toString(cctvId))
                                 .param("size", Integer.toString(size))
                                 .contentType(MediaType.APPLICATION_JSON)
 

@@ -23,9 +23,9 @@ public class JpaAccidentRepository implements AccidentRepository {
     }
 
     @Override
-    public List<Accident> findAllByCctvId(Long cctvId, int offset, int size) {
+    public List<Accident> findAllByCctvId(Long cctvId, long accidentId, int size) {
 
-        return springDataJpaAccidentRepository.findByCctvId(cctvId, PageRequest.of(offset, size));
+        return springDataJpaAccidentRepository.findByCctvIdAndIdGreaterThan(cctvId, accidentId, PageRequest.of(0, size));
     }
 
     @Override
@@ -35,25 +35,26 @@ public class JpaAccidentRepository implements AccidentRepository {
     }
 
     @Override
-    public List<Accident> findAllByStoreId(long storeId, long startTimestamp, long endTimestamp, int offset, int size) {
+    public List<Accident> findAllByStoreId(long storeId, long startTimestamp, long endTimestamp, long accidentId, int size) {
 
         return springDataJpaAccidentRepository
-                .findAllByStoreId(storeId, startTimestamp, endTimestamp, offset, size);
+                .findAllByStoreId(storeId, startTimestamp, endTimestamp, accidentId, size);
     }
 
     @Override
-    public List<Accident> findAllByStoreId(long storeId, List<AccidentBehavior> behavior, long startTimestamp, long endTimestamp, int offset, int size) {
+    public List<Accident> findAllByStoreId(long storeId, List<AccidentBehavior> behavior,
+                                           long startTimestamp, long endTimestamp, long accidentId, int size) {
 
         List<Integer> behaviorCodes = behavior.stream().map(AccidentBehavior::getCode).collect(Collectors.toList());
 
         return springDataJpaAccidentRepository
-                .findAllByStoreId(storeId, behaviorCodes, startTimestamp, endTimestamp, offset, size);
+                .findAllByStoreId(storeId, behaviorCodes, startTimestamp, endTimestamp, accidentId, size);
     }
 
     @Override
-    public List<AccidentRegionDto> findAccidentRegion(long startTimestamp, long endTimestamp, int offset, int size) {
+    public List<AccidentRegionDto> findAccidentRegion(long startTimestamp, long endTimestamp, long accidentId, int size) {
 
-        return springDataJpaAccidentRepository.getAccidentRegion(startTimestamp, endTimestamp, offset, size);
+        return springDataJpaAccidentRepository.getAccidentRegion(startTimestamp, endTimestamp, accidentId, size);
     }
 
 

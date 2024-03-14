@@ -15,17 +15,18 @@ import java.util.stream.Collectors;
 
 public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident, Long> {
 
-    List<Accident> findByCctvId(Long cctvId, Pageable pageable);
+    List<Accident> findByCctvIdAndIdGreaterThan(Long cctvId, Long accidentId, Pageable pageable);
 
     @Query(value = "SELECT a.id, a.cctv_id, a.behavior, a.start_timestamp" +
             " FROM store s JOIN cctv c ON s.id = c.store_id JOIN accident a ON c.id = a.cctv_id" +
             " WHERE s.id = :storeId" +
             " AND a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
-            " LIMIT :size OFFSET :offset ", nativeQuery = true)
+            " AND a.id > :accidentId" +
+            " LIMIT :size", nativeQuery = true)
     List<Accident> findAllByStoreId(@Param("storeId") long storeId,
                                     @Param("startTimestamp") long startTimestamp,
                                     @Param("endTimestamp") long endTimestamp,
-                                    @Param("offset") int offset,
+                                    @Param("accidentId") long accidentId,
                                     @Param("size") int size);
 
     @Query(value = "SELECT a.id, a.cctv_id, a.behavior, a.start_timestamp" +
@@ -33,12 +34,13 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
             " WHERE s.id = :storeId" +
             " AND a.behavior IN :behavior" +
             " AND a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
-            " LIMIT :size OFFSET :offset ", nativeQuery = true)
+            " AND a.id > :accidentId" +
+            " LIMIT :size", nativeQuery = true)
     List<Accident> findAllByStoreId(@Param("storeId") long storeId,
                                     @Param("behavior") List<Integer> behaviors,
                                     @Param("startTimestamp") long startTimestamp,
                                     @Param("endTimestamp") long endTimestamp,
-                                    @Param("offset") int offset,
+                                    @Param("accidentId") long accidentId,
                                     @Param("size") int size);
 
     @Query(value = "SELECT s.id AS storeId, a.behavior AS behavior, COUNT(*) AS count" +
@@ -53,10 +55,11 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
     @Query(value = "SELECT a.id, s.store_address, a.behavior" +
             " FROM store s JOIN cctv c ON s.id = c.store_id JOIN accident a ON c.id = a.cctv_id" +
             " WHERE a.start_timestamp BETWEEN :startTimestamp AND :endTimestamp" +
-            " LIMIT :size OFFSET :offset ", nativeQuery = true)
+            " AND a.id > :accidentId" +
+            " LIMIT :size ", nativeQuery = true)
     List<Object[]> findAccidentRegion(@Param("startTimestamp") long startTimestamp,
                                 @Param("endTimestamp") long endTimestamp,
-                                @Param("offset") int offset,
+                                @Param("accidentId") long accidentId,
                                 @Param("size") int size);
 
     default List<AccidentStatDto> getAccidentStats(long storeId, long startTimestamp, long endTimestamp) {
@@ -79,9 +82,9 @@ public interface SpringDataJpaAccidentRepository extends JpaRepository<Accident,
                 .collect(Collectors.toList());
     }
 
-    default List<AccidentRegionDto> getAccidentRegion(long startTimestamp, long endTimestamp, int offset, int size) {
+    default List<AccidentRegionDto> getAccidentRegion(long startTimestamp, long endTimestamp, long accidentId, int size) {
 
-        List<Object[]> result = findAccidentRegion(startTimestamp, endTimestamp, offset, size);
+        List<Object[]> result = findAccidentRegion(startTimestamp, endTimestamp, accidentId, size);
 
         return result.stream()
                 .map(row -> AccidentRegionDto.builder()

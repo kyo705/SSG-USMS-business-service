@@ -8,7 +8,7 @@ public interface CctvRepository {
 
     Cctv findById(Long id);
 
-    List<Cctv> findByStoreId(Long storeId, int offset, int size);
+    List<Cctv> findByStoreId(Long storeId, long cctvId, int size);
 
     Cctv findByStreamKey(String streamKey);
 

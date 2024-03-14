@@ -19,4 +19,9 @@ public class StoreSpecifications {
 
         return (store, cq, cb) -> cb.equal(store.get("storeState"), state.getCode());
     }
+
+    static Specification<Store> greaterThanStoreId(Long storeId) {
+
+        return (store, cq, cb) -> cb.greaterThan(store.get("id"), storeId);
+    }
 }

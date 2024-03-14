@@ -38,7 +38,7 @@ public class RegionWarningService {
     private final RegionWarningRepository regionWarningRepository;
 
     @Transactional(readOnly = true)
-    public List<RegionWarningDto> findByRegion(Long storeId, String startDate, String endDate, int offset, int size) {
+    public List<RegionWarningDto> findByRegion(Long storeId, String startDate, String endDate, long regionWarningId, int size) {
 
         Store store = storeRepository.findById(storeId);
         String[] address = store.getStoreAddress().split(" "); // 서울특별시 강남구 강남대로42길
@@ -51,7 +51,7 @@ public class RegionWarningService {
             endDate = LocalDate.now().toString();
         }
 
-        return regionWarningRepository.findByRegion(region, startDate, endDate, offset, size)
+        return regionWarningRepository.findByRegion(region, startDate, endDate, regionWarningId, size)
                 .stream()
                 .map(RegionWarningDto::new)
                 .collect(Collectors.toList());
@@ -66,13 +66,13 @@ public class RegionWarningService {
         long endTimestamp = System.currentTimeMillis();
         long startTimestamp = endTimestamp - 1000*60*60*24;
 
-        int offset = 0;
+        long accidentId = 0;
         int size = 100;
 
         Map<String, Long> regionBehaviorMap = new HashMap<>();
 
         while(true) {
-            List<AccidentRegionDto> accidentRegionDtos = accidentRepository.findAccidentRegion(startTimestamp, endTimestamp, offset, size);
+            List<AccidentRegionDto> accidentRegionDtos = accidentRepository.findAccidentRegion(startTimestamp, endTimestamp, accidentId, size);
             for(AccidentRegionDto accidentRegion : accidentRegionDtos) {
                 String key = accidentRegion.getBehavior().getCode() + " "
                         + accidentRegion.getStoreAddress().split(" ")[0] + " "
@@ -84,7 +84,7 @@ public class RegionWarningService {
             if(accidentRegionDtos.size() != size) {
                 break;
             }
-            offset += size;
+            accidentId += size;
         }
 
         regionBehaviorMap.forEach((key, value) -> {
@@ -107,12 +107,12 @@ public class RegionWarningService {
     @Scheduled(cron = "${usms.schedule.sendRegionWarningNotification.cron}", zone = "${usms.schedule.timeZone}")
     public void sendRegionWarningNotification() throws IOException {
 
-        int offset = 0;
+        int regionWarningId = 0;
         int size = 100;
 
         while (true) {
             List<RegionWarning> regionWarnings = regionWarningRepository
-                    .findAll(LocalDate.now().minusDays(1).toString(), LocalDate.now().toString(), offset, size);
+                    .findAll(LocalDate.now().minusDays(1).toString(), LocalDate.now().toString(), regionWarningId, size);
 
             for(RegionWarning regionWarning : regionWarnings) {
                 //지역을 통해 매장 찾아냄
@@ -138,7 +138,7 @@ public class RegionWarningService {
             if(regionWarnings.size() != size) {
                 break;
             }
-            offset++;
+            regionWarningId += size;
         }
 
     }

@@ -59,7 +59,7 @@ public class StoreServiceRetrievingTest {
         stores.add(store3);
         stores.add(store4);
 
-        given(mockStoreRepository.findAll(anyLong(), isNull(), isNull(), anyInt(), anyInt())).willReturn(stores);
+        given(mockStoreRepository.findAll(anyLong(), isNull(), isNull(), anyLong(), anyInt())).willReturn(stores);
 
         //when
         List<StoreDto> result = storeService.findAll(1L, null, null, 0, 5);
@@ -90,7 +90,7 @@ public class StoreServiceRetrievingTest {
         stores.add(store3);
         stores.add(store4);
 
-        given(mockStoreRepository.findByUserId(any(), anyInt(), anyInt())).willReturn(stores);
+        given(mockStoreRepository.findByUserId(any(), anyLong(), anyInt())).willReturn(stores);
 
         //when
         List<StoreDto> result = storeService.findAllByUserId(1L, 0, 5);

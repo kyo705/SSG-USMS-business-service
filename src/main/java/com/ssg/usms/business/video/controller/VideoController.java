@@ -5,7 +5,6 @@ import com.ssg.usms.business.security.login.UsmsUserDetails;
 import com.ssg.usms.business.store.exception.UnavailableStoreException;
 import com.ssg.usms.business.store.service.StoreService;
 import com.ssg.usms.business.video.annotation.LiveVideoFilename;
-import com.ssg.usms.business.video.annotation.ReplayVideoFilename;
 import com.ssg.usms.business.video.annotation.StreamKey;
 import com.ssg.usms.business.video.service.VideoService;
 import com.ssg.usms.business.video.util.ProtocolAndFileFormatMatcher;

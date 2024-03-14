@@ -2,6 +2,7 @@ package com.ssg.usms.business.warning.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssg.usms.business.config.EmbeddedRedis;
 import com.ssg.usms.business.error.ErrorResponseDto;
 import com.ssg.usms.business.store.exception.NotExistingStoreException;
 import com.ssg.usms.business.store.exception.NotOwnedStoreException;
@@ -37,7 +38,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ActiveProfiles("test")
-@SpringBootTest()
+@SpringBootTest(classes = EmbeddedRedis.class)
 public class RegionWarningControllerTest {
 
     private MockMvc mockMvc;
@@ -68,20 +69,20 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
 
         List<RegionWarningDto> list = RegionWarningTestSetup.getRegionWarning("서울특별시 강남구").stream().map(RegionWarningDto::new).collect(Collectors.toList());
 
         given(mockStoreService.isAvailable(storeId)).willReturn(true);
-        given(mockRegionWarningService.findByRegion(storeId, null, null, offset, size)).willReturn(list);
+        given(mockRegionWarningService.findByRegion(storeId, null, null, regionWarningId, size)).willReturn(list);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                 )
                 .andExpect(MockMvcResultMatchers.status().is(200))
@@ -96,21 +97,21 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-26";
 
         List<RegionWarningDto> list = RegionWarningTestSetup.getRegionWarning("서울특별시 강남구").stream().map(RegionWarningDto::new).collect(Collectors.toList());
 
         given(mockStoreService.isAvailable(storeId)).willReturn(true);
-        given(mockRegionWarningService.findByRegion(storeId, startDate, null, offset, size)).willReturn(list);
+        given(mockRegionWarningService.findByRegion(storeId, startDate, null, regionWarningId, size)).willReturn(list);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                 )
@@ -126,21 +127,21 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String endDate = "2024-01-26";
 
         List<RegionWarningDto> list = RegionWarningTestSetup.getRegionWarning("서울특별시 강남구").stream().map(RegionWarningDto::new).collect(Collectors.toList());
 
         given(mockStoreService.isAvailable(storeId)).willReturn(true);
-        given(mockRegionWarningService.findByRegion(storeId, null, endDate, offset, size)).willReturn(list);
+        given(mockRegionWarningService.findByRegion(storeId, null, endDate, regionWarningId, size)).willReturn(list);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("endDate", endDate)
                 )
@@ -156,7 +157,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-22";
         String endDate = "2024-01-26";
@@ -164,14 +165,14 @@ public class RegionWarningControllerTest {
         List<RegionWarningDto> list = RegionWarningTestSetup.getRegionWarning("서울특별시 강남구").stream().map(RegionWarningDto::new).collect(Collectors.toList());
 
         given(mockStoreService.isAvailable(storeId)).willReturn(true);
-        given(mockRegionWarningService.findByRegion(storeId, startDate, endDate, offset, size)).willReturn(list);
+        given(mockRegionWarningService.findByRegion(storeId, startDate, endDate, regionWarningId, size)).willReturn(list);
 
         //when & then
         mockMvc.perform(
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -188,7 +189,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-22";
         String endDate = "2024-01-26";
@@ -197,7 +198,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -214,7 +215,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-22";
         String endDate = "2024-01-26";
@@ -223,7 +224,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -240,7 +241,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = -5;
+        Long regionWarningId = -5L;
         int size = 20;
         String startDate = "2024-01-22";
         String endDate = "2024-01-26";
@@ -250,7 +251,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -300,7 +301,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 0;
         String startDate = "2024-01-22";
         String endDate = "2024-01-26";
@@ -310,7 +311,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -331,7 +332,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         String startDate = "2024-01-22";
         String endDate = "2024-01-26";
 
@@ -340,7 +341,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
                 )
@@ -360,7 +361,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-30";
         String endDate = "2024-01-26";
@@ -370,7 +371,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -391,7 +392,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-10";
         String endDate = "2024-01-26";
@@ -403,7 +404,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -424,7 +425,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-10";
         String endDate = "2024-01-26";
@@ -436,7 +437,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)
@@ -457,7 +458,7 @@ public class RegionWarningControllerTest {
         //given
         Long userId = 1L;
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
         String startDate = "2024-01-10";
         String endDate = "2024-01-26";
@@ -469,7 +470,7 @@ public class RegionWarningControllerTest {
                         MockMvcRequestBuilders
                                 .get("/api/users/{userId}/stores/{storeId}/accidents/region", userId, storeId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .param("offset", Integer.toString(offset))
+                                .param("regionWarningId", Long.toString(regionWarningId))
                                 .param("size", Integer.toString(size))
                                 .param("startDate", startDate)
                                 .param("endDate", endDate)

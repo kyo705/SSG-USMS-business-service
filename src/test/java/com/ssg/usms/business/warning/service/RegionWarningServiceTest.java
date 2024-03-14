@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,7 +56,7 @@ public class RegionWarningServiceTest {
         Long storeId = 1L;
         String startDate = "2024-01-24";
         String endDate = "2024-01-31";
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
 
         Store store = new Store();
@@ -73,15 +72,15 @@ public class RegionWarningServiceTest {
 
         List<RegionWarning> regionWarningDtoList = RegionWarningTestSetup.getRegionWarning("서울특별시 강남구");
 
-        given(regionWarningRepository.findByRegion("서울특별시 강남구", startDate, endDate, offset, size))
+        given(regionWarningRepository.findByRegion("서울특별시 강남구", startDate, endDate, regionWarningId, size))
                 .willReturn(regionWarningDtoList);
 
         //when
-        regionWarningService.findByRegion(storeId, startDate, endDate, offset, size);
+        regionWarningService.findByRegion(storeId, startDate, endDate, regionWarningId, size);
 
         //then
         verify(storeRepository, times(1)).findById(storeId);
-        verify(regionWarningRepository, times(1)).findByRegion("서울특별시 강남구", startDate, endDate, offset, size);
+        verify(regionWarningRepository, times(1)).findByRegion("서울특별시 강남구", startDate, endDate, regionWarningId, size);
 
     }
 
@@ -91,7 +90,7 @@ public class RegionWarningServiceTest {
 
         //given
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
 
         Store store = new Store();
@@ -107,15 +106,15 @@ public class RegionWarningServiceTest {
 
         List<RegionWarning> regionWarningDtoList = RegionWarningTestSetup.getRegionWarning("서울특별시 강남구");
 
-        given(regionWarningRepository.findByRegion(any(), any(), any(), anyInt(), anyInt()))
+        given(regionWarningRepository.findByRegion(any(), any(), any(), anyLong(), anyInt()))
                 .willReturn(regionWarningDtoList);
 
         //when
-        regionWarningService.findByRegion(storeId, null, null, offset, size);
+        regionWarningService.findByRegion(storeId, null, null, regionWarningId, size);
 
         //then
         verify(storeRepository, times(1)).findById(storeId);
-        verify(regionWarningRepository, times(1)).findByRegion( any(),  any(),  any(),  anyInt(), anyInt());
+        verify(regionWarningRepository, times(1)).findByRegion( any(),  any(),  any(),  anyLong(), anyInt());
 
     }
 
@@ -125,17 +124,17 @@ public class RegionWarningServiceTest {
 
         //given
         Long storeId = 1L;
-        int offset = 0;
+        Long regionWarningId = 0L;
         int size = 20;
 
         given(storeRepository.findById(storeId)).willThrow(NotExistingStoreException.class);
 
         //when
-        assertThrows(NotExistingStoreException.class, () -> regionWarningService.findByRegion(storeId, null, null, offset, size));
+        assertThrows(NotExistingStoreException.class, () -> regionWarningService.findByRegion(storeId, null, null, regionWarningId, size));
 
         //then
         verify(storeRepository, times(1)).findById(storeId);
-        verify(regionWarningRepository, times(0)).findByRegion( any(),  any(),  any(),  anyInt(), anyInt());
+        verify(regionWarningRepository, times(0)).findByRegion( any(),  any(),  any(),  anyLong(), anyInt());
 
     }
 

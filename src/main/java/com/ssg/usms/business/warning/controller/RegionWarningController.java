@@ -41,7 +41,7 @@ public class RegionWarningController {
         return regionWarningService.findByRegion(storeId,
                                                 requestParams.getStartDate(),
                                                 requestParams.getEndDate(),
-                                                requestParams.getOffset(),
+                                                requestParams.getRegionWarningId(),
                                                 requestParams.getSize());
     }
 
