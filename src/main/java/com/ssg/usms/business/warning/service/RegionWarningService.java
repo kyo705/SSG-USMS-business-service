@@ -84,7 +84,7 @@ public class RegionWarningService {
             if(accidentRegionDtos.size() != size) {
                 break;
             }
-            accidentId += size;
+            accidentId = accidentRegionDtos.get(size-1).getAccidentId();
         }
 
         regionBehaviorMap.forEach((key, value) -> {
@@ -107,7 +107,7 @@ public class RegionWarningService {
     @Scheduled(cron = "${usms.schedule.sendRegionWarningNotification.cron}", zone = "${usms.schedule.timeZone}")
     public void sendRegionWarningNotification() throws IOException {
 
-        int regionWarningId = 0;
+        long regionWarningId = 0;
         int size = 100;
 
         while (true) {
@@ -138,7 +138,7 @@ public class RegionWarningService {
             if(regionWarnings.size() != size) {
                 break;
             }
-            regionWarningId += size;
+            regionWarningId = regionWarnings.get(size-1).getId();
         }
 
     }
